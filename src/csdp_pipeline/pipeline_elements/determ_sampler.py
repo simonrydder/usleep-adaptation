@@ -61,7 +61,7 @@ class Determ_sampler(IPipe):
                             print(
                                 f"Could not find configured split for dataset {f} and splittype {self.split_type}. All subjects are sampled."
                             )
-                            subjects = list(hdf5.keys())
+                            subjects = list(hdf5["data"].keys())
                 else:
                     subjects = list(hdf5.keys())
 
@@ -74,7 +74,7 @@ class Determ_sampler(IPipe):
 
                 for s in subjects:
                     try:
-                        records = list(hdf5[s])
+                        records = list(hdf5["data"][s])
                     except:
                         print(
                             f"Did not find subject {s} in dataset {f} for splittype {self.split_type}"
@@ -86,6 +86,44 @@ class Determ_sampler(IPipe):
 
         return list_of_records
 
+    # def list_records(self):
+    #     list_of_records = []
+
+    #     for f in self.datasets:
+    #         with h5py.File(f"{self.base_file_path}/{f}.hdf5", "r") as hdf5:
+
+    #             if self.split_file != None:
+    #                 with open(self.split_file, "r") as splitfile:
+    #                     splitdata = json.load(splitfile)
+
+    #                     try:
+    #                         sets = splitdata[f]
+    #                         subjects = sets[self.split_type]
+    #                     except:
+    #                         print(f"Could not find configured split for dataset {f} and splittype {self.split_type}. All subjects are sampled.")
+    #                         subjects = list(hdf5['data'].keys())
+    #             else:
+    #                 subjects = list(hdf5['data'].keys())
+
+    #             num_subjects = len(subjects)
+    #             num_subjects_to_use = math.ceil(num_subjects*self.subject_percentage)
+    #             subjects = subjects[0:num_subjects_to_use]
+
+    #             if len(subjects) == 0:
+    #                 raise ValueError(f"No subjects in split type: {self.split_type}")
+
+    #             for s in subjects:
+    #                 try:
+    #                     records = list(hdf5['data'][s])
+    #                 except:
+    #                     print(f"Did not find subject {s} in dataset {f} for splittype {self.split_type}")
+    #                     continue
+
+    #                 for r in records:
+    #                     list_of_records.append((f,s,r))
+
+    #     return list_of_records
+
     def __get_sample(self, index):
         r = self.records[index]
 
@@ -94,9 +132,9 @@ class Determ_sampler(IPipe):
         rec = r[2]
 
         with h5py.File(f"{self.base_file_path}/{dataset}.hdf5", "r") as hdf5:
-            y = hdf5[subject][rec]["hypnogram"][()]
+            y = hdf5["data"][subject][rec]["hypnogram"][()]
 
-            psg_channels = list(hdf5[subject][rec]["psg"].keys())
+            psg_channels = list(hdf5["data"][subject][rec]["psg"].keys())
 
             eeg_data, eog_data, eeg_tag, eog_tag = self.__load_data(
                 hdf5, subject, rec, psg_channels
@@ -141,11 +179,11 @@ class Determ_sampler(IPipe):
             eog_tag = "all"
 
         for ch in eeg_keys:
-            data = hdf5[subject][rec]["psg"][ch][:]
+            data = hdf5["data"][subject][rec]["psg"][ch][:]
             eeg_data.append(data)
 
         for ch in eog_keys:
-            data = hdf5[subject][rec]["psg"][ch][:]
+            data = hdf5["data"][subject][rec]["psg"][ch][:]
             eog_data.append(data)
 
         eog_data = np.array(eog_data)

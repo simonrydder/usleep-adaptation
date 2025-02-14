@@ -38,7 +38,6 @@ class USleep_Factory(IModel_Factory):
         batch_size,
         initial_filters,
         complexity_factor,
-        # depth,
         progression_factor,
         lr_patience=50,
         lr_factor=0.5,

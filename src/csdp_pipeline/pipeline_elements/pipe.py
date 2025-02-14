@@ -1,19 +1,24 @@
 from abc import ABC, abstractmethod
 
+import torch
+
+
 class IPipe(ABC):
     @abstractmethod
-    def process(x):
+    def process(
+        self, x: tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         pass
 
+
 class Pipeline:
-    def __init__(self,
-                 pipes: list):
+    def __init__(self, pipes: list):
         self.pipes = pipes
 
     def get_batch(self, index):
         x = index
-        
+
         for _, p in enumerate(self.pipes):
             x = p.process(x)
-        
+
         return x

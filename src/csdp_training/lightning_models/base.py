@@ -5,8 +5,8 @@ Created on Thu Feb  2 13:40:59 2023
 @author: repse
 """
 
-import lightning as pl
 import numpy as np
+import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 

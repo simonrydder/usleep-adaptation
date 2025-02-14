@@ -1,0 +1,44 @@
+
+hdf5_base_path: "data/hdf5"
+
+hdf5_split_path: "data/splits/eesm_example.json"
+create_random_split: False
+
+accelerator: "cpu"
+train_sets:
+  - "eesm19v1"
+val_sets:
+  - "eesm19v1"
+test_sets:
+  - "eesm19v1"
+
+gradient_steps: 5
+batch_size: 64
+num_workers: 1
+lr: 0.0001
+max_epochs: 2
+early_stop_patience: 50
+
+lr_sched_patience: 50
+lr_sched_factor: 0.5
+lr_sched_minimum: 0.0000001
+
+usleep_parameters:
+  initial_filters: 5
+  complexity_factor: 1.67
+  progression_factor: 2
+  depth : 10
+
+test_after_train: True
+test_only: True
+
+pretrained: True
+pretrained_path: "data/weights/EESM19_finetuned.ckpt"
+
+neptune:
+  use: False
+  existing_run_id: null
+  logging_folder: null
+  api_key: ""
+  project: ""
+  name: ""

@@ -1,0 +1,11 @@
+batch_size: 64
+complexity_factor: 0.5
+depth: 5
+include_eog: true
+initial_filters: 5
+loss_weights: null
+lr: 0.0001
+lr_factor: 0.5
+lr_minimum: 1.0e-07
+lr_patience: 50
+progression_factor: 2

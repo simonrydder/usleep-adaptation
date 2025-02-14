@@ -1,8 +1,6 @@
 # Code inspired by U-Sleep article
 # and https://github.com/neergaard/utime-pytorch
 
-# type: ignore
-
 import math
 
 import torch
@@ -11,7 +9,12 @@ import torch.nn as nn
 
 class ConvBNELU(nn.Module):
     def __init__(
-        self, in_channels, out_channels=6, kernel_size=9, dilation=1, ceil_pad=False
+        self,
+        in_channels: int,
+        out_channels: int = 6,
+        kernel_size: int = 9,
+        dilation: int = 1,
+        ceil_pad: bool = False,
     ):
         super().__init__()
 
@@ -62,10 +65,10 @@ class Encoder(nn.Module):
         self,
         filters,
         max_filters,
-        in_channels=2,
-        maxpool_kernel=2,
-        kernel_size=9,
-        dilation=1,
+        in_channels: int = 2,
+        maxpool_kernel: int = 2,
+        kernel_size: int = 9,
+        dilation: int = 1,
     ):
         super().__init__()
 
@@ -121,8 +124,8 @@ class Decoder(nn.Module):
         self,
         filters,
         max_filters,
-        upsample_kernel=2,
-        kernel_size=9,
+        upsample_kernel: int = 2,
+        kernel_size: int = 9,
     ):
         super().__init__()
 
@@ -185,7 +188,7 @@ class Decoder(nn.Module):
 
 
 class Dense(nn.Module):
-    def __init__(self, in_channels, num_classes=6, kernel_size=1):
+    def __init__(self, in_channels: int, num_classes: int = 6, kernel_size: int = 1):
         super().__init__()
 
         self.in_channels = in_channels
@@ -212,7 +215,9 @@ class Dense(nn.Module):
 
 
 class SegmentClassifier(nn.Module):
-    def __init__(self, num_classes=5, avgpool_kernel=3840, conv1d_kernel=1):
+    def __init__(
+        self, num_classes: int = 5, avgpool_kernel: int = 3840, conv1d_kernel: int = 1
+    ):
         super().__init__()
         self.num_classes = num_classes
         self.avgpool_kernel = avgpool_kernel
@@ -248,11 +253,11 @@ class SegmentClassifier(nn.Module):
 class USleep(nn.Module):
     def __init__(
         self,
-        num_channels=2,
-        initial_filters=5,
-        complexity_factor=1.67,
-        progression_factor=2,
-        depth=12,
+        num_channels: int = 2,
+        initial_filters: int = 5,
+        complexity_factor: float = 1.67,
+        progression_factor: int = 2,
+        depth: int = 12,
     ):
         super().__init__()
         self.depth = depth
@@ -269,7 +274,7 @@ class USleep(nn.Module):
         self.dense = Dense(encoder_filters[0])
         self.classifier = SegmentClassifier()
 
-    def create_filters(self) -> (list, list, int):
+    def create_filters(self) -> tuple[list, list, int]:
         encoder_filters = []
         decoder_filters = []
         current_filters = self.initial_filters

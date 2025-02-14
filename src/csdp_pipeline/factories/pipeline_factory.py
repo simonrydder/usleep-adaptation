@@ -123,3 +123,6 @@ class LSeqSleepNet_Pipeline_Factory(IPipeline_Factory):
 
     def create_test_pipeline(self):
         return self.__evaluation_pipeline("test", self.testsets)
+
+    def create_test_pipeline(self):
+        return self.__evaluation_pipeline("test", self.testsets)

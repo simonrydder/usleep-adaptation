@@ -1,7 +1,6 @@
 import os
 
 import pytorch_lightning as pl
-import torch
 from pytorch_lightning.callbacks import (
     EarlyStopping,
     LearningRateMonitor,
@@ -22,19 +21,20 @@ def main():
         initial_filters=5,
         complexity_factor=0.5,
         progression_factor=2,
+        depth=5,
     )
     # ckpt = os.path.join("src", "usleep", "weights", "Depth10_CF05.ckpt")
-    ckpt = os.path.join("src", "usleep", "weights", "EESM19_finetuned.ckpt")
-    pretrained = usleep_factory.create_pretrained_net(ckpt)
+    ckpt = os.path.join("src", "usleep", "weights", "Depth10_CF05.ckpt")
+    new_net = usleep_factory.create_new_net()
 
     dataloader = USleep_Dataloader_Factory(
         gradient_steps=5,
         batch_size=64,
         hdf5_base_path=os.path.join("data", "hdf5"),
-        trainsets=["eesm19"],
-        testsets=["eesm19"],
-        valsets=["eesm19"],
-        data_split_path=os.path.join("data", "splits", "test.json"),
+        trainsets=["sedf_st"],
+        testsets=["sedf_st"],
+        valsets=["sedf_st"],
+        data_split_path=os.path.join("data", "splits", "usleep_split.json"),
         create_random_split=False,
     )
     early_stopping = EarlyStopping(
@@ -49,23 +49,17 @@ def main():
 
     trainer = pl.Trainer(
         logger=True,
-        max_epochs=2,
+        max_epochs=200,
         callbacks=callbacks,
         accelerator="gpu",
         devices=1,
         num_nodes=1,
     )
 
-    with torch.no_grad():
-        pretrained.eval()
+    train_loader = dataloader.create_training_loader(num_workers=5)
+    val_loader = dataloader.create_validation_loader(num_workers=5)
 
-        test_loader = dataloader.create_testing_loader(num_workers=1)
-        _ = trainer.test(
-            pretrained,
-            test_loader,
-            # ckpt_path=os.path.join("data", "ckpt", "test"),
-        )
-    pass
+    trainer.fit(new_net, train_loader, val_loader)
 
 
 if __name__ == "__main__":

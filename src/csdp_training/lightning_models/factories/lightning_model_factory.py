@@ -24,6 +24,7 @@ class USleep_Factory(IModel_Factory):
     - batch_size: batch size
     - initial_filters: number of filters in the first layer
     - complexity_factor: factor by which the number of filters is increased in each layer
+    - depth : depth of network
     - progression_factor: factor by which the number of filters is increased in each block
     - lr_patience: number of epochs without improvement before reducing the learning rate (default: 50)
     - lr_factor: factor by which the learning rate is reduced (default: 0.5)
@@ -38,7 +39,7 @@ class USleep_Factory(IModel_Factory):
         batch_size,
         initial_filters,
         complexity_factor,
-        # depth,
+        depth,
         progression_factor,
         lr_patience=50,
         lr_factor=0.5,
@@ -54,7 +55,7 @@ class USleep_Factory(IModel_Factory):
         self.batch_size = batch_size
         self.initial_filters = initial_filters
         self.complexity_factor = complexity_factor
-        # self.depth = depth
+        self.depth = depth
         self.progression_factor = progression_factor
         self.include_eog = include_eog
         self.loss_weights = loss_weights
@@ -65,7 +66,7 @@ class USleep_Factory(IModel_Factory):
             self.batch_size,
             self.initial_filters,
             self.complexity_factor,
-            # self.depth,
+            self.depth,
             self.progression_factor,
             self.lr_patience,
             self.lr_factor,
@@ -81,7 +82,7 @@ class USleep_Factory(IModel_Factory):
             pretrained_path,
             lr=self.lr,
             batch_size=self.batch_size,
-            # depth=self.depth,
+            depth=self.depth,
             lr_patience=self.lr_patience,
             lr_factor=self.lr_factor,
             lr_minimum=self.lr_minimum,

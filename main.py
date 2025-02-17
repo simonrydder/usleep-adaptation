@@ -2,15 +2,15 @@ from src.concrete.standard_data_creater import StandardDataCreater
 from src.concrete.standard_model_loader import StandardModelLoader
 from src.concrete.standard_model_trainer import StandardModelTrainer
 from src.concrete.standard_model_updater import StandardModelUpdater
+from src.config.config import load_config
 from src.data.resnet.simple_images import SimpleImages
-from src.models.resnet import Resnet
 
 
 def fine_tune_model():
-    # loader = StandardModelLoader(Simple)
-    loader = StandardModelLoader(Resnet)
-    # old_model = loader.load_pretrained("data/ckpt/simple_linear_one.ckpt")
-    old_model = loader.load_pretrained("data/ckpt/resnet_pretrained.ckpt")
+    config = load_config("simple_bitfit")
+
+    loader = StandardModelLoader(config.get_model_class())
+    old_model = loader.load_pretrained(config.ckpt)
 
     updater = StandardModelUpdater()
     new_model = updater.adapt(old_model)

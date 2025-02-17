@@ -1,5 +1,6 @@
 import os
 
+from src.config._registries import ADAPTER_REGISTRY
 from src.config.config import MODEL_REGISTRY
 
 
@@ -16,3 +17,20 @@ def validate_file_existence(file: str) -> str:
         return file
 
     raise ValueError(f"{file = } does not exists.")
+
+
+def validate_folder_existence(folder: str | list[str]) -> str:
+    if isinstance(folder, list):
+        folder = os.path.join(*folder)
+
+    if os.path.exists(folder):
+        return folder
+
+    raise ValueError(f"{folder = } does not exists.")
+
+
+def validate_adapter_name(name: str) -> str:
+    if name in ADAPTER_REGISTRY:
+        return name
+
+    raise ValueError(f"{name} not a model in ADAPTER_REGISTRY")

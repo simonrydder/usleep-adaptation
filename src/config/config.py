@@ -7,6 +7,7 @@ from pydantic import AfterValidator, BaseModel
 
 from src.config._registries import MODEL_REGISTRY
 from src.config._validators import (
+    validate_adapter_name,
     validate_file_existence,
     validate_model_name,
 )
@@ -15,6 +16,7 @@ from src.config._validators import (
 class Config(BaseModel):
     model: Annotated[str, AfterValidator(validate_model_name)]
     ckpt: Annotated[str, AfterValidator(validate_file_existence)]
+    adapter: Annotated[str, AfterValidator(validate_adapter_name)]
 
     def get_model_class(self) -> type[LightningModule]:
         """Retrieve the LightningModule class based on the model name."""

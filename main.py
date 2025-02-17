@@ -1,19 +1,32 @@
-from src.concrete.standard_fine_tuner import StandardFineTuner
+from src.concrete.standard_data_creater import StandardDataCreater
+from src.concrete.standard_model_loader import StandardModelLoader
+from src.concrete.standard_model_trainer import StandardModelTrainer
+from src.concrete.standard_model_updater import StandardModelUpdater
 from src.models.simple import Simple
-from src.utils.callbacks import early_stopping, timer
-from src.utils.trainer import define_trainer
 
 
-def main():
-    trainer = define_trainer(
-        1,
-        "cpu",
-        [early_stopping("loss", 5, "min"), timer()],
-    )
-    ft = StandardFineTuner(trainer)
+def fine_tune_model():
+    loader = StandardModelLoader(Simple)
+    old_model = loader.load_pretrained("data/ckpt/simple_linear_one.ckpt")
 
-    model = Simple()
+    updater = StandardModelUpdater()
+    new_model = updater.adapt(old_model)
+
+    data_creater = StandardDataCreater()
+    train = data_creater.create_training_loader()
+    val = data_creater.create_validation_loader()
+    test = data_creater.create_test_loader()
+
+    model_trainer = StandardModelTrainer()
+    trainer = model_trainer.get()
+
+    trainer.test(old_model, test)
+    trainer.fit(new_model, train, val)
+    trainer.test(new_model, test)
+
+    print("Pretrained:", old_model.state_dict())
+    print("Fine Tunes:", new_model.state_dict())
 
 
 if __name__ == "__main__":
-    pass
+    fine_tune_model()

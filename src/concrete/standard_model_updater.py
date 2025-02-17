@@ -1,17 +1,20 @@
+from copy import deepcopy
+
 from lightning import LightningModule
 
 from src.interfaces.model_updater import ModelUpdater
 
 
 class StandardModelUpdater(ModelUpdater):
-    def __init__(self, adapter) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
     def adapt(self, model: LightningModule, **kwargs) -> LightningModule:
-        for name, param in model.named_parameters():
+        new_model = deepcopy(model)
+        for name, param in new_model.named_parameters():
             if "bias" in name:
                 param.requires_grad = True
             else:
                 param.requires_grad = False
 
-        return model
+        return new_model

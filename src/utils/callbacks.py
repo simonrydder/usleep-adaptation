@@ -14,6 +14,7 @@ def early_stopping(
         patience=patience,
         verbose=True,
         mode=mode,
+        min_delta=0.0001,
     )
 
 

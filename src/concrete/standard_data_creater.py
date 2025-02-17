@@ -1,16 +1,13 @@
 from torch.utils.data import DataLoader, Dataset, random_split
 
-from src.data.simple.linear_two import LinearTwo
 from src.interfaces.data_creater import DataCreater
 
 
 class StandardDataCreater(DataCreater):
-    def __init__(
-        self,
-    ) -> None:
+    def __init__(self, dataset: Dataset) -> None:
         super().__init__()
 
-        train, val, test = random_split(LinearTwo(10000), [0.7, 0.15, 0.15])
+        train, val, test = random_split(dataset, [0.7, 0.15, 0.15])
 
         self.train: Dataset = train
         self.validation: Dataset = val

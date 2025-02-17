@@ -8,13 +8,13 @@ class DataloadCreater(ABC):
         super().__init__()
 
     @abstractmethod
-    def create_training_loader(self, dataset: Dataset) -> DataLoader:
+    def create_training_loader(self, train: Dataset) -> DataLoader:
         pass
 
     @abstractmethod
-    def create_test_loader(self, dataset: Dataset) -> DataLoader:
+    def create_test_loader(self, test: Dataset) -> DataLoader:
         pass
 
     @abstractmethod
-    def create_validation_loader(self, dataset: Dataset) -> DataLoader:
+    def create_validation_loader(self, validation: Dataset) -> DataLoader:
         pass

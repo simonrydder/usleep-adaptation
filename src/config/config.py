@@ -5,12 +5,13 @@ import yaml
 from lightning import LightningModule
 from pydantic import AfterValidator, BaseModel
 
-from src.config._registries import MODEL_REGISTRY
+from src.config._registries import ADAPTER_REGISTRY, MODEL_REGISTRY
 from src.config._validators import (
     validate_adapter_name,
     validate_file_existence,
     validate_model_name,
 )
+from src.interfaces.adapter import Adapter
 
 
 class Config(BaseModel):
@@ -21,6 +22,9 @@ class Config(BaseModel):
     def get_model_class(self) -> type[LightningModule]:
         """Retrieve the LightningModule class based on the model name."""
         return MODEL_REGISTRY[self.model]
+
+    def get_adapter(self) -> type[Adapter]:
+        return ADAPTER_REGISTRY[self.adapter]
 
 
 def load_config(yaml_filename: str) -> Config:

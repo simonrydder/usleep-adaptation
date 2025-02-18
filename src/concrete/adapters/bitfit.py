@@ -9,7 +9,7 @@ class BitFit(Adapter):
 
     def adapt(self, model: LightningModule) -> LightningModule:
         for name, param in model.named_parameters():
-            if not name.endswith("bias"):
-                param.requires_grad = False
+            if name.endswith("bias"):
+                param.requires_grad = True
 
         return model

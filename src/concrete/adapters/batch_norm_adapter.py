@@ -9,10 +9,6 @@ class BatchNormAdapter(Adapter):
         super().__init__()
 
     def adapt(self, model: LightningModule) -> LightningModule:
-        # Freeze all parameters first.
-        for param in model.parameters():
-            param.requires_grad = False
-
         # Unfreeze only the BN layers.
         for module in model.modules():
             if isinstance(module, nn.BatchNorm2d):

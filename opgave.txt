@@ -1,0 +1,1 @@
+prøv kort at lave ne simpel conv network og se state dict ifht hvordan bias vægte er lavet. 

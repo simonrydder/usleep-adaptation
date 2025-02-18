@@ -3,9 +3,6 @@ from lightning import LightningModule
 from torch import Tensor, optim
 
 
-class Encoder(nn.Module): ...
-
-
 class Simple(LightningModule):
     def __init__(self) -> None:
         super().__init__()

@@ -3,14 +3,16 @@ from src.concrete.standard_model_loader import StandardModelLoader
 from src.concrete.standard_model_trainer import StandardModelTrainer
 from src.concrete.standard_model_updater import StandardModelUpdater
 from src.data.resnet.simple_images import SimpleImages
-from src.models.resnet import Resnet
+from src.models.conv_simple import ConvSimple
 
 
 def fine_tune_model():
     # loader = StandardModelLoader(Simple)
-    loader = StandardModelLoader(Resnet)
+    # loader = StandardModelLoader(Resnet)
+    loader = StandardModelLoader(ConvSimple)
+
     # old_model = loader.load_pretrained("data/ckpt/simple_linear_one.ckpt")
-    old_model = loader.load_pretrained("data/ckpt/resnet_pretrained.ckpt")
+    old_model = loader.load_pretrained("data/ckpt/convsimple_pretrained.ckpt")
 
     updater = StandardModelUpdater()
     new_model = updater.adapt(old_model)
@@ -27,8 +29,8 @@ def fine_tune_model():
     trainer.fit(new_model, train, val)
     trainer.test(new_model, test)
 
-    # print("Pretrained:", old_model.state_dict())
-    # print("Fine Tunes:", new_model.state_dict())
+    print("Pretrained:", old_model.state_dict())
+    print("Fine Tunes:", new_model.state_dict())
 
 
 if __name__ == "__main__":

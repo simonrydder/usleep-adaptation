@@ -1,0 +1,18 @@
+usleep and training. 
+
+standard usleep 2 channels, they are pooled randomly - one cllose to eye and one close to head. 
+data augmentation. use all data kinda thing.
+
+should probably use lightning usleep. 
+
+hvor meget compute og storage skal vi bruge i vores speciale ?
+
+skal vi have aktiveret de sjove datasæt ? 
+
+gerne bruge en masse datasæt, men ikke overveje hivlke metoder
+bedst til hvilket datasæt 
+
+hvor mange eksperimenter skal vi lave, gpu tid osv.. 
+skal kun bruge holdout. hvor lang tid tager det at fine-tune lille Usleep 
+
+tænk på en plan for vores eksperimenter

@@ -9,18 +9,15 @@ class Resnet(pl.LightningModule):
         super().__init__()
         # Load ResNet-18
         self.model = resnet18(pretrained=False)
-        # Modify the final fully connected layer to match num_classes.
         num_ftrs = self.model.fc.in_features
         self.model.fc = nn.Linear(num_ftrs, num_classes)
 
     def forward(self, x: Tensor) -> Tensor:
-        # Forward pass through the resnet model.
         return self.model(x)
 
     def training_step(self, batch: tuple[Tensor, Tensor], batch_idx: int) -> Tensor:
         x, y = batch
         pred = self(x)
-        # Using MSE loss here for demonstration; for classification consider using cross entropy.
         loss = nn.functional.cross_entropy(pred, y)
         self.log("train_loss", loss, prog_bar=True)
         return loss
@@ -37,8 +34,7 @@ class Resnet(pl.LightningModule):
         pred = self(x)
         loss = nn.functional.cross_entropy(pred, y)
         self.log("test_loss", loss, prog_bar=True)
-        # Optionally, print the state dict for debugging purposes.
-        # print(self.state_dict())
+
         return loss
 
     def configure_optimizers(self) -> optim.Optimizer:

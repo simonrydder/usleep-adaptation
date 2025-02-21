@@ -1,0 +1,3 @@
+model: resnet
+ckpt: data/ckpt/resnet_finetuned.ckpt
+adapter: batch_norm_adapter

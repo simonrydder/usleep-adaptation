@@ -3,7 +3,6 @@ from src.concrete.standard_model_loader import StandardModelLoader
 from src.concrete.standard_model_trainer import StandardModelTrainer
 from src.concrete.standard_model_updater import StandardModelUpdater
 from src.config.config import load_config
-from src.dataset.resnet.simple_images import SimpleImages
 from src.dataset.simple.simple_linear import SimpleLinear
 
 
@@ -18,7 +17,7 @@ def fine_tune_model():
     updater = StandardModelUpdater(adapter)
     new_model = updater.adapt(old_model)
 
-    data_creater = StandardDataCreater(SimpleImages(1000, 10, distribution="shifted"))
+    # data_creater = StandardDataCreater(SimpleImages(1000, 10, distribution="shifted"))
     data_creater = StandardDataCreater(SimpleLinear(1000, distribution=2))
     train = data_creater.create_training_loader()
     val = data_creater.create_validation_loader()

@@ -1,0 +1,3 @@
+model: resnet
+ckpt: data/ckpt/resnet_pretrained.ckpt
+adapter: lora

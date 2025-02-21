@@ -8,7 +8,7 @@ class Resnet(pl.LightningModule):
     def __init__(self, num_classes: int = 10) -> None:
         super().__init__()
         # Load ResNet-18
-        self.model = resnet18(pretrained=False)
+        self.model = resnet18(weights=None)
         num_ftrs = self.model.fc.in_features
         self.model.fc = nn.Linear(num_ftrs, num_classes)
 

@@ -1,33 +1,22 @@
-import loralib
 from lightning import LightningModule
-from torch.nn import Conv2d, Linear
+from peft import LoraConfig, get_peft_model
 
 from src.interfaces.adapter import Adapter
 
 
 class LoRA(Adapter):
-    def __init__(self) -> None:
+    def __init__(self):  # rank: int, alpha: int, dropout: float) -> None:
         super().__init__()
 
     def adapt(self, model: LightningModule) -> LightningModule:
-        for block in model.modules():
-            if isinstance(block, Conv2d):
-                block = loralib.Conv2d(
-                    block.in_channels,
-                    block.out_channels,
-                    block.kernel_size[0],
-                    block.stride,
-                    block.padding,
-                    True if block.bias == None else False,
-                )
-            elif isinstance(block, Linear):
-                block = loralib.Linear(
-                    in_features=block.in_features,
-                    out_features=block.out_features,
-                    r=16,
-                )
+        config = LoraConfig(
+            r=2,
+            lora_alpha=16,
+            target_modules=["conv1", "conv2"],
+            lora_dropout=0.1,
+            bias="none",
+            modules_to_save=["classifier"],
+        )
+        lora_model = get_peft_model(model.model, config)
 
-            else:
-                pass
-
-        return model
+        return lora_model

@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "commonsleepdatapipeline",
     "lightning>=2.5.0.post0",
+    "mlarchitectures",
     "numpy>=1.17.3",
     "peft>=0.14.0",
     "pydantic>=2.10.6",
@@ -24,6 +25,7 @@ torchvision = [
     { index = "pytorch-cu121" },
 ]
 commonsleepdatapipeline = { git = "https://gitlab.au.dk/tech_ear-eeg/sleep-code/common-sleep-data-pipeline.git", rev = "main" }
+mlarchitectures = { git = "https://gitlab.au.dk/tech_ear-eeg/ml_architectures.git", rev = "main" }
 
 [[tool.uv.index]]
 name = "pytorch-cu121"

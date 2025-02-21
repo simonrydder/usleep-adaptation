@@ -6,7 +6,7 @@ from src.interfaces.adapter import Adapter
 
 
 class ModelUpdater(ABC):
-    def __init__(self, adapter: type[Adapter]) -> None:
+    def __init__(self, adapter: Adapter) -> None:
         super().__init__()
 
     @abstractmethod

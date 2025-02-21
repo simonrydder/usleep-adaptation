@@ -1,6 +1,7 @@
 import json
 
 from lightning import LightningModule
+from lightning.pytorch.utilities.model_summary.model_summary import summarize
 
 
 def save_model_structure(
@@ -27,3 +28,7 @@ def save_model_structure(
         json.dump(model_structure, f, indent=4)
 
     print(f"Model structure saved to {path}")
+
+
+def summarize_lightning(model: LightningModule, depth: int = 1) -> None:
+    print(summarize(model, depth))

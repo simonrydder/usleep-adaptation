@@ -7,9 +7,9 @@ from src.interfaces.model_updater import ModelUpdater
 
 
 class StandardModelUpdater(ModelUpdater):
-    def __init__(self, adapter: type[Adapter]) -> None:
+    def __init__(self, adapter: Adapter) -> None:
         super().__init__(adapter)
-        self.adapter = adapter()
+        self.adapter = adapter
 
     def adapt(self, model: LightningModule, **kwargs) -> LightningModule:
         new_model = deepcopy(model)

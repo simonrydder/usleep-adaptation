@@ -10,7 +10,7 @@ from src.interfaces.adapter import Adapter
 
 class AdapterConfig(BaseModel):
     type: Annotated[str, AfterValidator(validate_adapter_name)]
-    settings: AdapterSetting
+    settings: AdapterSetting = AdapterSetting()
 
     def get_adapter(self) -> Adapter:
         adapter_class = ADAPTER_REGISTRY[self.type]

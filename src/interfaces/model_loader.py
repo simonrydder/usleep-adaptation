@@ -4,8 +4,7 @@ from lightning import LightningModule
 
 
 class ModelLoader(ABC):
-    def __init__(self, model_class: type[LightningModule]) -> None:
-        self.model_cls = model_class
+    def __init__(self, model: LightningModule) -> None:
         super().__init__()
 
     @abstractmethod

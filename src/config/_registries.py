@@ -1,3 +1,5 @@
+import pytorch_lightning as pl
+from csdp_training.lightning_models.usleep import USleep_Lightning
 from lightning import LightningModule
 
 from src.concrete.adapters.batch_norm_adapter import BatchNormAdapter
@@ -16,10 +18,11 @@ from src.models.conv_simple import ConvSimple
 from src.models.resnet import Resnet
 from src.models.simple import Simple
 
-MODEL_REGISTRY: dict[str, type[LightningModule]] = {
+MODEL_REGISTRY: dict[str, type[LightningModule] | type[pl.LightningModule]] = {
     "simple": Simple,
     "resnet": Resnet,
     "conv_simple": ConvSimple,
+    "usleep": USleep_Lightning,
 }
 
 ADAPTER_REGISTRY: dict[str, type[Adapter]] = {

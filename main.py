@@ -7,17 +7,17 @@ from src.dataset.resnet.simple_images import SimpleImages
 
 
 def fine_tune_model():
-    config = load_config("resnet_lora")
+    config = load_config("resnet_conv_adapter")
 
-    model_cls = config.get_model_class()
-    loader = StandardModelLoader(model_cls)
+    base_model = config.get_model()
+    loader = StandardModelLoader(base_model)
     old_model = loader.load_pretrained(config.ckpt)
 
     adapter = config.adapter.get_adapter()
     updater = StandardModelUpdater(adapter)
     new_model = updater.adapt(old_model)
 
-    print(summarize_lightning(new_model, 2))
+    # print(summarize_lightning(new_model, 2))
 
     data_creater = StandardDataCreater(SimpleImages(1000, 10, distribution="shifted"))
     # data_creater = StandardDataCreater(SimpleLinear(1000, distribution=2))

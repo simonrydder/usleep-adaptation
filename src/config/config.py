@@ -1,5 +1,5 @@
 import os
-from typing import Annotated
+from typing import Annotated, cast
 
 import yaml
 from lightning import LightningModule
@@ -18,9 +18,12 @@ class Config(BaseModel):
     ckpt: Annotated[str, AfterValidator(validate_file_existence)]
     adapter: AdapterConfig
 
-    def get_model_class(self) -> type[LightningModule]:
-        """Retrieve the LightningModule class based on the model name."""
-        return MODEL_REGISTRY[self.model]
+    def get_model(self) -> LightningModule:
+        """Retrieve the LightningModule based on the model name."""
+        model_cls = MODEL_REGISTRY[self.model]
+        model = model_cls()
+
+        return cast(LightningModule, model)  # cast to make mypy happy - no effect.
 
 
 def load_config(yaml_filename: str) -> Config:

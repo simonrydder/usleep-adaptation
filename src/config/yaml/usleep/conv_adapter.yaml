@@ -1,0 +1,7 @@
+model: usleep
+ckpt: data/ckpt/usleep/alternative_big_sleep.ckpt
+adapter:
+  type: conv-adapter
+  setting:
+    forward_pass: parallel
+    residual: false

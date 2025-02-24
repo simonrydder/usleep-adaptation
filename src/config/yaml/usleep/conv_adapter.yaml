@@ -5,3 +5,4 @@ adapter:
   settings:
     forward_pass: parallel
     reduction: 2
+    activation: relu

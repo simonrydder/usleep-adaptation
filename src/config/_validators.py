@@ -1,11 +1,11 @@
 import os
 
 from src.config._registries import (
+    ACTIVATION_REGISTRY,
     ADAPTER_METHODS_REGISTRY,
     FORWARD_PASS_REGISTRY,
     MODEL_REGISTRY,
 )
-from src.interfaces.strategies.forward_pass import ForwardPass
 
 
 def validate_model_name(name: str) -> str:
@@ -40,8 +40,15 @@ def validate_adapter_name(name: str) -> str:
     raise ValueError(f"{name} not a model in ADAPTER_REGISTRY")
 
 
-def validate_forward_pass(name: str) -> ForwardPass:
+def validate_forward_pass(name: str) -> str:
     if name in FORWARD_PASS_REGISTRY:
-        return FORWARD_PASS_REGISTRY[name]
+        return name
 
     raise ValueError(f"{name} is not a valid ForwardPass type")
+
+
+def validate_activation(name: str) -> str:
+    if name in ACTIVATION_REGISTRY:
+        return name
+
+    raise ValueError(f"{name} is not a activation in ACTIVATION_REGISTRY")

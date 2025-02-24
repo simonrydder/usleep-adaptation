@@ -4,3 +4,5 @@ adapter:
   type: conv-adapter
   settings:
     forward_pass: parallel
+    activation: relu
+    reduction: 4

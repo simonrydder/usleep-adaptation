@@ -1,4 +1,5 @@
 import pytorch_lightning as pl
+import torch.nn as nn
 from csdp_training.lightning_models.usleep import USleep_Lightning
 from lightning import LightningModule
 
@@ -36,4 +37,9 @@ ADAPTER_METHODS_REGISTRY: dict[str, type[AdapterMethod]] = {
 FORWARD_PASS_REGISTRY: dict[str, ForwardPass] = {
     "parallel": ParallelForwardPass(),
     "sequential": SequentialForwardPass(),
+}
+
+
+ACTIVATION_REGISTRY: dict[str, type[nn.Module]] = {
+    "relu": nn.ReLU,
 }

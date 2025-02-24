@@ -1,14 +1,14 @@
 from lightning import LightningModule
 from peft import LoraConfig, get_peft_model
 
-from src.interfaces.adapter import Adapter
+from src.interfaces.strategies.adapter_method import AdapterMethod
 
 
-class LoRA(Adapter):
+class LoRA(AdapterMethod):
     def __init__(self):  # rank: int, alpha: int, dropout: float) -> None:
         super().__init__()
 
-    def adapt(self, model: LightningModule) -> LightningModule:
+    def apply(self, model: LightningModule) -> LightningModule:
         config = LoraConfig(
             r=2,
             lora_alpha=16,

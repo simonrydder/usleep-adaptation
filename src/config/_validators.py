@@ -1,7 +1,7 @@
 import os
 
 from src.config._registries import (
-    ADAPTER_REGISTRY,
+    ADAPTER_METHODS_REGISTRY,
     FORWARD_PASS_REGISTRY,
     MODEL_REGISTRY,
 )
@@ -34,7 +34,7 @@ def validate_folder_existence(folder: str | list[str]) -> str:
 
 
 def validate_adapter_name(name: str) -> str:
-    if name in ADAPTER_REGISTRY:
+    if name in ADAPTER_METHODS_REGISTRY:
         return name
 
     raise ValueError(f"{name} not a model in ADAPTER_REGISTRY")

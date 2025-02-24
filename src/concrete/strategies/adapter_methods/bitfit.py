@@ -1,13 +1,13 @@
 from lightning import LightningModule
 
-from src.interfaces.adapter import Adapter
+from src.interfaces.strategies.adapter_method import AdapterMethod
 
 
-class BitFit(Adapter):
+class BitFit(AdapterMethod):
     def __init__(self) -> None:
         super().__init__()
 
-    def adapt(self, model: LightningModule) -> LightningModule:
+    def apply(self, model: LightningModule) -> LightningModule:
         for name, param in model.named_parameters():
             if name.endswith("bias"):
                 param.requires_grad = True

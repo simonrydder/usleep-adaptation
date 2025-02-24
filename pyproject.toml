@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "commonsleepdatapipeline",
     "lightning>=2.5.0.post0",
+    "loralib>=0.1.2",
     "mlarchitectures",
     "numpy>=1.17.3",
     "peft>=0.14.0",

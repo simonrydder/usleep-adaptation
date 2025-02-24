@@ -7,10 +7,10 @@ from src.dataset.resnet.simple_images import SimpleImages
 
 
 def fine_tune_model():
-    config = load_config("resnet_conv_adapter")
+    config = load_config("usleep/conv_adapter")
 
-    base_model = config.get_model()
-    loader = StandardModelLoader(base_model)
+    model_cls = config.get_model_class()
+    loader = StandardModelLoader(model_cls)
     old_model = loader.load_pretrained(config.ckpt)
 
     adapter = config.adapter.get_adapter()

@@ -2,6 +2,6 @@ model: resnet
 ckpt: data/ckpt/resnet/resnet_pretrained.ckpt
 adapter:
   type: conv-adapter
-  setting:
+  settings:
     forward_pass: parallel
     residual: false

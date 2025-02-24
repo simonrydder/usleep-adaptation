@@ -36,3 +36,7 @@ def load_config(yaml_filename: str) -> Config:
         raw_config = yaml.safe_load(f)
 
     return Config(**raw_config)
+
+
+if __name__ == "__main__":
+    load_config("resnet/bitfit")

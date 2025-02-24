@@ -4,3 +4,4 @@ adapter:
   type: conv-adapter
   settings:
     forward_pass: parallel
+    reduction: 2

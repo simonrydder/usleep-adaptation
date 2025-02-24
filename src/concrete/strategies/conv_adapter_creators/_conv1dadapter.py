@@ -14,7 +14,7 @@ class Conv1dAdapter(nn.Module):
     ) -> None:
         super().__init__()
 
-        hidden_dim = in_channels // gamma
+        hidden_dim = max(in_channels // gamma, 1)
 
         # Depth-wise Convolution
         self.W_down = nn.Conv1d(

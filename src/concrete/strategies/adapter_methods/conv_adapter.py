@@ -2,16 +2,17 @@ import torch
 import torch.nn as nn
 from lightning import LightningModule
 
+from src.concrete.strategies.conv_adapter_creators._conv1dadapter import Conv1dAdapter
 from src.concrete.strategies.conv_adapter_creators._conv2dadapter import Conv2dAdapter
 from src.interfaces.strategies.adapter_method import AdapterMethod
 from src.interfaces.strategies.forward_pass import ForwardPass
 
 
 class ConvAdapter(AdapterMethod):
-    def __init__(self, forward_pass: ForwardPass) -> None:
+    def __init__(self, forward_pass: ForwardPass, reduction: int | None) -> None:
         super().__init__()
         self.forward_pass = forward_pass
-        self.gamma = 4
+        self.gamma = reduction
         self.activation = nn.ReLU
         self.kernel = None
 
@@ -38,12 +39,26 @@ class ConvAdapter(AdapterMethod):
                 in_channels=module.in_channels,
                 out_channels=module.out_channels,
                 kernel=module.kernel_size,  # type: ignore
-                gamma=self.gamma,
+                gamma=module.in_channels if self.gamma is None else self.gamma,
                 activation_function=self.activation,
                 stride=module.stride,
                 dilation=module.dilation,
                 padding=module.padding,
                 bias=module.bias,
+                groups=module.groups,
+            )
+
+        if isinstance(module, nn.Conv1d):
+            return Conv1dAdapter(
+                in_channels=module.in_channels,
+                out_channels=module.out_channels,
+                kernel=module.kernel_size,  # type: ignore
+                gamma=module.in_channels if self.gamma is None else self.gamma,
+                activation_function=self.activation,
+                stride=module.stride,
+                dilation=module.dilation,
+                padding=module.padding,
+                bias=True if module.bias is not None else False,
                 groups=module.groups,
             )
 

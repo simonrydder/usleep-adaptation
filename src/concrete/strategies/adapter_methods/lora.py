@@ -14,11 +14,11 @@ class LoRA(AdapterMethod):
 
     def apply(self, model: LightningModule) -> LightningModule:
         for name, child_module in model.named_children():
-            setattr(model, name, self.recursive_adapt(child_module))
+            setattr(model, name, self.recursive_apply(child_module))
 
         return model
 
-    def recursive_adapt(self, parent: nn.Module | LightningModule) -> nn.Module:
+    def recursive_apply(self, parent: nn.Module | LightningModule) -> nn.Module:
         if isinstance(parent, nn.Linear):
             lora_linear = self.create_new_module(parent)
             return lora_linear
@@ -32,7 +32,7 @@ class LoRA(AdapterMethod):
             return lora_conv2d
 
         for name, child in parent.named_children():
-            setattr(parent, name, self.recursive_adapt(child))
+            setattr(parent, name, self.recursive_apply(child))
 
         return parent
 
@@ -76,15 +76,11 @@ class LoRA(AdapterMethod):
                 lora_alpha=self.alpha,
                 lora_dropout=self.dropout,
             )
-
-        else:
-            return lora.Linear(
-                in_features=module.in_features,
-                out_features=module.out_features,
-                bias=True
-                if module.bias is not None
-                else False,  # TODO ved ikke om det er sus
-                r=self.rank,
-                lora_alpha=self.alpha,
-                lora_dropout=self.dropout,
-            )
+        return lora.Linear(
+            in_features=module.in_features,
+            out_features=module.out_features,
+            bias=True if module.bias is not None else False,
+            r=self.rank,
+            lora_alpha=self.alpha,
+            lora_dropout=self.dropout,
+        )

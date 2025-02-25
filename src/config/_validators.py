@@ -52,3 +52,13 @@ def validate_activation(name: str) -> str:
         return name
 
     raise ValueError(f"{name} is not a activation in ACTIVATION_REGISTRY")
+
+
+def validate_split_percentages(split: list[float]) -> list[float]:
+    if not len(split) == 3:
+        raise ValueError(f"{split} do not have lenght 3.")
+
+    if sum(split) == 1:
+        return split
+
+    raise ValueError(f"{split} is not valid split_percentages")

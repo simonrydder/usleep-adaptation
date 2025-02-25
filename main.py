@@ -1,9 +1,7 @@
 from src.concrete.standard_adapter import StandardAdapter
-from src.concrete.standard_data_creater import StandardDataCreater
 from src.concrete.standard_model_loader import StandardModelLoader
 from src.concrete.standard_model_trainer import StandardModelTrainer
 from src.config.config import load_config
-from src.dataset.resnet.simple_images import SimpleImages
 
 
 def fine_tune_model():
@@ -19,8 +17,7 @@ def fine_tune_model():
 
     # print(summarize_lightning(new_model, 2))
 
-    data_creater = StandardDataCreater(SimpleImages(1000, 10, distribution="shifted"))
-    # data_creater = StandardDataCreater(SimpleLinear(1000, distribution=2))
+    data_creater = config.data.get_data_creater()
     train = data_creater.create_training_loader()
     val = data_creater.create_validation_loader()
     test = data_creater.create_test_loader()

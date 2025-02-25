@@ -6,3 +6,9 @@ adapter:
     forward_pass: parallel
     reduction: 2
     activation: relu
+data:
+  dataset: 'eesm19'
+  settings:
+    split_percentages: [0.8, 0.1, 0.1]
+    batch_size: 64
+    num_workers: 1

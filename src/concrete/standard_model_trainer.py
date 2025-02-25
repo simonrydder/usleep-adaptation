@@ -13,6 +13,6 @@ class StandardModelTrainer(ModelTrainer):
         return define_trainer(
             max_epochs=1,
             accelerator="gpu",
-            callbacks=[early_stopping("train_loss", 5, "min"), timer()],
+            callbacks=[early_stopping("valKap", 5, "max"), timer()],
             logger=True,
         )

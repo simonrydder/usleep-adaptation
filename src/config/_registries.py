@@ -6,7 +6,9 @@ from lightning import LightningModule
 from src.concrete.strategies.adapter_methods.batch_norm import BatchNorm
 from src.concrete.strategies.adapter_methods.bitfit import BitFit
 from src.concrete.strategies.adapter_methods.conv_adapter import ConvAdapter
+from src.concrete.strategies.adapter_methods.fully_finetune import FullyFinetune
 from src.concrete.strategies.adapter_methods.lora import LoRA
+from src.concrete.strategies.adapter_methods.nothing import Nothing
 from src.concrete.strategies.forward_passes.parallel_forward_pass import (
     ParallelForwardPass,
 )
@@ -29,8 +31,10 @@ MODEL_REGISTRY: dict[str, type[LightningModule] | type[pl.LightningModule]] = {
 ADAPTER_METHODS_REGISTRY: dict[str, type[AdapterMethod]] = {
     "bitfit": BitFit,
     "conv-adapter": ConvAdapter,
-    "batch_norm_adapter": BatchNorm,
+    "batch-norm": BatchNorm,
     "lora": LoRA,
+    "nothing": Nothing,
+    "fully-finetune": FullyFinetune,
 }
 
 

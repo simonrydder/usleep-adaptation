@@ -1,7 +1,7 @@
 model: resnet
 ckpt: data/ckpt/resnet/resnet_pretrained.ckpt
 adapter:
-  type: bitfit
+  type: nothing
 data:
   dataset: images
   settings:

@@ -16,3 +16,4 @@ src/usleep/weights/
 
 lightning_logs/
 data/
+main.py

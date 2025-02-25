@@ -9,12 +9,21 @@ class BatchNorm(AdapterMethod):
         super().__init__()
 
     def apply(self, model: LightningModule) -> LightningModule:
-        # Unfreeze only the BN layers.
-        for module in model.modules():
-            if isinstance(module, nn.BatchNorm2d):
-                # Optionally, force the BN layers into train mode so their running stats update.
-                module.train()
-                for param in module.parameters():
-                    param.requires_grad = True
+        for name, child_module in model.named_children():
+            setattr(model, name, self.recursive_apply(child_module))
 
         return model
+
+    def recursive_apply(self, parent: nn.Module | LightningModule) -> nn.Module:
+        if isinstance(parent, nn.BatchNorm1d):
+            for param in parent.parameters():
+                param.requires_grad = True
+
+        if isinstance(parent, nn.BatchNorm2d):
+            for param in parent.parameters():
+                param.requires_grad = True
+
+        for name, child in parent.named_children():
+            setattr(parent, name, self.recursive_apply(child))
+
+        return parent

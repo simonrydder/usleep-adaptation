@@ -32,9 +32,11 @@ class AdapterSetting(BaseModel):
 
         if self.rank is not None:
             settings["rank"] = self.rank
+
         if self.alpha is not None:
             settings["alpha"] = self.alpha
 
         if self.dropout is not None:
             settings["dropout"] = self.dropout
+
         return settings

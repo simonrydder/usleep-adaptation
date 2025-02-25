@@ -6,7 +6,7 @@ from src.interfaces.strategies.adapter_method import AdapterMethod
 
 
 class LoRA(AdapterMethod):
-    def __init__(self, rank: int, alpha: int, dropout: float) -> None:
+    def __init__(self, rank: int = 1, alpha: int = 1, dropout: float = 0.0) -> None:
         self.rank = rank
         self.alpha = alpha
         self.dropout = dropout

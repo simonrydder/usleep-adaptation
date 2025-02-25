@@ -11,8 +11,8 @@ from csdp_pipeline.pipeline_elements.samplers import (
 )
 from csdp_training.lightning_models.usleep import USleep_Lightning
 
-from src.concrete.adapters.bitfit import BitFit
-from src.concrete.standard_model_updater import StandardModelUpdater
+from src.concrete.standard_adapter import StandardAdapter
+from src.concrete.strategies.adapter_methods.bitfit import BitFit
 
 
 def main():
@@ -71,7 +71,7 @@ def main():
     else:
         net: USleep_Lightning = USleep_Lightning.load_from_checkpoint(pretrained_path)
 
-    updater = StandardModelUpdater(BitFit)
+    updater = StandardAdapter(BitFit)
     new_model = updater.adapt(net)
 
     trainer = pl.Trainer(

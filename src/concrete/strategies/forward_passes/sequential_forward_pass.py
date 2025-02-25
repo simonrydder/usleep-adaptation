@@ -16,6 +16,6 @@ class SequentialForwardPass(ForwardPass):
         assert isinstance(adapter, nn.Module)
 
         h = original(x)
-        y = adapter(h)
+        h_delta = adapter(h)
 
-        return y
+        return h + h_delta

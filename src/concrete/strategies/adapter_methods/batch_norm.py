@@ -1,14 +1,14 @@
 import torch.nn as nn
 from lightning import LightningModule
 
-from src.interfaces.adapter import Adapter
+from src.interfaces.strategies.adapter_method import AdapterMethod
 
 
-class BatchNormAdapter(Adapter):
+class BatchNorm(AdapterMethod):
     def __init__(self) -> None:
         super().__init__()
 
-    def adapt(self, model: LightningModule) -> LightningModule:
+    def apply(self, model: LightningModule) -> LightningModule:
         # Unfreeze only the BN layers.
         for module in model.modules():
             if isinstance(module, nn.BatchNorm2d):

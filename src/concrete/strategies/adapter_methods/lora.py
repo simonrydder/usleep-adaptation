@@ -2,10 +2,10 @@ import loralib as lora
 import torch.nn as nn
 from lightning import LightningModule
 
-from src.interfaces.adapter import Adapter
+from src.interfaces.strategies.adapter_method import AdapterMethod
 
 
-class LoRA(Adapter):
+class LoRA(AdapterMethod):
     def __init__(self, rank: int, alpha: int, dropout: float) -> None:
         self.rank = rank
         self.alpha = alpha
@@ -15,8 +15,6 @@ class LoRA(Adapter):
     def adapt(self, model: LightningModule) -> LightningModule:
         for name, child_module in model.named_children():
             setattr(model, name, self.recursive_adapt(child_module))
-
-        return model
 
     def recursive_adapt(self, parent: nn.Module | LightningModule) -> nn.Module:
         if isinstance(parent, nn.Linear):

@@ -1,0 +1,8 @@
+model: resnet
+ckpt: data/ckpt/resnet/resnet_pretrained.ckpt
+adapter:
+  type: conv-adapter
+  settings:
+    forward_pass: parallel
+    activation: relu
+    reduction: 4

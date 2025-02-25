@@ -19,8 +19,10 @@ class Config(BaseModel):
     adapter: AdapterConfig
 
     def get_model_class(self) -> type[LightningModule]:
-        """Retrieve the LightningModule class based on the model name."""
-        return MODEL_REGISTRY[self.model]
+        """Retrieve the LightningModule based on the model name."""
+        model_cls = MODEL_REGISTRY[self.model]
+
+        return model_cls  # type: ignore
 
 
 def load_config(yaml_filename: str) -> Config:
@@ -33,3 +35,7 @@ def load_config(yaml_filename: str) -> Config:
         raw_config = yaml.safe_load(f)
 
     return Config(**raw_config)
+
+
+if __name__ == "__main__":
+    load_config("resnet/bitfit")

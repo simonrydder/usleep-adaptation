@@ -1,14 +1,8 @@
-model: resnet
-ckpt: data/ckpt/resnet/resnet_pretrained.ckpt
+default: !include _default.yaml
 adapter:
   type: conv-adapter
   settings:
     forward_pass: parallel
     activation: relu
     reduction: 4
-data:
-  dataset: images
-  settings:
-    num_samples: 1000
-    num_classes: 3
-    distribution: shifted
+

@@ -1,3 +1,0 @@
-model: simple
-ckpt: data/ckpt/simple/simple_linear_one.ckpt
-adapter: bitfit

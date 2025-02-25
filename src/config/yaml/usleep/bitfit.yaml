@@ -1,4 +1,3 @@
-model: usleep
-ckpt: data/ckpt/usleep/alternative_big_sleep.ckpt
+default: !include _default.yaml
 adapter:
     type: bitfit

@@ -1,5 +1,5 @@
 import os
-from typing import Annotated
+from typing import Annotated, Any
 
 import yaml
 from lightning import LightningModule
@@ -28,6 +28,19 @@ class Config(BaseModel):
         return model_cls  # type: ignore
 
 
+def include_constructor(loader: yaml.SafeLoader, node: yaml.Node) -> Any:
+    """Custom constructor to handle !include directives in YAML files."""
+    filename = node.value
+    base_path = os.path.dirname(loader.name)
+    file_path = os.path.join(base_path, filename)
+
+    with open(file_path, "r") as f:
+        return yaml.safe_load(f)
+
+
+yaml.SafeLoader.add_constructor("!include", include_constructor)
+
+
 def load_config(yaml_filename: str) -> Config:
     yaml_file = os.path.join("src", "config", "yaml", yaml_filename)
 
@@ -35,9 +48,28 @@ def load_config(yaml_filename: str) -> Config:
         yaml_file += ".yaml"
 
     with open(yaml_file, "r") as f:
-        raw_config = yaml.safe_load(f)
+        raw_config: dict[str, Any] = yaml.safe_load(f)
 
-    return Config(**raw_config)
+    default = raw_config.get("default", {})
+    del raw_config["default"]
+    configs = update_default_configs(default, raw_config)
+
+    return Config(**configs)
+
+
+def update_default_configs(
+    default: dict[str, Any], updates: dict[str, Any]
+) -> dict[str, Any]:
+    config = default.copy()
+
+    for key, value in updates.items():
+        if key in config and isinstance(value, dict) and isinstance(config[key], dict):
+            config[key] = update_default_configs(config[key], value)
+
+        else:
+            config[key] = value
+
+    return config
 
 
 if __name__ == "__main__":

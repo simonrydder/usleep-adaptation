@@ -1,4 +1,2 @@
 default: !include _default.yaml
-adapter:
-  type: bitfit
-
+adapter: bitfit

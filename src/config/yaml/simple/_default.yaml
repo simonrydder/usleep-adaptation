@@ -1,0 +1,7 @@
+model: simple
+ckpt: data/ckpt/simple/simple_linear_one.ckpt
+data:
+  dataset: 'simple'
+  settings:
+    num_samples: 100
+    distribution: 2

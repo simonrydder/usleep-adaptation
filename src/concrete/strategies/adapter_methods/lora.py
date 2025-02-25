@@ -12,20 +12,22 @@ class LoRA(AdapterMethod):
         self.dropout = dropout
         super().__init__()
 
-    def adapt(self, model: LightningModule) -> LightningModule:
+    def apply(self, model: LightningModule) -> LightningModule:
         for name, child_module in model.named_children():
             setattr(model, name, self.recursive_adapt(child_module))
+
+        return model
 
     def recursive_adapt(self, parent: nn.Module | LightningModule) -> nn.Module:
         if isinstance(parent, nn.Linear):
             lora_linear = self.create_new_module(parent)
             return lora_linear
 
-        elif isinstance(parent, nn.Conv1d):
+        if isinstance(parent, nn.Conv1d):
             lora_conv1d = self.create_new_module(parent)
             return lora_conv1d
 
-        elif isinstance(parent, nn.Conv1d):
+        if isinstance(parent, nn.Conv2d):
             lora_conv2d = self.create_new_module(parent)
             return lora_conv2d
 

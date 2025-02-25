@@ -9,7 +9,7 @@ class BatchNorm(AdapterMethod):
         super().__init__()
 
     def apply(self, model: LightningModule) -> LightningModule:
-        # Unfreeze only the BN layers.
+        # TODO: FIX!
         for module in model.modules():
             if isinstance(module, nn.BatchNorm2d):
                 # Optionally, force the BN layers into train mode so their running stats update.

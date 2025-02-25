@@ -6,3 +6,10 @@ data:
     split_percentages: [0.8, 0.1, 0.1]
     batch_size: 64
     num_workers: 1
+trainer:
+  max_epochs: 1
+  accelerator: gpu
+  early_stopping:
+    monitor: valKap
+    mode: max
+  timer: true

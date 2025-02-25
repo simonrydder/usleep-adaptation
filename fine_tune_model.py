@@ -20,7 +20,7 @@ def fine_tune_model(config_file: str):
     val = data_creater.create_validation_loader()
     test = data_creater.create_test_loader()
 
-    model_trainer = StandardModelTrainer()
+    model_trainer = StandardModelTrainer(config.trainer)
     trainer = model_trainer.get()
 
     trainer.test(old_model, test)

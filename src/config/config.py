@@ -8,6 +8,7 @@ from pydantic import AfterValidator, BaseModel
 from src.config._adapter_config import AdapterConfig
 from src.config._data_config import DataConfig
 from src.config._registries import MODEL_REGISTRY
+from src.config._trainer_config import TrainerConfig
 from src.config._validators import (
     validate_file_existence,
     validate_model_name,
@@ -19,7 +20,7 @@ class Config(BaseModel):
     ckpt: Annotated[str, AfterValidator(validate_file_existence)]
     data: DataConfig
     adapter: AdapterConfig
-    # trainer: TrainerConfig
+    trainer: TrainerConfig
 
     def get_model_class(self) -> type[LightningModule]:
         """Retrieve the LightningModule based on the model name."""

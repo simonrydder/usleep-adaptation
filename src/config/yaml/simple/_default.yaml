@@ -5,3 +5,10 @@ data:
   settings:
     num_samples: 100
     distribution: 2
+trainer:
+  max_epochs: 1
+  accelerator: gpu
+  early_stopping:
+    monitor: train_loss
+    mode: min
+  timer: true

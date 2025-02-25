@@ -7,6 +7,7 @@ from src.concrete.strategies.adapter_methods.batch_norm import BatchNorm
 from src.concrete.strategies.adapter_methods.bitfit import BitFit
 from src.concrete.strategies.adapter_methods.conv_adapter import ConvAdapter
 from src.concrete.strategies.adapter_methods.lora import LoRA
+from src.concrete.strategies.adapter_methods.nothing import Nothing
 from src.concrete.strategies.forward_passes.parallel_forward_pass import (
     ParallelForwardPass,
 )
@@ -31,6 +32,7 @@ ADAPTER_METHODS_REGISTRY: dict[str, type[AdapterMethod]] = {
     "conv-adapter": ConvAdapter,
     "batch_norm_adapter": BatchNorm,
     "lora": LoRA,
+    "nothing": Nothing,
 }
 
 

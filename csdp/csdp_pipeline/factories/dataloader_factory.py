@@ -92,6 +92,7 @@ class Dataloader_Factory(IDataloader_Factory):
             batch_size=1,
             shuffle=False,
             num_workers=num_workers,
+            persistent_workers=True,
         )
         return valloader
 
@@ -116,6 +117,7 @@ class Dataloader_Factory(IDataloader_Factory):
             batch_size=1,
             shuffle=False,
             num_workers=num_workers,
+            persistent_workers=True,
         )
 
         return testloader

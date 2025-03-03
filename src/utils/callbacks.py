@@ -5,16 +5,14 @@ from lightning.pytorch.callbacks import EarlyStopping, LearningRateMonitor, Time
 
 
 def early_stopping(
-    monitor: str,
-    patience: int,
-    mode: Literal["min", "max"],
+    monitor: str, patience: int, mode: Literal["min", "max"], min_delta: float
 ) -> Callback:
     return EarlyStopping(
         monitor=monitor,
         patience=patience,
         verbose=True,
         mode=mode,
-        min_delta=0.0001,
+        min_delta=min_delta,
     )
 
 

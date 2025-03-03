@@ -1,0 +1,10 @@
+model: resnet
+ckpt: data/ckpt/resnet/resnet_pretrained.ckpt
+adapter:
+  type: dora
+data:
+  dataset: images
+  settings:
+    num_samples: 1000
+    num_classes: 3
+    distribution: shifted

@@ -1,11 +1,12 @@
 import pytorch_lightning as pl
 import torch.nn as nn
-from csdp_training.lightning_models.usleep import USleep_Lightning
 from lightning import LightningModule
 
+from csdp.csdp_training.lightning_models.usleep import USleep_Lightning
 from src.concrete.strategies.adapter_methods.batch_norm import BatchNorm
 from src.concrete.strategies.adapter_methods.bitfit import BitFit
 from src.concrete.strategies.adapter_methods.conv_adapter import ConvAdapter
+from src.concrete.strategies.adapter_methods.dora import DoRA
 from src.concrete.strategies.adapter_methods.fully_finetune import FullyFinetune
 from src.concrete.strategies.adapter_methods.lora import LoRA
 from src.concrete.strategies.adapter_methods.nothing import Nothing
@@ -35,6 +36,7 @@ ADAPTER_METHODS_REGISTRY: dict[str, type[AdapterMethod]] = {
     "lora": LoRA,
     "nothing": Nothing,
     "fully-finetune": FullyFinetune,
+    "dora": DoRA,
 }
 
 

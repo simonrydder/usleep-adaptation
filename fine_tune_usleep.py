@@ -2,15 +2,15 @@ import os
 
 import pytorch_lightning as pl
 import torch
-from csdp_pipeline.factories.dataloader_factory import Dataloader_Factory
-from csdp_pipeline.pipeline_elements.models import Split
-from csdp_pipeline.pipeline_elements.samplers import (
+
+from csdp.csdp_pipeline.factories.dataloader_factory import Dataloader_Factory
+from csdp.csdp_pipeline.pipeline_elements.models import Split
+from csdp.csdp_pipeline.pipeline_elements.samplers import (
     Determ_sampler,
     Random_Sampler,
     SamplerConfiguration,
 )
-from csdp_training.lightning_models.usleep import USleep_Lightning
-
+from csdp.csdp_training.lightning_models.usleep import USleep_Lightning
 from src.concrete.standard_adapter import StandardAdapter
 from src.concrete.strategies.adapter_methods.bitfit import BitFit
 

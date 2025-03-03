@@ -1,16 +1,16 @@
 import os
 
 import h5py
-from csdp_pipeline.factories.dataloader_factory import Dataloader_Factory
-from csdp_pipeline.pipeline_elements.models import Dataset_Split, Split
-from csdp_pipeline.pipeline_elements.samplers import (
+from sklearn.model_selection import train_test_split
+from torch.utils.data import DataLoader
+
+from csdp.csdp_pipeline.factories.dataloader_factory import Dataloader_Factory
+from csdp.csdp_pipeline.pipeline_elements.models import Dataset_Split, Split
+from csdp.csdp_pipeline.pipeline_elements.samplers import (
     Determ_sampler,
     Random_Sampler,
     SamplerConfiguration,
 )
-from sklearn.model_selection import train_test_split
-from torch.utils.data import DataLoader
-
 from src.interfaces.data_creater import DataCreater
 
 

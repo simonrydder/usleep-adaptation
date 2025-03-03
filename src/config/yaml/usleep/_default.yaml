@@ -7,9 +7,9 @@ data:
     batch_size: 64
     num_workers: 1
 trainer:
-  max_epochs: 1
+  max_epochs: 10
   accelerator: gpu
   early_stopping:
-    monitor: valKap
+    monitor: val_kappa
     mode: max
   timer: true

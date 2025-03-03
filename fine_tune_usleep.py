@@ -1,6 +1,6 @@
 import os
 
-import pytorch_lightning as pl
+import lightning as pl
 import torch
 
 from csdp.csdp_pipeline.factories.dataloader_factory import Dataloader_Factory
@@ -21,7 +21,7 @@ def main():
     split_file_path = os.getcwd()  # Where to save the generated dataloading split file
 
     # Path to existing pre-trained weights. Can be used for finetuning or testing.
-    pretrained_path = "data/ckpt/alternative_big_sleep.ckpt"
+    pretrained_path = "data/ckpt/usleep/alternative_big_sleep.ckpt"
 
     batch_size = 64
     learning_rate = 0.0001
@@ -71,7 +71,7 @@ def main():
     else:
         net: USleep_Lightning = USleep_Lightning.load_from_checkpoint(pretrained_path)
 
-    updater = StandardAdapter(BitFit)
+    updater = StandardAdapter(BitFit())
     new_model = updater.adapt(net)
 
     trainer = pl.Trainer(
@@ -87,7 +87,7 @@ def main():
     )
     trainer.fit(new_model, train_loader, val_loader)
     # Start test and output results to a specific folder
-    new_model.run_test(trainer, test_loader, output_folder_prefix=results_folder)
+    # new_model.run_test(trainer, test_loader, output_folder_prefix=results_folder)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-import pytorch_lightning as pl
+import lightning as pl
 import torch
 
 from csdp.csdp_training.lightning_models.lseqsleepnet import LSeqSleepNet_Lightning

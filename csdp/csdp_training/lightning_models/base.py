@@ -5,7 +5,7 @@ Created on Thu Feb  2 13:40:59 2023
 @author: repse
 """
 
-import pytorch_lightning as pl
+import lightning as pl
 import torch
 import torch.nn as nn
 
@@ -139,7 +139,5 @@ class Base_Lightning(pl.LightningModule):
         self.validation_step_acc.clear()
         self.validation_step_kap.clear()
         self.validation_step_f1.clear()
-        self.validation_labels.clear()
-        self.validation_preds.clear()
         self.validation_labels.clear()
         self.validation_preds.clear()

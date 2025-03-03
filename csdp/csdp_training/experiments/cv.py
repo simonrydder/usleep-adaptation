@@ -3,7 +3,7 @@ from copy import deepcopy
 
 import h5py
 import neptune
-import pytorch_lightning as pl
+import lightning as pl
 import torch
 from neptune.utils import stringify_unsupported
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint

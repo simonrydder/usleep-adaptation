@@ -8,7 +8,7 @@
 
 import os
 
-import pytorch_lightning as pl
+import lightning as pl
 import torch
 import torch.nn as nn
 
@@ -228,7 +228,10 @@ class USleep_Lightning(Base_Lightning):
     ):
         self.eval()
 
-        os.makedirs(output_folder_prefix)
+        try:
+            os.makedirs(output_folder_prefix)
+        except FileExistsError:
+            pass
 
         self.output_folder_prefix = output_folder_prefix
 

@@ -1,9 +1,11 @@
 # Code inspired by U-Sleep article
 # and https://github.com/neergaard/utime-pytorch
 
+import math
+
 import torch
 import torch.nn as nn
-import math
+
 
 class ConvBNELU(nn.Module):
     def __init__(
@@ -51,6 +53,7 @@ class ConvBNELU(nn.Module):
             x = self.ceil_padding(x)
 
         return x
+
 
 class Encoder(nn.Module):
     def __init__(
@@ -133,9 +136,7 @@ class Decoder(nn.Module):
                 nn.Sequential(
                     nn.Upsample(scale_factor=self.upsample_kernel),
                     ConvBNELU(
-                        in_channels=self.in_channels
-                        if k == 0
-                        else self.filters[k - 1],
+                        in_channels=self.in_channels if k == 0 else self.filters[k - 1],
                         out_channels=self.filters[k],
                         kernel_size=self.upsample_kernel,
                         ceil_pad=True,
@@ -245,21 +246,23 @@ class SegmentClassifier(nn.Module):
 class USleep(nn.Module):
     def __init__(
         self,
-        num_channels = 2,
-        initial_filters = 5,
-        complexity_factor = 1.67,
-        progression_factor = 2,
-        depth = 12,
+        num_channels=2,
+        initial_filters=5,
+        complexity_factor=1.67,
+        progression_factor=2,
+        depth=12,
     ):
         super().__init__()
         self.depth = depth
         self.initial_filters = initial_filters
         self.new_filter_factor = math.sqrt(complexity_factor)
         self.progression_factor = math.sqrt(progression_factor)
-        
+
         encoder_filters, decoder_filters, max_filters = self.create_filters()
-        
-        self.encoder = Encoder(filters=encoder_filters, max_filters=max_filters, in_channels=num_channels)
+
+        self.encoder = Encoder(
+            filters=encoder_filters, max_filters=max_filters, in_channels=num_channels
+        )
         self.decoder = Decoder(filters=decoder_filters, max_filters=max_filters)
         self.dense = Dense(encoder_filters[0])
         self.classifier = SegmentClassifier()
@@ -269,23 +272,25 @@ class USleep(nn.Module):
         decoder_filters = []
         current_filters = self.initial_filters
 
-        for _ in range(self.depth+1):
-            encoder_filters.append(int(current_filters*self.new_filter_factor))
-            current_filters = int(self.progression_factor*current_filters)
+        for _ in range(self.depth + 1):
+            encoder_filters.append(int(current_filters * self.new_filter_factor))
+            current_filters = int(self.progression_factor * current_filters)
 
         max_filters = encoder_filters[-1]
         encoder_filters.pop()
         decoder_filters = encoder_filters[::-1]
-        
+
         return encoder_filters, decoder_filters, max_filters
-    
+
     def forward(self, x):
         x, shortcuts = self.encoder(x)
- 
+
         x = self.decoder(x, shortcuts)
 
         x = self.dense(x)
 
         x = self.classifier(x)
+
+        return x
 
         return x

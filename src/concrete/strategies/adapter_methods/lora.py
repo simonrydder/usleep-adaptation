@@ -1,7 +1,7 @@
-import loralib as lora
 import torch.nn as nn
 from lightning import LightningModule
 
+import src.concrete.strategies.adapter_methods.lora_base as lora
 from src.interfaces.strategies.adapter_method import AdapterMethod
 
 

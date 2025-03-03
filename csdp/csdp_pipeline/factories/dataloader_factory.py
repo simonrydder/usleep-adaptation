@@ -38,7 +38,7 @@ class Dataloader_Factory(IDataloader_Factory):
             trainsets (list[str]): List of names of datasets used for training. For example, if the dataset "abc.hdf5" is in the hdf5_base_path, add "abc" to the list
             valsets (list[str]): List of names of datasets used for validation. For example, if the dataset "abc.hdf5" is in the hdf5_base_path, add "abc" to the list
             testsets (list[str]): List of names of datasets used for testing. For example, if the dataset "abc.hdf5" is in the hdf5_base_path, add "abc" to the list
-            data_split_path (str, optional): Specifies a path to a split json file. For examples, look in the folder "csdp.csdp_pipeline/splits" of this repository. Defaults to None, which means all subjects are used for both training, validation and test.
+            data_split_path (str, optional): Specifies a path to a split json file. For examples, look in the folder "csdp_pipeline/splits" of this repository. Defaults to None, which means all subjects are used for both training, validation and test.
             create_random_split (bool, optional): If set to True, a random split json file will be created and used for data-loading. Defaults to False.
         """
 
@@ -200,7 +200,7 @@ class Dataloader_Factory(IDataloader_Factory):
 #             trainsets (list[str]): List of names of datasets used for training. For example, if the dataset "abc.hdf5" is in the hdf5_base_path, add "abc" to the list
 #             valsets (list[str]): List of names of datasets used for validation. For example, if the dataset "abc.hdf5" is in the hdf5_base_path, add "abc" to the list
 #             testsets (list[str]): List of names of datasets used for testing. For example, if the dataset "abc.hdf5" is in the hdf5_base_path, add "abc" to the list
-#             data_split_path (str, optional): Specifies a path to a split json file. For examples, look in the folder "csdp.csdp_pipeline/splits" of this repository. Defaults to None, which means all subjects are used for both training, validation and test.
+#             data_split_path (str, optional): Specifies a path to a split json file. For examples, look in the folder "csdp_pipeline/splits" of this repository. Defaults to None, which means all subjects are used for both training, validation and test.
 #             create_random_split (bool, optional): If set to True, a random split json file will be created and used for data-loading. Defaults to False.
 #         """
 #         super().__init__(data_split_path, hdf5_base_path, create_random_split)

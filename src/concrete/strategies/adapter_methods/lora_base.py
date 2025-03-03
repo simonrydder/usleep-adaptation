@@ -122,6 +122,8 @@ class ConvLoRA(nn.Module, LoRALayer):
     ):
         super(ConvLoRA, self).__init__()
         self.conv = conv_module(in_channels, out_channels, kernel_size, **kwargs)
+        for name, param in self.conv.named_parameters():
+            self.register_parameter(name, param)
         LoRALayer.__init__(
             self,
             r=r,
@@ -153,7 +155,7 @@ class ConvLoRA(nn.Module, LoRALayer):
             nn.init.kaiming_uniform_(self.lora_A, a=math.sqrt(5))
             nn.init.zeros_(self.lora_B)
 
-    def train(self, mode=True) -> Module:
+    def train(self, mode=True):
         super(ConvLoRA, self).train(mode)
         if mode:
             if self.merge_weights and self.merged:
@@ -172,18 +174,16 @@ class ConvLoRA(nn.Module, LoRALayer):
                     ) * self.scaling
                 self.merged = True
 
-        return self
-
-    def forward(self, x):
+    def forward(self, input):
         if self.r > 0 and not self.merged:
             return self.conv._conv_forward(
-                x,
+                input,
                 self.conv.weight
                 + (self.lora_B @ self.lora_A).view(self.conv.weight.shape)
                 * self.scaling,
                 self.conv.bias,
             )
-        return self.conv(x)
+        return self.conv(input)
 
 
 class Conv2d(ConvLoRA):

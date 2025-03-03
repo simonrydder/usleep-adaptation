@@ -1,0 +1,5 @@
+default: !include _default.yaml
+adapter:
+  type: lora
+  settings:
+    rank : 32

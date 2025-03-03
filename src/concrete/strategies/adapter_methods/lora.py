@@ -38,40 +38,30 @@ class LoRA(AdapterMethod):
 
     def create_new_module(self, module: nn.Linear | nn.Conv1d | nn.Conv2d):
         if isinstance(module, nn.Conv1d):
-            return lora.ConvLoRA(
-                lora.Conv1d(
-                    in_channels=module.in_channels,
-                    out_channels=module.out_channels,
-                    kernel_size=module.kernel_size[0],
-                    stride=module.stride,
-                    dilation=module.dilation,
-                    padding=module.padding,
-                    bias=True if module.bias is not None else False,
-                    groups=module.groups,
-                ),
+            return lora.Conv1d(
                 in_channels=module.in_channels,
                 out_channels=module.out_channels,
                 kernel_size=module.kernel_size[0],
+                stride=module.stride,
+                dilation=module.dilation,
+                padding=module.padding,
+                bias=True if module.bias is not None else False,
+                groups=module.groups,
                 r=self.rank,
                 lora_alpha=self.alpha,
                 lora_dropout=self.dropout,
             )
 
         elif isinstance(module, nn.Conv2d):
-            return lora.ConvLoRA(
-                lora.Conv2d(
-                    in_channels=module.in_channels,
-                    out_channels=module.out_channels,
-                    kernel_size=module.kernel_size[0],
-                    stride=module.stride,
-                    dilation=module.dilation,
-                    padding=module.padding,
-                    bias=True if module.bias is not None else False,
-                    groups=module.groups,
-                ),
+            return lora.Conv2d(
                 in_channels=module.in_channels,
                 out_channels=module.out_channels,
                 kernel_size=module.kernel_size[0],
+                stride=module.stride,
+                dilation=module.dilation,
+                padding=module.padding,
+                bias=True if module.bias is not None else False,
+                groups=module.groups,
                 r=self.rank,
                 lora_alpha=self.alpha,
                 lora_dropout=self.dropout,

@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 from lightning import LightningModule
 from torch import Tensor, optim
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from csdp.csdp_training.utility import acc, f1, kappa
 from csdp.ml_architectures.usleep.usleep import USleep
@@ -50,7 +51,6 @@ class UsleepLightning(LightningModule):
         self.validation_labels = []
 
         weights = torch.tensor(loss_weights) if loss_weights is not None else None
-
         self.loss = nn.CrossEntropyLoss(weight=weights, ignore_index=5)
 
         self.save_hyperparameters(ignore=["model"])
@@ -100,10 +100,28 @@ class UsleepLightning(LightningModule):
 
         return loss
 
-    def configure_optimizers(self) -> optim.Optimizer:
+    def configure_optimizers(
+        self,
+    ) -> optim.Optimizer:
         optimizer = optim.Adam(self.parameters(), lr=self.lr)
 
-        return optimizer
+        scheduler = ReduceLROnPlateau(
+            optimizer,
+            mode="max",
+            factor=self.lr_factor,
+            patience=self.lr_patience,
+            threshold=1e-4,
+            threshold_mode="rel",
+            cooldown=0,
+            min_lr=self.lr_minimum,
+            eps=1e-8,
+        )
+
+        return {
+            "optimizer": optimizer,
+            "monitor": "val_kappa",
+            "lr_scheduler": scheduler,
+        }  # type: ignore
 
     def _prep_batch(self, x_eeg: Tensor, x_eog: Tensor) -> Tensor:
         assert len(x_eeg.shape) == 3, (

@@ -2,6 +2,7 @@ from typing import Annotated, Any
 
 from pydantic import BaseModel
 
+from src.config._data_config import DataConfig
 from src.config._registries import ACTIVATION_REGISTRY, FORWARD_PASS_REGISTRY
 from src.config._validators import validate_activation, validate_forward_pass
 
@@ -14,6 +15,8 @@ class AdapterSetting(BaseModel):
     reduction: int | None = None
     activation: Annotated[str, validate_activation] | None = None
     kernel: int | tuple[int] | tuple[int, int] | None = None
+    keep_ratio: float | None = None
+    data: DataConfig | None = None
 
     def get_settings(self) -> dict[str, Any]:
         settings = {}
@@ -38,5 +41,14 @@ class AdapterSetting(BaseModel):
 
         if self.dropout is not None:
             settings["dropout"] = self.dropout
+
+        if self.keep_ratio is not None:
+            settings["keep_ratio"] = self.keep_ratio
+
+        if self.data is not None:
+            self.data.settings.batch_size = 1
+            settings["dataloader"] = (
+                self.data.get_data_creater().create_training_loader()
+            )
 
         return settings

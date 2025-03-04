@@ -1,7 +1,11 @@
+import torch
+
 from src.concrete.standard_adapter import StandardAdapter
 from src.concrete.standard_model_loader import StandardModelLoader
 from src.concrete.standard_model_trainer import StandardModelTrainer
 from src.config.config import load_config
+
+torch.set_float32_matmul_precision("medium")
 
 
 def fine_tune_model(config_file: str):
@@ -26,3 +30,5 @@ def fine_tune_model(config_file: str):
     trainer.test(old_model, test)
     trainer.fit(new_model, train, val)
     trainer.test(new_model, test)
+
+    pass

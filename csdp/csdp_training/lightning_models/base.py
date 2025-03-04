@@ -5,14 +5,14 @@ Created on Thu Feb  2 13:40:59 2023
 @author: repse
 """
 
-import lightning as pl
 import torch
 import torch.nn as nn
+from lightning import LightningModule
 
 from csdp.csdp_training.utility import acc, f1, kappa
 
 
-class Base_Lightning(pl.LightningModule):
+class Base_Lightning(LightningModule):
     def __init__(
         self, model, lr, batch_size, lr_patience, lr_factor, lr_minimum, loss_weights
     ):

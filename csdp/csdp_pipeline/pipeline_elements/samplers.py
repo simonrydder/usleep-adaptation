@@ -310,9 +310,9 @@ class Determ_sampler(ISampler):
         sample: ISample = self.__get_sample(index)
 
         if any(dim == 0 for dim in sample.eog.shape):
-            print(
-                f"Info: Sampled data for {self.split_type} had no EOG channel - duplicating EEG instead"
-            )
+            # print(
+            #     f"Info: Sampled data for {self.split_type} had no EOG channel - duplicating EEG instead"
+            # )
             sample.eog = sample.eeg
             sample.tag.eog = sample.tag.eeg
 

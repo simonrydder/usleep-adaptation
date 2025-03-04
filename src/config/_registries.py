@@ -1,8 +1,6 @@
-import lightning as pl
 import torch.nn as nn
 from lightning import LightningModule
 
-from csdp.csdp_training.lightning_models.usleep import USleep_Lightning
 from src.concrete.strategies.adapter_methods.batch_norm import BatchNorm
 from src.concrete.strategies.adapter_methods.bitfit import BitFit
 from src.concrete.strategies.adapter_methods.conv_adapter import ConvAdapter
@@ -21,12 +19,14 @@ from src.interfaces.strategies.forward_pass import ForwardPass
 from src.models.conv_simple import ConvSimple
 from src.models.resnet import Resnet
 from src.models.simple import Simple
+from src.models.usleep import UsleepLightning
 
-MODEL_REGISTRY: dict[str, type[LightningModule] | type[pl.LightningModule]] = {
+MODEL_REGISTRY: dict[str, type[LightningModule]] = {
     "simple": Simple,
     "resnet": Resnet,
     "conv_simple": ConvSimple,
-    "usleep": USleep_Lightning,
+    # "usleep": USleep_Lightning,
+    "usleep": UsleepLightning,
 }
 
 ADAPTER_METHODS_REGISTRY: dict[str, type[AdapterMethod]] = {

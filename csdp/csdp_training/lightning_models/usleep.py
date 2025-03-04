@@ -13,7 +13,6 @@ import torch
 import torch.nn as nn
 
 from csdp.csdp_training.lightning_models.base import Base_Lightning
-from csdp.csdp_training.utility import log_test_step
 from csdp.ml_architectures.usleep.usleep import USleep
 
 
@@ -153,15 +152,15 @@ class USleep_Lightning(Base_Lightning):
         return output
 
     def prep_batch(self, x_eeg, x_eog):
-        assert (
-            len(x_eeg.shape) == 3
-        ), "EEG shape must be on the form (batch_size, num_channels, data)"
+        assert len(x_eeg.shape) == 3, (
+            "EEG shape must be on the form (batch_size, num_channels, data)"
+        )
         assert x_eeg.shape[1] == 1, "Only one EEG channel allowed"
 
         if self.include_eog == True:
-            assert (
-                len(x_eog.shape) == 3
-            ), "EOG shape must be on the form (batch_size, num_channels, data)"
+            assert len(x_eog.shape) == 3, (
+                "EOG shape must be on the form (batch_size, num_channels, data)"
+            )
             assert x_eog.shape[1] == 1, "Only one EOG channel allowed"
             xbatch = torch.cat((x_eeg, x_eog), dim=1)
         else:
@@ -258,11 +257,11 @@ class USleep_Lightning(Base_Lightning):
 
         output = self.majority_vote_prediction(x_eeg, x_eog, tags)
 
-        log_test_step(
-            self.output_folder_prefix,
-            dataset=tags["dataset"],
-            subject=tags["subject"],
-            record=tags["record"],
-            output=output,
-            labels=ybatch.to("cpu"),
-        )
+        # log_test_step(
+        #     self.output_folder_prefix,
+        #     dataset=tags["dataset"],
+        #     subject=tags["subject"],
+        #     record=tags["record"],
+        #     output=output,
+        #     labels=ybatch.to("cpu"),
+        # )

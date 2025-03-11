@@ -9,6 +9,7 @@ from src.concrete.strategies.adapter_methods.fish import FISH
 from src.concrete.strategies.adapter_methods.fully_finetune import FullyFinetune
 from src.concrete.strategies.adapter_methods.lora import LoRA
 from src.concrete.strategies.adapter_methods.nothing import Nothing
+from src.concrete.strategies.adapter_methods.residual_adapter import ResidualAdapter
 from src.concrete.strategies.forward_passes.parallel_forward_pass import (
     ParallelForwardPass,
 )
@@ -39,6 +40,7 @@ ADAPTER_METHODS_REGISTRY: dict[str, type[AdapterMethod]] = {
     "fully-finetune": FullyFinetune,
     "dora": DoRA,
     "fish": FISH,
+    "residual-adapter": ResidualAdapter,
 }
 
 

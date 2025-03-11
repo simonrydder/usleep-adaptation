@@ -1,0 +1,7 @@
+default: !include _default.yaml
+adapter:
+  type: residual-adapter
+  settings:
+    forward_pass: parallel
+    reduction: 10
+    activation: elu

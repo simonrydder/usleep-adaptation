@@ -17,6 +17,7 @@ class AdapterSetting(BaseModel):
     kernel: int | tuple[int] | tuple[int, int] | None = None
     keep_ratio: float | None = None
     data: DataConfig | None = None
+    num_samples: int | None = None
 
     def get_settings(self) -> dict[str, Any]:
         settings = {}
@@ -46,9 +47,12 @@ class AdapterSetting(BaseModel):
             settings["keep_ratio"] = self.keep_ratio
 
         if self.data is not None:
-            self.data.settings.batch_size = 1
+            self.data.settings.batch_size = 3
             settings["dataloader"] = (
                 self.data.get_data_creater().create_training_loader()
             )
+
+        if self.num_samples is not None:
+            settings["num_samples"] = self.num_samples
 
         return settings

@@ -65,7 +65,10 @@ class UsleepLightning(LightningModule):
         self.include_eog = include_eog
         self.num_channels = num_channels
 
-    def forward(self, x: Tensor):
+    def forward(self, x: Tensor | dict[str, Any]) -> Tensor:
+        if isinstance(x, dict):
+            x = self._prep_batch(x["eeg"], x["eog"])
+
         y = self.model(x.float())
         return y
 

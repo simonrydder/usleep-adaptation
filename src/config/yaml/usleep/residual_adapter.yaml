@@ -1,8 +1,7 @@
 default: !include _default.yaml
 adapter:
-  type: conv-adapter
+  type: residual-adapter
   settings:
     forward_pass: parallel
-    location: 'skip'
     reduction: 10
     activation: elu

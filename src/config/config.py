@@ -55,6 +55,12 @@ def load_config(yaml_filename: str) -> Config:
     del raw_config["default"]
     configs = update_default_configs(default, raw_config)
 
+    adapter = configs.get("adapter", {})
+    adapter_settings = adapter.get("settings", {})
+
+    if adapter_settings.get("data") == "same":
+        adapter_settings["data"] = DataConfig(**configs["data"])
+
     return Config(**configs)
 
 

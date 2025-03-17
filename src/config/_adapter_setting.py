@@ -2,8 +2,13 @@ from typing import Annotated, Any
 
 from pydantic import BaseModel
 
+from src.config._data_config import DataConfig
 from src.config._registries import ACTIVATION_REGISTRY, FORWARD_PASS_REGISTRY
-from src.config._validators import validate_activation, validate_forward_pass
+from src.config._validators import (
+    validate_activation,
+    validate_forward_pass,
+    validate_location,
+)
 
 
 class AdapterSetting(BaseModel):
@@ -11,9 +16,13 @@ class AdapterSetting(BaseModel):
     alpha: int | None = None
     dropout: float | None = None
     forward_pass: Annotated[str, validate_forward_pass] | None = None
+    location: Annotated[str, validate_location] | None = None
     reduction: int | None = None
     activation: Annotated[str, validate_activation] | None = None
     kernel: int | tuple[int] | tuple[int, int] | None = None
+    keep_ratio: float | None = None
+    data: DataConfig | None = None
+    num_samples: int | None = None
 
     def get_settings(self) -> dict[str, Any]:
         settings = {}
@@ -38,5 +47,20 @@ class AdapterSetting(BaseModel):
 
         if self.dropout is not None:
             settings["dropout"] = self.dropout
+
+        if self.keep_ratio is not None:
+            settings["keep_ratio"] = self.keep_ratio
+
+        if self.data is not None:
+            self.data.settings.batch_size = 3
+            settings["dataloader"] = (
+                self.data.get_data_creater().create_training_loader()
+            )
+
+        if self.num_samples is not None:
+            settings["num_samples"] = self.num_samples
+
+        if self.location is not None:
+            settings["location"] = self.location
 
         return settings

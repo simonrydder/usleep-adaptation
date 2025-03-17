@@ -5,10 +5,12 @@ from src.concrete.strategies.adapter_methods.batch_norm import BatchNorm
 from src.concrete.strategies.adapter_methods.bitfit import BitFit
 from src.concrete.strategies.adapter_methods.conv_adapter import ConvAdapter
 from src.concrete.strategies.adapter_methods.dora import DoRA
+from src.concrete.strategies.adapter_methods.fish import FISH
 from src.concrete.strategies.adapter_methods.fully_finetune import FullyFinetune
 from src.concrete.strategies.adapter_methods.kronA import KronA
 from src.concrete.strategies.adapter_methods.lora import LoRA
 from src.concrete.strategies.adapter_methods.nothing import Nothing
+from src.concrete.strategies.adapter_methods.residual_adapter import ResidualAdapter
 from src.concrete.strategies.forward_passes.parallel_forward_pass import (
     ParallelForwardPass,
 )
@@ -39,6 +41,8 @@ ADAPTER_METHODS_REGISTRY: dict[str, type[AdapterMethod]] = {
     "fully-finetune": FullyFinetune,
     "dora": DoRA,
     "kronA": KronA,
+    "fish": FISH,
+    "residual-adapter": ResidualAdapter,
 }
 
 
@@ -50,4 +54,6 @@ FORWARD_PASS_REGISTRY: dict[str, ForwardPass] = {
 
 ACTIVATION_REGISTRY: dict[str, type[nn.Module]] = {
     "relu": nn.ReLU,
+    "elu": nn.ELU,
+    "tanh": nn.Tanh,
 }

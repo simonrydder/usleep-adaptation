@@ -62,3 +62,10 @@ def validate_split_percentages(split: list[float]) -> list[float]:
         return split
 
     raise ValueError(f"{split} is not valid split_percentages")
+
+
+def validate_location(name: str) -> str:
+    if name in ["root", "layer", "skip", "contract", "expand", "concat"]:
+        return name
+
+    raise ValueError(f"{name} is not a valid location")

@@ -3,5 +3,6 @@ adapter:
   type: conv-adapter
   settings:
     forward_pass: parallel
+    location: 'skip'
     reduction: 10
     activation: elu

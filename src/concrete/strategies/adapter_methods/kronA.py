@@ -1,15 +1,12 @@
 from lightning import LightningModule
 from torch import nn
 
-import src.concrete.strategies.adapter_methods.dora_base as dora
+import src.concrete.strategies.adapter_methods.kronA_base as kron
 from src.interfaces.strategies.adapter_method import AdapterMethod
 
 
-class DoRA(AdapterMethod):
-    def __init__(self, rank: int = 1, alpha: int = 1, dropout: float = 0.0) -> None:
-        self.rank = rank
-        self.alpha = alpha
-        self.dropout = dropout
+class KronA(AdapterMethod):
+    def __init__(self) -> None:
         super().__init__()
 
     def apply(self, model: LightningModule) -> LightningModule:
@@ -20,16 +17,16 @@ class DoRA(AdapterMethod):
 
     def recursive_apply(self, parent: nn.Module | LightningModule) -> nn.Module:
         if isinstance(parent, nn.Linear):
-            dora_linear = self.create_new_module(parent)
-            return dora_linear
+            kron_linear = self.create_new_module(parent)
+            return kron_linear
 
         if isinstance(parent, nn.Conv1d):
-            dora_conv1d = self.create_new_module(parent)
-            return dora_conv1d
+            kron_conv1d = self.create_new_module(parent)
+            return kron_conv1d
 
         if isinstance(parent, nn.Conv2d):
-            dora_conv2d = self.create_new_module(parent)
-            return dora_conv2d
+            kron_conv2d = self.create_new_module(parent)
+            return kron_conv2d
 
         for name, child in parent.named_children():
             setattr(parent, name, self.recursive_apply(child))
@@ -38,7 +35,7 @@ class DoRA(AdapterMethod):
 
     def create_new_module(self, module: nn.Linear | nn.Conv1d | nn.Conv2d):
         if isinstance(module, nn.Conv1d):
-            return dora.Conv1d(
+            return kron.Conv1d(
                 in_channels=module.in_channels,
                 out_channels=module.out_channels,
                 kernel_size=module.kernel_size[0],
@@ -47,13 +44,13 @@ class DoRA(AdapterMethod):
                 padding=module.padding,
                 bias=True if module.bias is not None else False,
                 groups=module.groups,
-                r=self.rank,
-                dora_alpha=self.alpha,
-                dora_dropout=self.dropout,
+                r=7,
+                kron_alpha=1,
+                kron_dropout=0,
             )
 
         elif isinstance(module, nn.Conv2d):
-            return dora.Conv2d(
+            return kron.Conv2d(
                 in_channels=module.in_channels,
                 out_channels=module.out_channels,
                 kernel_size=module.kernel_size[0],
@@ -62,15 +59,15 @@ class DoRA(AdapterMethod):
                 padding=module.padding,
                 bias=True if module.bias is not None else False,
                 groups=module.groups,
-                r=self.rank,
-                dora_alpha=self.alpha,
-                dora_dropout=self.dropout,
+                r=7,
+                kron_alpha=1,
+                kron_dropout=0,
             )
-        return dora.Linear(
+        return kron.KronALinear(
             in_features=module.in_features,
             out_features=module.out_features,
             bias=True if module.bias is not None else False,
-            r=self.rank,
-            dora_alpha=self.alpha,
-            dora_dropout=self.dropout,
+            r=7,
+            kron_alpha=1,
+            kron_dropout=0,
         )

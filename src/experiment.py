@@ -12,7 +12,7 @@ from src.config.config import load_config
 from src.config.experiment import Experiment
 
 
-def run_experiment(experiment: Experiment):
+def run_experiment(experiment: Experiment, debug: bool = False):
     config = load_config(experiment)
 
     model_loader = StandardModelLoader(config.model)
@@ -44,7 +44,11 @@ def run_experiment(experiment: Experiment):
         for pred, y_true, index in new_predictions:
             fine_tuned_results[index[0]] = new_model._compute_metrics(pred, y_true)
 
-    save_predictions(experiment, original_results, fine_tuned_results)
+        if debug:
+            break
+
+    if not debug:
+        save_predictions(experiment, original_results, fine_tuned_results)
 
 
 def save_predictions(

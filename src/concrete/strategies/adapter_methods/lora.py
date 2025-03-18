@@ -12,7 +12,7 @@ class LoRA(AdapterMethod):
         self.dropout = dropout
         super().__init__()
 
-    def apply(self, model: LightningModule) -> LightningModule:
+    def apply(self, model: LightningModule, **kwargs) -> LightningModule:
         for name, child_module in model.named_children():
             setattr(model, name, self.recursive_apply(child_module))
 

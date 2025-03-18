@@ -1,0 +1,4 @@
+default: !include _default.yaml
+early_stopping:
+    monitor: train_loss
+    mode: min

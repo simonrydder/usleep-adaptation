@@ -1,0 +1,2 @@
+model: linear
+ckpt: data/ckpt/simple/simple_linear_one.ckpt

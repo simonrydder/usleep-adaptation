@@ -81,17 +81,28 @@ class UsleepLightning(LightningModule):
     def test_step(self, batch: dict[str, Any], batch_index: int) -> Tensor:
         return self._step(batch, batch_index, "test")
 
+    def predict_step(
+        self, batch: dict[str, Any], batch_index: int
+    ) -> tuple[Tensor, Tensor, list[tuple[str, str]]]:
+        x_eeg, x_eog = batch["eeg"], batch["eog"]
+        x = self._prep_batch(x_eeg, x_eog)
+        y = batch["labels"]
+
+        subjects = batch["tag"]["subject"]
+        records = batch["tag"]["record"]
+
+        records = list(zip(subjects, records))
+
+        pred = self(x)
+        return pred, y, records
+
     def _step(
         self,
         batch: dict[str, Any],
         batch_index: int,
         type: Literal["test", "val", "train"],
     ) -> Tensor:
-        x_eeg, x_eog = batch["eeg"], batch["eog"]
-        x = self._prep_batch(x_eeg, x_eog)
-        y = batch["labels"]
-
-        pred = self(x)
+        pred, y, _ = self.predict_step(batch, batch_index)
 
         loss, acc, kappa, f1 = self._compute_metrics(pred, y)
         # self.training_step_outputs.append(loss)  # Maybe remove

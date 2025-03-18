@@ -8,5 +8,5 @@ class AdapterMethod(ABC):
         super().__init__()
 
     @abstractmethod
-    def apply(self, model: LightningModule) -> LightningModule:
+    def apply(self, model: LightningModule, **kwargs) -> LightningModule:
         pass

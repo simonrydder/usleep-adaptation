@@ -1,9 +1,0 @@
-model: resnet
-ckpt: data/ckpt/resnet_pretrained.ckpt
-adapter:
-    type: lora
-    settings:
-        rank: 64
-        alpha : 1
-        dropout : 0
-

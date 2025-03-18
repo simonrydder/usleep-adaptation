@@ -11,7 +11,7 @@ class DoRA(AdapterMethod):
         self.dropout = dropout
         super().__init__()
 
-    def apply(self, model: LightningModule) -> LightningModule:
+    def apply(self, model: LightningModule, **kwargs) -> LightningModule:
         config = LoraConfig(
             use_dora=True,
             r=self.rank,

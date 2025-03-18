@@ -7,7 +7,7 @@ class BitFit(AdapterMethod):
     def __init__(self) -> None:
         super().__init__()
 
-    def apply(self, model: LightningModule) -> LightningModule:
+    def apply(self, model: LightningModule, **kwargs) -> LightningModule:
         for name, param in model.named_parameters():
             if name.endswith("bias"):
                 param.requires_grad = True

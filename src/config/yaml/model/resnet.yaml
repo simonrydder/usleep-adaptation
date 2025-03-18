@@ -1,0 +1,2 @@
+model: resnet
+ckpt: data/ckpt/resnet/resnet_pretrained.ckpt

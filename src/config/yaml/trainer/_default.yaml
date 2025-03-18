@@ -1,0 +1,6 @@
+max_epochs: 5
+accelerator: gpu
+early_stopping:
+    monitor: val_kappa
+    mode: max
+timer: true

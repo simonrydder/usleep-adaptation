@@ -1,3 +1,0 @@
-model: conv_simple
-ckpt: data/ckpt/convsimple_pretrained.ckpt
-adapter: lora

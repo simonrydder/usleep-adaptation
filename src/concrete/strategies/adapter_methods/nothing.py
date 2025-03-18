@@ -7,5 +7,5 @@ class Nothing(AdapterMethod):
     def __init__(self) -> None:
         super().__init__()
 
-    def apply(self, model: LightningModule) -> LightningModule:
+    def apply(self, model: LightningModule, **kwargs) -> LightningModule:
         return model

@@ -1,3 +1,0 @@
-default: !include _default.yaml
-adapter:
-  type: nothing

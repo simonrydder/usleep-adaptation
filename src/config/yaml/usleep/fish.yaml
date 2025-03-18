@@ -1,6 +1,0 @@
-default: !include _default.yaml
-adapter:
-  type: fish
-  settings:
-    keep_ratio: 0.1
-    data: same

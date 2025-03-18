@@ -2,20 +2,22 @@ from copy import deepcopy
 
 from lightning import LightningModule
 
+from src.config._adapter_config import AdapterMethodConfig
 from src.interfaces.adapter import Adapter
-from src.interfaces.strategies.adapter_method import AdapterMethod
 
 
 class StandardAdapter(Adapter):
-    def __init__(self, adapter_method: AdapterMethod) -> None:
-        super().__init__(adapter_method)
-        self.adapter_method = adapter_method
+    def __init__(self, config: AdapterMethodConfig) -> None:
+        super().__init__(config)
 
-    def adapt(self, model: LightningModule) -> LightningModule:
+        settings = config.settings.get_settings()
+        self.adapter_method = config.method(**settings)
+
+    def adapt(self, model: LightningModule, **kwargs) -> LightningModule:
         new_model = deepcopy(model)
         new_model = self._freeze_all_parameters(new_model)
 
-        self.adapter_method.apply(new_model)
+        self.adapter_method.apply(new_model, **kwargs)
 
         return new_model
 

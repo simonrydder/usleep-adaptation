@@ -1,9 +1,11 @@
+import os
 from typing import Literal
 
 from lightning import Callback
 from pydantic import BaseModel
 
 from src.config._early_stopping_setting import EarlyStoppingSetting
+from src.config.utils import load_yaml_content
 from src.utils.callbacks import early_stopping, learning_rate_monitor, timer
 
 
@@ -31,3 +33,15 @@ class TrainerConfig(BaseModel):
             callbacks.append(timer())
 
         return callbacks
+
+
+def get_trainer_config(file: str) -> TrainerConfig:
+    trainer_config_file = os.path.join("trainer", file)
+    content = load_yaml_content(trainer_config_file)
+    return TrainerConfig(**content)
+
+
+if __name__ == "__main__":
+    res = get_trainer_config("usleep")
+    res = get_trainer_config("custom")
+    pass

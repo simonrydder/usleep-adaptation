@@ -17,3 +17,5 @@ src/usleep/weights/
 lightning_logs/
 data/
 tests.py
+.env
+.neptune

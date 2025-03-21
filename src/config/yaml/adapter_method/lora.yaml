@@ -1,0 +1,5 @@
+method : lora
+settings:
+    rank : 32
+    alpha : 1
+    dropout : 0

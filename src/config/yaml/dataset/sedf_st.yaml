@@ -1,0 +1,7 @@
+dataset: 'sedf_st'
+type: 'hdf5'
+batch_size: 4
+num_batches: 5
+num_workers: 1
+split_percentages: [0.8, 0.1, 0.1]
+random_state: 42

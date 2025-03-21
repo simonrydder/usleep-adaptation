@@ -112,8 +112,8 @@ class HDF5Splitter:
         with h5py.File(self.hdf5_file, "r") as hdf5:
             self.subjects = list(hdf5["data"].keys())  # type: ignore
 
-        self.sleep_epochs_pr_sample = 35
-        self.num_batches = 3
+        self.sleep_epochs_pr_sample = config.sleep_epochs
+        self.num_batches = config.num_batches
         self.training_iterations = config.batch_size * self.num_batches
 
     def get_splits(self) -> list[Any]:

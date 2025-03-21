@@ -13,6 +13,7 @@ def define_trainer(
     return Trainer(
         max_epochs=max_epochs,
         accelerator=accelerator,
+        log_every_n_steps=1,
         devices="auto",
         callbacks=callbacks,
         logger=logger,

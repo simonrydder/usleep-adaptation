@@ -10,6 +10,8 @@ class DataConfig(BaseModel):
     dataset: str
     type: Literal["custom", "hdf5"]
     batch_size: int
+    sleep_epochs: int = 35
+    num_batches: int = 3
     num_workers: int | tuple[int, int, int]
     split_percentages: tuple[float, float, float]
     random_state: int

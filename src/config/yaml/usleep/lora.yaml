@@ -1,0 +1,7 @@
+default: !include _default.yaml
+adapter:
+  type: lora
+  settings:
+    rank: 4
+    alpha : 1
+    dropout : 0.25

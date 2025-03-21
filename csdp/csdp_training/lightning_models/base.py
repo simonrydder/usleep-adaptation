@@ -141,5 +141,3 @@ class Base_Lightning(LightningModule):
         self.validation_step_f1.clear()
         self.validation_labels.clear()
         self.validation_preds.clear()
-        self.validation_labels.clear()
-        self.validation_preds.clear()

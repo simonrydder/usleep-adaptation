@@ -13,17 +13,17 @@ from csdp.ml_architectures.usleep.usleep import USleep
 class UsleepLightning(LightningModule):
     def __init__(
         self,
-        lr,
-        batch_size,
-        initial_filters=5,
-        complexity_factor=1.67,
-        progression_factor=2,
-        depth=12,
-        lr_patience=50,
-        lr_factor=0.5,
-        lr_minimum=0.0000001,
+        lr: float,
+        batch_size: int,
+        initial_filters: int = 5,
+        complexity_factor: float = 1.67,
+        progression_factor: int = 2,
+        depth: int = 12,
+        lr_patience: int = 50,
+        lr_factor: float = 0.5,
+        lr_minimum: float = 0.0000001,
         loss_weights=None,
-        include_eog=True,
+        include_eog: bool = True,
     ) -> None:
         super().__init__()
 
@@ -138,15 +138,15 @@ class UsleepLightning(LightningModule):
         }  # type: ignore
 
     def _prep_batch(self, x_eeg: Tensor, x_eog: Tensor) -> Tensor:
-        assert len(x_eeg.shape) == 3, (
-            "EEG shape must be on the form (batch_size, num_channels, data)"
-        )
+        assert (
+            len(x_eeg.shape) == 3
+        ), "EEG shape must be on the form (batch_size, num_channels, data)"
         assert x_eeg.shape[1] == 1, "Only one EEG channel allowed"
 
         if self.include_eog:
-            assert len(x_eog.shape) == 3, (
-                "EOG shape must be on the form (batch_size, num_channels, data)"
-            )
+            assert (
+                len(x_eog.shape) == 3
+            ), "EOG shape must be on the form (batch_size, num_channels, data)"
             assert x_eog.shape[1] == 1, "Only one EOG channel allowed"
             xbatch = torch.cat((x_eeg, x_eog), dim=1)
         else:

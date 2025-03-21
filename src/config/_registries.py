@@ -7,6 +7,7 @@ from src.concrete.strategies.adapter_methods.conv_adapter import ConvAdapter
 from src.concrete.strategies.adapter_methods.dora import DoRA
 from src.concrete.strategies.adapter_methods.fish import FISH
 from src.concrete.strategies.adapter_methods.fully_finetune import FullyFinetune
+from src.concrete.strategies.adapter_methods.kronA import KronA
 from src.concrete.strategies.adapter_methods.lora import LoRA
 from src.concrete.strategies.adapter_methods.nothing import Nothing
 from src.concrete.strategies.adapter_methods.residual_adapter import ResidualAdapter
@@ -39,6 +40,7 @@ ADAPTER_METHODS_REGISTRY: dict[str, type[AdapterMethod]] = {
     "nothing": Nothing,
     "fully-finetune": FullyFinetune,
     "dora": DoRA,
+    "kronA": KronA,
     "fish": FISH,
     "residual-adapter": ResidualAdapter,
 }

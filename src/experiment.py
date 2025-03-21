@@ -9,7 +9,7 @@ from src.concrete.standard_data_creater import StandardDataCreater
 from src.concrete.standard_model_loader import StandardModelLoader
 from src.concrete.standard_model_trainer import StandardModelTrainer
 from src.config.config import load_config
-from src.config.experiment import Experiment
+from src.config.experiment import Experiment, get_experiment_name
 
 
 def run_experiment(experiment: Experiment, debug: bool = False):
@@ -54,7 +54,7 @@ def run_experiment(experiment: Experiment, debug: bool = False):
 def save_predictions(
     experiment: Experiment, original: dict[str, Any], new: dict[str, Any]
 ) -> None:
-    base_filename = "_".join(experiment.model_dump().values()) + ".json"
+    base_filename = get_experiment_name(experiment) + ".json"
     directory = "results"
     os.makedirs(directory, exist_ok=True)  # Ensure the directory exists
     file_path = os.path.join(directory, base_filename)

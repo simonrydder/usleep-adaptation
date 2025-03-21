@@ -4,3 +4,4 @@ early_stopping:
     monitor: val_kappa
     mode: max
 timer: true
+logger: neptune

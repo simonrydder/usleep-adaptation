@@ -73,7 +73,19 @@ class UsleepLightning(LightningModule):
         return y
 
     def training_step(self, batch: dict[str, Any], batch_index: int) -> Tensor:
-        return self._step(batch, batch_index, "train")
+        type = "train"
+        pred, y, _ = self.predict_step(batch, batch_index)
+
+        loss, acc, kappa, f1 = self._compute_metrics(pred, y)
+        # self.training_step_outputs.append(loss)  # Maybe remove
+
+        self.log(f"{type}_loss", loss, prog_bar=True, on_step=True, on_epoch=True)
+        self.log(f"{type}_acc", acc, prog_bar=True, on_step=True, on_epoch=True)
+        self.log(f"{type}_kappa", kappa, prog_bar=True, on_step=True, on_epoch=True)
+        self.log(f"{type}_f1", f1, prog_bar=True, on_step=True, on_epoch=True)
+
+        # return self._step(batch, batch_index, "train")
+        return loss
 
     def validation_step(self, batch: dict[str, Any], batch_index: int) -> Tensor:
         return self._step(batch, batch_index, "val")
@@ -107,10 +119,10 @@ class UsleepLightning(LightningModule):
         loss, acc, kappa, f1 = self._compute_metrics(pred, y)
         # self.training_step_outputs.append(loss)  # Maybe remove
 
-        self.log(f"{type}_loss", loss, prog_bar=True)
-        self.log(f"{type}_acc", acc, prog_bar=True)
-        self.log(f"{type}_kappa", kappa, prog_bar=True)
-        self.log(f"{type}_f1", f1, prog_bar=True)
+        self.log(f"{type}_loss", loss, prog_bar=True, on_step=True, on_epoch=True)
+        self.log(f"{type}_acc", acc, prog_bar=True, on_step=True, on_epoch=True)
+        self.log(f"{type}_kappa", kappa, prog_bar=True, on_step=True, on_epoch=True)
+        self.log(f"{type}_f1", f1, prog_bar=True, on_step=True, on_epoch=True)
 
         return loss
 
@@ -138,15 +150,15 @@ class UsleepLightning(LightningModule):
         }  # type: ignore
 
     def _prep_batch(self, x_eeg: Tensor, x_eog: Tensor) -> Tensor:
-        assert (
-            len(x_eeg.shape) == 3
-        ), "EEG shape must be on the form (batch_size, num_channels, data)"
+        assert len(x_eeg.shape) == 3, (
+            "EEG shape must be on the form (batch_size, num_channels, data)"
+        )
         assert x_eeg.shape[1] == 1, "Only one EEG channel allowed"
 
         if self.include_eog:
-            assert (
-                len(x_eog.shape) == 3
-            ), "EOG shape must be on the form (batch_size, num_channels, data)"
+            assert len(x_eog.shape) == 3, (
+                "EOG shape must be on the form (batch_size, num_channels, data)"
+            )
             assert x_eog.shape[1] == 1, "Only one EOG channel allowed"
             xbatch = torch.cat((x_eeg, x_eog), dim=1)
         else:

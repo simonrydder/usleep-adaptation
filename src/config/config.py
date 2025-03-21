@@ -7,7 +7,7 @@ from src.config._adapter_config import (
 from src.config._data_config import DataConfig, get_data_config
 from src.config._model_config import ModelConfig, get_model_config
 from src.config._trainer_config import TrainerConfig, get_trainer_config
-from src.config.experiment import Experiment
+from src.config.experiment import Experiment, get_experiment_name
 
 
 class Config(BaseModel):
@@ -15,6 +15,7 @@ class Config(BaseModel):
     data: DataConfig
     adapter: AdapterMethodConfig
     trainer: TrainerConfig
+    experiment: str
 
 
 def load_config(experiment: Experiment) -> Config:
@@ -23,6 +24,7 @@ def load_config(experiment: Experiment) -> Config:
         data=get_data_config(experiment.dataset),
         adapter=get_adapter_method_config(experiment.method),
         trainer=get_trainer_config(experiment.trainer),
+        experiment=get_experiment_name(experiment),
     )
 
 

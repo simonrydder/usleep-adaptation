@@ -12,6 +12,7 @@ from src.utils.callbacks import early_stopping, learning_rate_monitor, timer
 class TrainerConfig(BaseModel):
     max_epochs: int
     accelerator: Literal["cpu", "gpu"]
+    logger: Literal["neptune"] | None = None
     early_stopping: EarlyStoppingSetting | None = None
     learning_rate_monitor: Literal["epoch", "step"] | None = None
     timer: bool = False

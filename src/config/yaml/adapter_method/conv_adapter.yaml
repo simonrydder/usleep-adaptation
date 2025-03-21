@@ -1,4 +1,4 @@
-type: conv-adapter
+method: conv-adapter
 settings:
   forward_pass: parallel
   activation: relu

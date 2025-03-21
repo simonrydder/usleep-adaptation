@@ -18,7 +18,11 @@ def get_adapter_method_config(file: str) -> AdapterMethodConfig:
 
     content = load_yaml_content(config_file)
 
-    method_str = content.get("method", "")
+    method_str = content.get("method")
+    assert method_str is not None, (
+        f"yaml-file: {config_file} does not include `method` key."
+    )
+
     method = ADAPTER_METHODS_REGISTRY.get(method_str)
     if method is None:
         raise NotImplementedError(

@@ -1,14 +1,14 @@
 import os
 
-from lightning import LightningModule
 from pydantic import BaseModel
 
 from src.config._registries import MODEL_REG
 from src.config.utils import load_yaml_content
+from src.interfaces.framework_model import FrameworkModel
 
 
 class ModelConfig(BaseModel):
-    model: type[LightningModule]
+    model: type[FrameworkModel]
     ckpt: str
 
 

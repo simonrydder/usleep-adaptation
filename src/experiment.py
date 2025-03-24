@@ -3,7 +3,7 @@ import os
 from typing import Any
 
 import torch
-from lightning import LightningModule, Trainer
+from lightning import Trainer
 from torch.utils.data import DataLoader
 
 from src.concrete.standard_adapter import StandardAdapter
@@ -12,7 +12,7 @@ from src.concrete.standard_model_loader import StandardModelLoader
 from src.concrete.standard_model_trainer import StandardModelTrainer
 from src.config.config import load_config
 from src.config.experiment import Experiment, get_experiment_name
-from src.models.usleep import UsleepLightning
+from src.interfaces.framework_model import FrameworkModel
 
 
 def run_experiment(experiment: Experiment, debug: bool = False):
@@ -43,16 +43,14 @@ def run_experiment(experiment: Experiment, debug: bool = False):
 
 
 def update_predictions(
-    model: LightningModule, test: DataLoader, trainer: Trainer, results: dict
+    model: FrameworkModel, test: DataLoader, trainer: Trainer, results: dict
 ) -> dict:
-    if model is not UsleepLightning:
-        trainer.test(model, test)
-        return {}
-
     prediction = trainer.predict(model, test)
     assert prediction is not None, f"predict_step not implemented for {model}"
     for pred, y_true, index in prediction:
-        results[index[0]] = model.compute_metrics(pred, y_true)
+        results[index[0]] = model.measurements(pred, y_true)
+
+    return results
 
 
 def save_predictions(

@@ -1,5 +1,4 @@
-from lightning import LightningModule
-
+from src.interfaces.framework_model import FrameworkModel
 from src.interfaces.strategies.parameter_count_method import ParameterCountMethod
 from src.utils.classification import is_classification_parameter
 
@@ -8,7 +7,7 @@ class Hook(ParameterCountMethod):
     def __init__(self) -> None:
         super().__init__()
 
-    def set_parameter_count(self, model: LightningModule) -> LightningModule:
+    def set_parameter_count(self, model: FrameworkModel) -> FrameworkModel:
         param_count = {}
         for name, param in model.named_parameters():
             count = param.numel()
@@ -30,4 +29,4 @@ class Hook(ParameterCountMethod):
             param_count[location] = count_dict
 
         setattr(model, "parameter_count", param_count)
-        return super().set_parameter_count(model)
+        return model

@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 
-from lightning import LightningModule
-
 from src.config.config import ModelConfig
+from src.interfaces.framework_model import FrameworkModel
 
 
 class ModelLoader(ABC):
@@ -10,5 +9,5 @@ class ModelLoader(ABC):
         super().__init__()
 
     @abstractmethod
-    def load_pretrained(self) -> LightningModule:
+    def load_pretrained(self) -> FrameworkModel:
         pass

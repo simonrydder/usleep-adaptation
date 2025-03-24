@@ -1,0 +1,3 @@
+default: !include _default.yaml
+max_epochs: 1
+logger: neptune

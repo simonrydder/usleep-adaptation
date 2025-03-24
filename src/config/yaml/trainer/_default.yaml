@@ -5,3 +5,5 @@ early_stopping:
     mode: max
 timer: true
 logger: neptune
+model_summary_depth: -1
+save_best_model_monitor: val_kappa

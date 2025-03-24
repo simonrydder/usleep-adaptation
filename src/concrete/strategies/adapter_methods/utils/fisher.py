@@ -36,7 +36,7 @@ def calculate_the_importance_label(
         y_pred = model(inputs)
         y_true = inputs["labels"]
 
-        loss, _, _, _ = model._compute_metrics(y_pred, y_true)
+        loss, _, _, _ = model.compute_metrics(y_pred, y_true)
 
         loss.backward()
 

@@ -3,14 +3,16 @@ import os
 from pydantic import BaseModel, Field
 
 from src.config._adapter_setting import AdapterSetting
-from src.config._registries import ADAPTER_METHODS_REGISTRY
+from src.config._registries import ADAPTER_METHOD_REG, PARAMETER_COUNT_REG
 from src.config.utils import load_yaml_content
 from src.interfaces.strategies.adapter_method import AdapterMethod
+from src.interfaces.strategies.parameter_count_method import ParameterCountMethod
 
 
 class AdapterMethodConfig(BaseModel):
     method: type[AdapterMethod]
     settings: AdapterSetting = Field(default_factory=AdapterSetting)
+    parameter_count: type[ParameterCountMethod]
 
 
 def get_adapter_method_config(file: str) -> AdapterMethodConfig:
@@ -18,18 +20,18 @@ def get_adapter_method_config(file: str) -> AdapterMethodConfig:
 
     content = load_yaml_content(config_file)
 
-    method_str = content.get("method")
-    assert method_str is not None, (
+    method = content.get("method")
+    assert method is not None, (
         f"yaml-file: {config_file} does not include `method` key."
     )
 
-    method = ADAPTER_METHODS_REGISTRY.get(method_str)
-    if method is None:
-        raise NotImplementedError(
-            f"{method_str} not defined in ADAPTER_METHODS_REGISTRY"
-        )
+    content["method"] = ADAPTER_METHOD_REG.lookup(method)
 
-    content["method"] = method
+    param_count = content.get("parameter_count")
+    if param_count is None:
+        param_count = "skip"
+
+    content["parameter_count"] = PARAMETER_COUNT_REG.lookup(param_count)
 
     return AdapterMethodConfig(**content)
 

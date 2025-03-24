@@ -26,7 +26,7 @@ def run_experiment(experiment: Experiment, debug: bool = False):
         adapter = StandardAdapter(config.adapter)
         new_model = adapter.adapt(original_model, dataloader=train)
 
-        trainer = StandardModelTrainer(config.trainer).get()
+        trainer = StandardModelTrainer(config.trainer, config.experiment).get()
 
         original_predictions = trainer.predict(original_model, test)
         assert original_predictions is not None, (
@@ -34,7 +34,7 @@ def run_experiment(experiment: Experiment, debug: bool = False):
         )
 
         for pred, y_true, index in original_predictions:
-            original_results[index[0]] = original_model._compute_metrics(pred, y_true)
+            original_results[index[0]] = original_model.compute_metrics(pred, y_true)
 
         trainer.fit(new_model, train, val)
 
@@ -42,7 +42,7 @@ def run_experiment(experiment: Experiment, debug: bool = False):
         assert new_predictions is not None, "New model needs an predict_step function"
 
         for pred, y_true, index in new_predictions:
-            fine_tuned_results[index[0]] = new_model._compute_metrics(pred, y_true)
+            fine_tuned_results[index[0]] = new_model.compute_metrics(pred, y_true)
 
         if debug:
             break
@@ -98,7 +98,7 @@ if __name__ == "__main__":
         dataset="eesm19",
         method="bitfit",
         model="usleep",
-        trainer="usleep_debug",
+        trainer="usleep_debug_neptune",
     )
-    run_experiment(exp)
+    run_experiment(exp, True)
     pass

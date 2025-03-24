@@ -3,6 +3,7 @@ from typing import Any, Literal
 import torch
 import torch.nn as nn
 from lightning import LightningModule
+from lightning.pytorch.loggers import NeptuneLogger
 from torch import Tensor, optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
@@ -72,6 +73,18 @@ class UsleepLightning(LightningModule):
         y = self.model(x.float())
         return y
 
+    def on_fit_start(self) -> None:
+        if not isinstance(self.logger, NeptuneLogger):
+            return None
+
+        params = getattr(self, "trainable_parameters")
+        if params is None:
+            params = 5
+
+        self.logger.experiment["model/trainable_params"] = params
+
+        return super().on_fit_start()
+
     def training_step(self, batch: dict[str, Any], batch_index: int) -> Tensor:
         return self._step(batch, batch_index, "train")
 
@@ -104,7 +117,7 @@ class UsleepLightning(LightningModule):
     ) -> Tensor:
         pred, y, _ = self.predict_step(batch, batch_index)
 
-        loss, acc, kappa, f1 = self._compute_metrics(pred, y)
+        loss, acc, kappa, f1 = self.compute_metrics(pred, y)
         # self.training_step_outputs.append(loss)  # Maybe remove
 
         self.log(f"{type}_loss", loss, prog_bar=True, on_step=True, on_epoch=True)
@@ -154,7 +167,7 @@ class UsleepLightning(LightningModule):
 
         return xbatch
 
-    def _compute_metrics(
+    def compute_metrics(
         self, y_pred: Tensor, y_true: Tensor
     ) -> tuple[Tensor, Tensor, Tensor, Tensor]:
         y_pred = torch.swapdims(y_pred, 1, 2)

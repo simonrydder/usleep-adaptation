@@ -7,11 +7,15 @@ from src.utils.trainer import define_trainer
 
 
 class StandardModelTrainer(ModelTrainer):
-    def __init__(self, trainer: TrainerConfig) -> None:
+    def __init__(self, trainer: TrainerConfig, experiment_name: str) -> None:
         super().__init__(trainer)
         self.trainer = trainer
 
-        self.logger = neptune_logger() if trainer.logger == "neptune" else True
+        self.logger = (
+            neptune_logger(name=experiment_name)
+            if trainer.logger == "neptune"
+            else True
+        )
 
     def get(self) -> Trainer:
         return define_trainer(

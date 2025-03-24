@@ -6,7 +6,13 @@ from pydantic import BaseModel
 
 from src.config._early_stopping_setting import EarlyStoppingSetting
 from src.config.utils import load_yaml_content
-from src.utils.callbacks import early_stopping, learning_rate_monitor, timer
+from src.utils.callbacks import (
+    early_stopping,
+    learning_rate_monitor,
+    model_checkpoint,
+    model_summary,
+    timer,
+)
 
 
 class TrainerConfig(BaseModel):
@@ -16,6 +22,8 @@ class TrainerConfig(BaseModel):
     early_stopping: EarlyStoppingSetting | None = None
     learning_rate_monitor: Literal["epoch", "step"] | None = None
     timer: bool = False
+    model_summary_depth: int | None = None
+    save_best_model_monitor: str | None = None
 
     def get_callbacks(self) -> list[Callback]:
         callbacks: list[Callback] = []
@@ -32,6 +40,12 @@ class TrainerConfig(BaseModel):
 
         if self.timer:
             callbacks.append(timer())
+
+        if self.model_summary_depth:
+            callbacks.append(model_summary(self.model_summary_depth))
+
+        if self.save_best_model_monitor:
+            callbacks.append(model_checkpoint(self.save_best_model_monitor))
 
         return callbacks
 

@@ -1,7 +1,13 @@
 from typing import Literal
 
 from lightning import Callback
-from lightning.pytorch.callbacks import EarlyStopping, LearningRateMonitor, Timer
+from lightning.pytorch.callbacks import (
+    EarlyStopping,
+    LearningRateMonitor,
+    ModelCheckpoint,
+    ModelSummary,
+    Timer,
+)
 
 
 def early_stopping(
@@ -22,3 +28,16 @@ def learning_rate_monitor(logging_interval: Literal["epoch", "step"]) -> Callbac
 
 def timer() -> Callback:
     return Timer()
+
+
+def model_summary(depth: int) -> Callback:
+    return ModelSummary(max_depth=depth)
+
+
+def model_checkpoint(monitor: str) -> Callback:
+    return ModelCheckpoint(
+        filename="best",
+        save_top_k=1,
+        monitor=monitor,
+        save_last=True,
+    )

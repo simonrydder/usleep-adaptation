@@ -1,16 +1,16 @@
 import os
 
 from src.config._registries import (
-    ACTIVATION_REGISTRY,
-    ADAPTER_METHODS_REGISTRY,
-    FORWARD_PASS_REGISTRY,
-    MODEL_REGISTRY,
+    ACTIVATION_REG,
+    ADAPTER_METHOD_REG,
+    FORWARD_PASS_REG,
+    MODEL_REG,
 )
 
 
 def validate_model_name(name: str) -> str:
     """Ensures the model name is valid and exists in the registry."""
-    if name in MODEL_REGISTRY:
+    if name in MODEL_REG:
         return name
 
     raise ValueError(f"{name} not a model in MODEL_REGISTRY")
@@ -34,21 +34,21 @@ def validate_folder_existence(folder: str | list[str]) -> str:
 
 
 def validate_adapter_name(name: str) -> str:
-    if name in ADAPTER_METHODS_REGISTRY:
+    if name in ADAPTER_METHOD_REG:
         return name
 
     raise ValueError(f"{name} not a model in ADAPTER_REGISTRY")
 
 
 def validate_forward_pass(name: str) -> str:
-    if name in FORWARD_PASS_REGISTRY:
+    if name in FORWARD_PASS_REG:
         return name
 
     raise ValueError(f"{name} is not a valid ForwardPass type")
 
 
 def validate_activation(name: str) -> str:
-    if name in ACTIVATION_REGISTRY:
+    if name in ACTIVATION_REG:
         return name
 
     raise ValueError(f"{name} is not a activation in ACTIVATION_REGISTRY")

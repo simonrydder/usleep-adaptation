@@ -13,6 +13,7 @@ class StandardAdapter(Adapter):
 
         settings = config.settings.get_settings()
         self.adapter_method = config.method(**settings)
+        self.param_count_method = config.parameter_count()
 
     def adapt(self, model: LightningModule, **kwargs) -> LightningModule:
         new_model = deepcopy(model)
@@ -20,6 +21,7 @@ class StandardAdapter(Adapter):
         new_model = self._unfreeze_segmentation_later(new_model)
 
         self.adapter_method.apply(new_model, **kwargs)
+        new_model = self.param_count_method.set_parameter_count(new_model)
 
         return new_model
 

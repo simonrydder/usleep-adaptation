@@ -3,7 +3,7 @@ import os
 from lightning import LightningModule
 from pydantic import BaseModel
 
-from src.config._registries import MODEL_REGISTRY
+from src.config._registries import MODEL_REG
 from src.config.utils import load_yaml_content
 
 
@@ -17,11 +17,8 @@ def get_model_config(file: str) -> ModelConfig:
     content = load_yaml_content(model_config_file)
 
     model_str = content.get("model", "")
-    model = MODEL_REGISTRY.get(model_str)
-    if model is None:
-        raise NotImplementedError(f"{model_str} not defined in MODEL_REGISRTY")
+    content["model"] = MODEL_REG.lookup(model_str)
 
-    content["model"] = model
     return ModelConfig(**content)
 
 

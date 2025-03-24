@@ -3,6 +3,8 @@ import os
 from typing import Any
 
 import torch
+from lightning import LightningModule, Trainer
+from torch.utils.data import DataLoader
 
 from src.concrete.standard_adapter import StandardAdapter
 from src.concrete.standard_data_creater import StandardDataCreater
@@ -10,45 +12,47 @@ from src.concrete.standard_model_loader import StandardModelLoader
 from src.concrete.standard_model_trainer import StandardModelTrainer
 from src.config.config import load_config
 from src.config.experiment import Experiment, get_experiment_name
+from src.models.usleep import UsleepLightning
 
 
 def run_experiment(experiment: Experiment, debug: bool = False):
     config = load_config(experiment)
 
     model_loader = StandardModelLoader(config.model)
-    original_model = model_loader.load_pretrained()
+    org_model = model_loader.load_pretrained()
 
     dataload_generator = StandardDataCreater(config.data)
 
-    original_results = {}
-    fine_tuned_results = {}
+    org_pred_error = {}
+    new_pred_error = {}
     for train, val, test in dataload_generator:
         adapter = StandardAdapter(config.adapter)
-        new_model = adapter.adapt(original_model, dataloader=train)
+        new_model = adapter.adapt(org_model, dataloader=train)
 
         trainer = StandardModelTrainer(config.trainer, config.experiment).get()
 
-        original_predictions = trainer.predict(original_model, test)
-        assert original_predictions is not None, (
-            "Original model needs an predict_step function"
-        )
-
-        for pred, y_true, index in original_predictions:
-            original_results[index[0]] = original_model.compute_metrics(pred, y_true)
-
+        org_pred_error = update_predictions(org_model, test, trainer, org_pred_error)
         trainer.fit(new_model, train, val)
-
-        new_predictions = trainer.predict(new_model, test)
-        assert new_predictions is not None, "New model needs an predict_step function"
-
-        for pred, y_true, index in new_predictions:
-            fine_tuned_results[index[0]] = new_model.compute_metrics(pred, y_true)
+        new_pred_error = update_predictions(new_model, test, trainer, new_pred_error)
 
         if debug:
             break
 
     if not debug:
-        save_predictions(experiment, original_results, fine_tuned_results)
+        save_predictions(experiment, org_pred_error, new_pred_error)
+
+
+def update_predictions(
+    model: LightningModule, test: DataLoader, trainer: Trainer, results: dict
+) -> dict:
+    if model is not UsleepLightning:
+        trainer.test(model, test)
+        return {}
+
+    prediction = trainer.predict(model, test)
+    assert prediction is not None, f"predict_step not implemented for {model}"
+    for pred, y_true, index in prediction:
+        results[index[0]] = model.compute_metrics(pred, y_true)
 
 
 def save_predictions(
@@ -96,9 +100,9 @@ def convert_json_serializable(obj: Any) -> Any:
 if __name__ == "__main__":
     exp = Experiment(
         dataset="eesm19",
-        method="bitfit",
+        method="fish",
         model="usleep",
-        trainer="usleep_debug_neptune",
+        trainer="usleep_debug",  # _neptune",
     )
     run_experiment(exp, True)
     pass

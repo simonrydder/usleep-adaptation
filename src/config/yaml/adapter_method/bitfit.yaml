@@ -1,4 +1,4 @@
 method: 'bitfit'
-parameter_count: skip
+parameter_count: grad
 # parameter_count: grad
 # parameter_count: hook

@@ -1,3 +1,4 @@
 method: fish
+parameter_count: hook
 settings:
   keep_ratio: 0.1

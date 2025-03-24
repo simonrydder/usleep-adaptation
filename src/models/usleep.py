@@ -77,11 +77,10 @@ class UsleepLightning(LightningModule):
         if not isinstance(self.logger, NeptuneLogger):
             return None
 
-        params = getattr(self, "trainable_parameters")
-        if params is None:
-            params = 5
-
-        self.logger.experiment["model/trainable_params"] = params
+        params = getattr(self, "parameter_count")
+        self.logger.experiment["model/parameter_count"] = getattr(
+            self, "parameter_count"
+        )
 
         return super().on_fit_start()
 

@@ -40,6 +40,16 @@ class FISH(AdapterMethod):
         masks = fish.calculate_mask()
 
         for name, param in model.named_parameters():
-            param.register_hook(lambda grad, mask=masks[name]: grad * mask)
+            mask = masks[name]
+            free_count = (mask == 1).sum().item()
+            frozen_count = (mask == 0).sum().item()
+            assert free_count + frozen_count == param.numel()
+            setattr(param, "free_count", free_count)
+            setattr(param, "frozen_count", frozen_count)
+            param.register_hook(lambda grad, mask=mask: grad * mask)
 
         return model
+
+
+
+class 

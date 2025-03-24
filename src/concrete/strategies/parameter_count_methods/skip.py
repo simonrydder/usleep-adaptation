@@ -8,5 +8,9 @@ class Skip(ParameterCountMethod):
         super().__init__()
 
     def set_parameter_count(self, model: LightningModule) -> LightningModule:
-        setattr(model, "trainable_parameters", None)
+        setattr(
+            model,
+            "parameter_count",
+            {"total": sum(p.numel() for p in model.parameters())},
+        )
         return model

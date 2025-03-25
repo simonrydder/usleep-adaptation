@@ -5,10 +5,6 @@ from lightning import LightningModule
 from lightning.pytorch.loggers import CSVLogger, NeptuneLogger
 from torch import Tensor
 
-type Prediction = Tensor
-type Label = Tensor
-type Indecies = Sequence[Any]
-
 
 class FrameworkModel(LightningModule, ABC):
     def __init__(self):
@@ -26,7 +22,7 @@ class FrameworkModel(LightningModule, ABC):
     @abstractmethod
     def predict_step(
         self, batch: Any, batch_index: int
-    ) -> tuple[Prediction, Label, Indecies]:
+    ) -> tuple[Tensor, Tensor, Sequence[Any]]:
         pass
 
     @abstractmethod

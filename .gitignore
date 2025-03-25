@@ -6,6 +6,11 @@ dist/
 wheels/
 *.egg-info
 
+*.sh
+*.sif
+*.out
+env.yaml
+
 lightning_logs/
 
 # Virtual environments

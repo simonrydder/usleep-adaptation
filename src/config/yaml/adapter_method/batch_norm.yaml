@@ -1,1 +1,2 @@
 method: 'batch_norm_adapter'
+parameter_count: grad

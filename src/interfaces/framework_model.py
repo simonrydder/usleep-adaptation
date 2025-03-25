@@ -20,6 +20,7 @@ class FrameworkModel(LightningModule, ABC):
             print(self.parameter_count)
         elif isinstance(self.logger, NeptuneLogger):
             self.logger.experiment["model/parameter_count"] = self.parameter_count
+            self.logger.experiment["model/settings"] = getattr(self, "exp_setting")
         return None
 
     @abstractmethod

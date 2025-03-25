@@ -1,4 +1,2 @@
 method: 'bitfit'
 parameter_count: grad
-# parameter_count: grad
-# parameter_count: hook

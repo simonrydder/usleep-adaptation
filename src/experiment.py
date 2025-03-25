@@ -19,7 +19,7 @@ def run_experiment(experiment: Experiment, debug: bool = False):
     config = load_config(experiment)
 
     model_loader = StandardModelLoader(config.model)
-    org_model = model_loader.load_pretrained()
+    org_model = model_loader.load_pretrained(experiment)
 
     dataload_generator = StandardDataCreater(config.data)
 
@@ -100,7 +100,7 @@ if __name__ == "__main__":
         dataset="eesm19",
         method="fish",
         model="usleep",
-        trainer="usleep_debug",  # _neptune",
+        trainer="usleep_debug_neptune",
     )
     run_experiment(exp, True)
     pass

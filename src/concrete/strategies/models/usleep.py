@@ -103,7 +103,7 @@ class UsleepModel(FrameworkModel):
 
         measurements = self.measurements(pred, y)
         for key, val in measurements.items():
-            self.log(f"{type}_{key}", val, prog_bar=True, on_step=True, on_epoch=True)
+            self.log(f"{type}_{key}", val, prog_bar=True, on_step=True, on_epoch=True, batch_size = self.batch_size)
 
         return self.loss(pred, y)
 

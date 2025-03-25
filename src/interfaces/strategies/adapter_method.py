@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from lightning import LightningModule
+from src.interfaces.framework_model import FrameworkModel
 
 
 class AdapterMethod(ABC):
@@ -8,5 +8,5 @@ class AdapterMethod(ABC):
         super().__init__()
 
     @abstractmethod
-    def apply(self, model: LightningModule, **kwargs) -> LightningModule:
+    def apply(self, model: FrameworkModel, **kwargs) -> FrameworkModel:
         pass

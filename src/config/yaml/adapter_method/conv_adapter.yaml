@@ -1,4 +1,5 @@
 method: conv-adapter
+parameter_count: grad
 settings:
   forward_pass: parallel
   activation: relu

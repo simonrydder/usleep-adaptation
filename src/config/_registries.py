@@ -9,20 +9,17 @@ from src.concrete.strategies.adapter_methods.fish import FISH
 from src.concrete.strategies.adapter_methods.fully_finetune import FullyFinetune
 from src.concrete.strategies.adapter_methods.lora import LoRA
 from src.concrete.strategies.adapter_methods.nothing import Nothing
-from src.concrete.strategies.adapter_methods.residual_adapter import ResidualAdapter
 from src.concrete.strategies.forward_passes.parallel_forward_pass import (
     ParallelForwardPass,
 )
 from src.concrete.strategies.forward_passes.sequential_forward_pass import (
     SequentialForwardPass,
 )
+from src.concrete.strategies.models.linear import SimpleLinearModel
+from src.concrete.strategies.models.usleep import UsleepModel
 from src.concrete.strategies.parameter_count_methods.grad import Grad
 from src.concrete.strategies.parameter_count_methods.hook import Hook
 from src.concrete.strategies.parameter_count_methods.skip import Skip
-from src.models.conv_simple import ConvSimple
-from src.models.resnet import Resnet
-from src.models.simple import Simple
-from src.models.usleep import UsleepLightning
 
 T = TypeVar("T")
 
@@ -49,10 +46,8 @@ class Registry(Generic[T]):
 
 MODEL_REG = Registry(
     {
-        "simple": Simple,
-        "resnet": Resnet,
-        "conv_simple": ConvSimple,
-        "usleep": UsleepLightning,
+        "simple": SimpleLinearModel,
+        "usleep": UsleepModel,
     }
 )
 
@@ -66,7 +61,6 @@ ADAPTER_METHOD_REG = Registry(
         "nothing": Nothing,
         "fully-finetune": FullyFinetune,
         "fish": FISH,
-        "residual-adapter": ResidualAdapter,
     }
 )
 

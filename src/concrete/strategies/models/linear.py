@@ -1,10 +1,13 @@
+from typing import Any, Sequence
+
 import torch.nn as nn
-from lightning import LightningModule
 from torch import Tensor, optim
 
+from src.interfaces.framework_model import FrameworkModel
 
-class Simple(LightningModule):
-    def __init__(self) -> None:
+
+class SimpleLinearModel(FrameworkModel):
+    def __init__(self):
         super().__init__()
 
         self.linear = nn.Linear(2, 1)
@@ -42,3 +45,22 @@ class Simple(LightningModule):
 
     def configure_optimizers(self) -> optim.Optimizer:
         return optim.SGD(self.parameters(), lr=0.01)
+
+    def predict_step(
+        self, batch: Any, batch_index: int
+    ) -> tuple[Tensor, Tensor, Sequence[Any]]:
+        return super().predict_step(batch, batch_index)
+
+    def loss(self, prediction: Tensor, true: Tensor) -> Tensor:
+        loss = nn.functional.mse_loss(prediction, true)
+        return loss
+
+    def measurements(self, prediction: Tensor, true: Tensor) -> dict[str, Tensor]:
+        return {"loss": self.loss(prediction, true)}
+
+    def is_classification_parameter(self, parameter_name: str) -> bool:
+        return False
+
+
+if __name__ == "__main__":
+    SimpleLinearModel()

@@ -1,14 +1,14 @@
 from lightning import LightningModule
 
-from src.models.simple import Simple
-from src.models.usleep import UsleepLightning
+from src.concrete.strategies.models.linear import SimpleLinearModel
+from src.concrete.strategies.models.usleep import UsleepModel
 
 
 def is_classification_parameter(name: str, model: LightningModule) -> bool:
-    if isinstance(model, UsleepLightning):
+    if isinstance(model, UsleepModel):
         return usleep_classification(name)
 
-    if isinstance(model, Simple):
+    if isinstance(model, SimpleLinearModel):
         return simple_classification(name)
 
     raise NotImplementedError(

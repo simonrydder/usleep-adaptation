@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from lightning import LightningModule
+from src.interfaces.framework_model import FrameworkModel
 
 
 class ParameterCountMethod(ABC):
@@ -8,5 +8,5 @@ class ParameterCountMethod(ABC):
         super().__init__()
 
     @abstractmethod
-    def set_parameter_count(self, model: LightningModule) -> LightningModule:
+    def set_parameter_count(self, model: FrameworkModel) -> FrameworkModel:
         pass

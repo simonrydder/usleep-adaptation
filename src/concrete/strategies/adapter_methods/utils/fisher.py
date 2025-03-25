@@ -3,13 +3,13 @@ import torch
 # from su_torch_backend import DataLoader
 from torch.utils.data import DataLoader
 
-from src.models.usleep import UsleepLightning
+from src.interfaces.framework_model import FrameworkModel
 
 CLASSIFIER_NAME = "classifier"
 
 
 def calculate_the_importance_label(
-    model: UsleepLightning, data_loader: DataLoader, num_samples, cuda_device, grad_type
+    model: FrameworkModel, data_loader: DataLoader, num_samples, cuda_device, grad_type
 ):
     """
     Args:
@@ -36,7 +36,7 @@ def calculate_the_importance_label(
         y_pred = model(inputs)
         y_true = inputs["labels"]
 
-        loss, _, _, _ = model.compute_metrics(y_pred, y_true)
+        loss = model.loss(y_pred, y_true)
 
         loss.backward()
 

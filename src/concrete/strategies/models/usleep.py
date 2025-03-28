@@ -100,10 +100,17 @@ class UsleepModel(FrameworkModel):
         type: Literal["test", "val", "train"],
     ) -> Tensor:
         pred, y, _ = self.predict_step(batch, batch_index)
-
+        model = "org" if getattr(self, "original_model") else "new"
         measurements = self.measurements(pred, y)
         for key, val in measurements.items():
-            self.log(f"{type}_{key}", val, prog_bar=True, on_step=True, on_epoch=True, batch_size = self.batch_size)
+            self.log(
+                f"{model}/{type}/{key}",
+                val,
+                prog_bar=True,
+                on_step=True,
+                on_epoch=True,
+                batch_size=self.batch_size,
+            )
 
         return self.loss(pred, y)
 
@@ -126,7 +133,7 @@ class UsleepModel(FrameworkModel):
 
         return {
             "optimizer": optimizer,
-            "monitor": "val_kappa",
+            "monitor": "new/val/kappa",
             "lr_scheduler": scheduler,
         }  # type: ignore
 

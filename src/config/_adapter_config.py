@@ -1,6 +1,6 @@
 import os
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 
 from src.config._adapter_setting import AdapterSetting
 from src.config._registries import ADAPTER_METHOD_REG, PARAMETER_COUNT_REG
@@ -13,6 +13,10 @@ class AdapterMethodConfig(BaseModel):
     method: type[AdapterMethod]
     settings: AdapterSetting = Field(default_factory=AdapterSetting)
     parameter_count: type[ParameterCountMethod]
+
+    @field_serializer("method", "parameter_count")
+    def serialize_class(self, v):
+        return str(v)
 
 
 def get_adapter_method_config(file: str) -> AdapterMethodConfig:

@@ -1,9 +1,9 @@
 max_epochs: 5
 accelerator: gpu
 early_stopping:
-    monitor: val_kappa
+    monitor: new/val/kappa
     mode: max
 timer: true
 logger: neptune
 model_summary_depth: -1
-save_best_model_monitor: val_kappa
+save_best_model_monitor: new/val/kappa

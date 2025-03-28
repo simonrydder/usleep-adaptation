@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.config.config import ModelConfig
-from src.config.experiment import Experiment
+from src.config.config import Config, ModelConfig
 from src.interfaces.framework_model import FrameworkModel
 
 
@@ -10,5 +9,5 @@ class ModelLoader(ABC):
         super().__init__()
 
     @abstractmethod
-    def load_pretrained(self, experiment: Experiment) -> FrameworkModel:
+    def load_pretrained(self, config: Config) -> FrameworkModel:
         pass

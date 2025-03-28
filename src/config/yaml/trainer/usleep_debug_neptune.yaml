@@ -1,3 +1,4 @@
 default: !include _default.yaml
 max_epochs: 1
 logger: neptune
+model_summary_depth: 1

@@ -16,6 +16,7 @@ class StandardAdapter(Adapter):
 
     def adapt(self, model: FrameworkModel, **kwargs) -> FrameworkModel:
         new_model = deepcopy(model)
+        setattr(new_model, "original_model", False)
         new_model = self._freeze_all_parameters(new_model)
         new_model = self._unfreeze_segmentation_later(new_model)
 

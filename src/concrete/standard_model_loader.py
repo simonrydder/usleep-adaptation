@@ -13,4 +13,5 @@ class StandardModelLoader(ModelLoader):
     def load_pretrained(self, experiment: Experiment) -> FrameworkModel:
         model = self.model_cls.load_from_checkpoint(self.ckpt)
         setattr(model, "exp_setting", experiment.model_dump())
+        setattr(model, "original_model", True)
         return model

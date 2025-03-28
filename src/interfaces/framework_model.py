@@ -20,6 +20,34 @@ class FrameworkModel(LightningModule, ABC):
             self.logger.experiment["sys/tags"].add(getattr(self, "experiment_id"))
         return None
 
+    def on_validation_epoch_end(self) -> None:
+        if isinstance(self.logger, NeptuneLogger):
+            mode = "org" if getattr(self, "original_model") else "new"
+            self.logger.experiment[f"training/{mode}/val/records"].log(
+                self.validation_records
+            )
+
+        return None
+
+    def on_validation_epoch_start(self) -> None:
+        self.validation_records = []
+
+        return None
+
+    def on_test_epoch_end(self) -> None:
+        if isinstance(self.logger, NeptuneLogger):
+            mode = "org" if getattr(self, "original_model") else "new"
+            self.logger.experiment[f"training/{mode}/test/records"].log(
+                self.test_records
+            )
+
+        return None
+
+    def on_test_epoch_start(self) -> None:
+        self.test_records = []
+
+        return None
+
     @abstractmethod
     def predict_step(
         self, batch: Any, batch_index: int

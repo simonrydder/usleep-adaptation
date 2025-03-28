@@ -1,6 +1,6 @@
 from typing import Annotated, Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 
 from src.config._registries import ACTIVATION_REG, FORWARD_PASS_REG
 from src.config._validators import (
@@ -21,6 +21,13 @@ class AdapterSetting(BaseModel):
     kernel: int | tuple[int] | tuple[int, int] | None = None
     keep_ratio: float | None = None
     num_samples: int | None = None
+
+    @field_serializer("kernel")
+    def serialize_tuple(self, v):
+        if isinstance(v, tuple):
+            return list(v)
+
+        return v
 
     def get_settings(self) -> dict[str, Any]:
         settings = {}

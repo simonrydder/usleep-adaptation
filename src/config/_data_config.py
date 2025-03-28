@@ -1,7 +1,7 @@
 import os
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 
 from src.config.utils import load_yaml_content
 
@@ -16,6 +16,13 @@ class DataConfig(BaseModel):
     split_percentages: tuple[float, float, float]
     random_state: int
     num_samples: int | None = None
+
+    @field_serializer("split_percentages", "num_workers")
+    def serialize_tuple(self, v):
+        if isinstance(v, tuple):
+            return list(v)
+
+        return v
 
 
 def get_data_config(file: str) -> DataConfig:

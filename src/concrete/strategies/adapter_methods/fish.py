@@ -42,7 +42,9 @@ class FISH(AdapterMethod):
         )
 
         masks = fish.calculate_mask()
-
+        model_device = model.device
+        print("Model device: ", model_device)
+        print("Mask device: ", list(masks.values())[0].device)
         for name, param in model.named_parameters():
             mask = masks[name]
             free_count = (mask == 1).sum().item()
@@ -50,7 +52,7 @@ class FISH(AdapterMethod):
             assert free_count + frozen_count == param.numel()
             setattr(param, "free_count", free_count)
             setattr(param, "frozen_count", frozen_count)
-            param.register_hook(lambda grad, m=mask: grad * m)
+            param.register_hook(lambda grad, m=mask: grad * m.to(grad.device))
 
         return model
 
@@ -72,7 +74,7 @@ class LabeledFisherMask:
 
     def calculate_mask(self) -> dict[str, Tensor]:
         org_device = self.model.device
-        org_device = list(self.model.parameters())[0].device
+        # org_device = list(self.model.parameters())[0].device
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
 

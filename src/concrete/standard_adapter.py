@@ -3,7 +3,6 @@ from copy import deepcopy
 from src.config._adapter_config import AdapterMethodConfig
 from src.interfaces.adapter import Adapter
 from src.interfaces.framework_model import FrameworkModel
-from src.utils.classification import is_classification_parameter
 
 
 class StandardAdapter(Adapter):
@@ -33,7 +32,7 @@ class StandardAdapter(Adapter):
 
     def _unfreeze_segmentation_later(self, model: FrameworkModel) -> FrameworkModel:
         for name, param in model.named_parameters():
-            if is_classification_parameter(name, model):
+            if model.is_classification_parameter(name):
                 param.requires_grad = True
                 print(f"Unfroze {name}")
 

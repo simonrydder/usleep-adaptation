@@ -67,13 +67,26 @@ class UsleepModel(FrameworkModel):
         return y
 
     def training_step(self, batch: dict[str, Any], batch_index: int) -> Tensor:
-        return self._step(batch, batch_index, "train")
+        pred, label, records = self.predict_step(batch, batch_index)
+        measurements = self.measurements(pred, label)
+        self._log_measurements(measurements, "train")
+
+        return measurements["loss"]
 
     def validation_step(self, batch: dict[str, Any], batch_index: int) -> Tensor:
-        return self._step(batch, batch_index, "val")
+        pred, label, records = self.predict_step(batch, batch_index)
+        measurements = self.measurements(pred, label)
+        self._log_measurements(measurements, "val")
+        if not self.trainer.sanity_checking:
+            self.validation_records += [str(record) for record in records]
+        return measurements["loss"]
 
     def test_step(self, batch: dict[str, Any], batch_index: int) -> Tensor:
-        return self._step(batch, batch_index, "test")
+        pred, label, records = self.predict_step(batch, batch_index)
+        measurements = self.measurements(pred, label)
+        self._log_measurements(measurements, "test")
+        self.test_records += [str(record) for record in records]
+        return measurements["loss"]
 
     def predict_step(
         self, batch: Any, batch_index: int
@@ -93,26 +106,19 @@ class UsleepModel(FrameworkModel):
 
         return y_pred, y_true, records
 
-    def _step(
-        self,
-        batch: dict[str, Any],
-        batch_index: int,
-        type: Literal["test", "val", "train"],
-    ) -> Tensor:
-        pred, y, _ = self.predict_step(batch, batch_index)
-        model = "org" if getattr(self, "original_model") else "new"
-        measurements = self.measurements(pred, y)
+    def _log_measurements(
+        self, measurements: dict[str, Tensor], type: Literal["test", "val", "train"]
+    ) -> None:
+        mode = "org" if getattr(self, "original_model") else "new"
         for key, val in measurements.items():
             self.log(
-                f"{model}/{type}/{key}",
+                f"{mode}/{type}/{key}",
                 val,
                 prog_bar=True,
                 on_step=True,
                 on_epoch=True,
                 batch_size=self.batch_size,
             )
-
-        return self.loss(pred, y)
 
     def configure_optimizers(
         self,

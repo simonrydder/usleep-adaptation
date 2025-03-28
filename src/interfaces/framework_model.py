@@ -21,6 +21,9 @@ class FrameworkModel(LightningModule, ABC):
         return None
 
     def on_validation_epoch_end(self) -> None:
+        if self.trainer.sanity_checking:
+            return None
+
         if isinstance(self.logger, NeptuneLogger):
             mode = "org" if getattr(self, "original_model") else "new"
             self.logger.experiment[f"training/{mode}/val/records"].log(

@@ -14,7 +14,7 @@ def define_trainer(
         max_epochs=max_epochs,
         accelerator=accelerator,
         log_every_n_steps=1,
-        devices=accelerator,
+        devices="auto",
         callbacks=callbacks,
         logger=logger,
     )

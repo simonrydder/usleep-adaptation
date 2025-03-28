@@ -18,13 +18,12 @@ def run_experiment(experiment: Experiment, debug: bool = False):
 
     dataload_generator = StandardDataCreater(config.data)
 
-    for train, val, test in dataload_generator:
+    for fold, (train, val, test) in enumerate(dataload_generator):
         adapter = StandardAdapter(config.adapter)
         new_model = adapter.adapt(org_model, dataloader=train)
 
         trainer = StandardModelTrainer(config.trainer, config.experiment).get()
 
-        trainer.validate(org_model, val)
         trainer.test(org_model, test)
         trainer.fit(new_model, train, val)
         trainer.test(new_model, test)
@@ -36,7 +35,7 @@ def run_experiment(experiment: Experiment, debug: bool = False):
 if __name__ == "__main__":
     exp = Experiment(
         dataset="eesm19",
-        method="fish",
+        method="bitfit",
         model="usleep",
         trainer="usleep_debug_neptune",
     )

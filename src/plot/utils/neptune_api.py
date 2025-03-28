@@ -1,9 +1,10 @@
 import os
+from datetime import datetime
 from typing import Any
 
 from dotenv import load_dotenv
 from neptune import Project, Run, init_project, init_run
-from neptune.exceptions import MissingFieldException
+from pandas import DataFrame
 from pydantic import BaseModel
 
 from src.config.experiment import Experiment
@@ -28,11 +29,8 @@ def get_project(project_name: str = "S4MODEL/Usleep-Adaptation") -> Project:
     )
 
 
-def get_data_series(run: Run, key: str) -> list[Any] | None:
-    try:
-        return run[key].fetch_values()["value"].tolist()
-    except MissingFieldException:
-        return None
+def get_data_series(run: Run, key: str) -> DataFrame:
+    return run[key].fetch_values()
 
 
 def get_data(run: Run, key: str) -> Any:
@@ -57,52 +55,156 @@ class ConfigData(BaseModel):
 class Kappa(BaseModel):
     epoch: list[float]
     step: list[float]
-    records: list[str] | None
 
 
-class ModelResults(BaseModel):
-    val: Kappa
-    test: Kappa
-    train: Kappa | None = None
+class Measurement(BaseModel):
+    record: str
+    value: float
 
 
-class ResultData(BaseModel):
+class Performance(BaseModel):
+    kappa: list[Measurement]
+    accuracy: list[Measurement]
+    loss: list[Measurement]
+
+
+class Record(BaseModel):
+    step: int
+    record: str
+
+
+class Step(BaseModel):
+    step: int
+    value: float
+    timestamp: datetime
+
+
+class Epoch(BaseModel):
+    epoch: int
+    value: float
+    timestamp: datetime
+
+
+class Training(BaseModel):
+    kappa_step: list[Step]
+    kappa_epoch: list[Epoch]
+    accuracy_step: list[Step]
+    accuracy_epoch: list[Epoch]
+    loss_step: list[Step]
+    loss_epoch: list[Epoch]
+
+
+class Validation(BaseModel):
+    val: Training
+    records: list[Record]
+
+
+class RunData(BaseModel):
     parameters: ParameterData
     config: ConfigData
+    original_performance: Performance
+    new_performance: Performance
+    new_validation: Validation
+    new_training: Training
 
 
-def get_tag_data(tags: str | list[str]) -> ResultData:
+def get_tag_data(tags: str | list[str]) -> dict[int, RunData]:
     project = get_project()
     runs = project.fetch_runs_table(tag=tags).to_pandas()
 
-    for run_id in runs["sys/id"]:
+    data = {}
+    for fold, run_id in enumerate(runs["sys/id"]):
         run = get_run(run_id)
         run_data = get_run_data(run)
-    pass
+        data[fold] = run_data
+
+    return data
 
 
-def get_run_data(run: Run) -> Any:
+def _get_records(run: Run, mode: str, type: str) -> list[Record]:
+    df = get_data_series(run, f"training/{mode}/{type}/records")
+
+    return [
+        Record(step=int(row["step"]), record=row["value"]) for _, row in df.iterrows()
+    ]
+
+
+def _get_steps(run: Run, mode: str, type: str, measurement: str) -> list[Step]:
+    df = get_data_series(run, f"training/{mode}/{type}/{measurement}_step")
+
+    return [
+        Step(step=int(row["step"]), value=row["value"], timestamp=row["timestamp"])
+        for _, row in df.iterrows()
+    ]
+
+
+def _get_epoch(run: Run, mode: str, type: str, measurement: str) -> list[Epoch]:
+    df = get_data_series(run, f"training/{mode}/{type}/{measurement}_epoch")
+    return [
+        Epoch(epoch=int(row["step"]), value=row["value"], timestamp=row["timestamp"])
+        for _, row in df.iterrows()
+    ]
+
+
+def _get_measurements(
+    run: Run, mode: str, type: str, measurement: str
+) -> list[Measurement]:
+    records = _get_records(run, mode, type)
+    steps = _get_steps(run, mode, type, measurement)
+
+    return [
+        Measurement(record=rec.record, value=step.value)
+        for rec, step in zip(records, steps)
+    ]
+
+
+def _get_performance(run: Run, mode: str) -> Performance:
+    kappa = _get_measurements(run, mode, "test", "kappa")
+    accuracy = _get_measurements(run, mode, "test", "accuracy")
+    loss = _get_measurements(run, mode, "test", "loss")
+
+    return Performance(kappa=kappa, accuracy=accuracy, loss=loss)
+
+
+def _get_training(run: Run, mode: str, type: str) -> Training:
+    kappa_step = _get_steps(run, mode, type, "kappa")
+    kappa_epoch = _get_epoch(run, mode, type, "kappa")
+    accuracy_step = _get_steps(run, mode, type, "accuracy")
+    accuracy_epoch = _get_epoch(run, mode, type, "accuracy")
+    loss_step = _get_steps(run, mode, type, "loss")
+    loss_epoch = _get_epoch(run, mode, type, "loss")
+
+    return Training(
+        kappa_step=kappa_step,
+        kappa_epoch=kappa_epoch,
+        accuracy_step=accuracy_step,
+        accuracy_epoch=accuracy_epoch,
+        loss_step=loss_step,
+        loss_epoch=loss_epoch,
+    )
+
+
+def get_run_data(run: Run) -> RunData:
     param_data = ParameterData(**get_data(run, "model/parameter_count"))
     config_data = ConfigData(**get_data(run, "model/config"))
 
-    for mode in ["org", "new"]:
-        for type in ["train", "val", "test"]:
-            epoch_data = get_data_series(run, f"training/{mode}/{type}/kappa_epoch")
-            assert epoch_data is not None
+    org_performance = _get_performance(run, "org")
+    new_performance = _get_performance(run, "new")
 
-            step_data = get_data_series(run, f"training/{mode}/{type}/kappa_step")
-            assert step_data is not None
+    new_training = _get_training(run, "new", "train")
+    new_validation = Validation(
+        val=_get_training(run, "new", "val"),
+        records=_get_records(run, "new", "val"),
+    )
 
-            records_data = get_data_series(run, f"training/{mode}/{type}/records")
-
-            kappa = Kappa(
-                epoch=epoch_data,
-                step=step_data,
-                records=records_data,
-            )
-    org_results = ModelResults()
-
-    pass
+    return RunData(
+        parameters=param_data,
+        config=config_data,
+        original_performance=org_performance,
+        new_performance=new_performance,
+        new_training=new_training,
+        new_validation=new_validation,
+    )
 
 
 if __name__ == "__main__":

@@ -28,12 +28,14 @@ class StandardAdapter(Adapter):
         for param in model.parameters():
             param.requires_grad = False
 
+        print("All parameters are frozen")
         return model
 
     def _unfreeze_segmentation_later(self, model: FrameworkModel) -> FrameworkModel:
         for name, param in model.named_parameters():
             if model.is_classification_parameter(name):
                 param.requires_grad = True
-                print(f"Unfroze {name}")
+
+        print("Segment classifier parameters are unfrozen")
 
         return model

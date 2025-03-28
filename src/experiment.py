@@ -1,9 +1,13 @@
+import torch
+
 from src.concrete.standard_adapter import StandardAdapter
 from src.concrete.standard_data_creater import StandardDataCreater
 from src.concrete.standard_model_loader import StandardModelLoader
 from src.concrete.standard_model_trainer import StandardModelTrainer
 from src.config.config import load_config
 from src.config.experiment import Experiment
+
+torch.set_float32_matmul_precision("medium")
 
 
 def run_experiment(experiment: Experiment, debug: bool = False):

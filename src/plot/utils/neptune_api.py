@@ -1,8 +1,9 @@
 import os
 from datetime import datetime
-from typing import Any
+from typing import Any, Sequence
 
 import pandas as pd
+import polars as pl
 from dotenv import load_dotenv
 from neptune import Project, Run, init_project, init_run
 from pandas import DataFrame
@@ -82,6 +83,7 @@ class Step(BaseModel):
 
 class Epoch(BaseModel):
     epoch: int
+    step: int
     value: float
     timestamp: datetime
 
@@ -142,8 +144,13 @@ def _get_steps(run: Run, mode: str, type: str, measurement: str) -> list[Step]:
 def _get_epoch(run: Run, mode: str, type: str, measurement: str) -> list[Epoch]:
     df = get_data_series(run, f"training/{mode}/{type}/{measurement}_epoch")
     return [
-        Epoch(epoch=int(row["step"]), value=row["value"], timestamp=row["timestamp"])
-        for _, row in df.iterrows()
+        Epoch(
+            epoch=i,
+            step=int(row["step"]),
+            value=row["value"],
+            timestamp=row["timestamp"],
+        )
+        for i, (_, row) in enumerate(df.iterrows())
     ]
 
 
@@ -221,6 +228,14 @@ def get_original(tag_data: dict[int, RunData], tag: str) -> DataFrame:
         org_dfs.append(org_df)
 
     return pd.concat(org_dfs, ignore_index=True)
+
+
+def convert_to_polars(values: Sequence[BaseModel]) -> pl.DataFrame:
+    """
+    Convert a list of Pydantic BaseModel instances to a Polars DataFrame.
+    """
+    data = [value.model_dump() for value in values]
+    return pl.DataFrame(data)
 
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@ def run_experiment(experiment: Experiment, debug: bool = False):
 
         trainer.test(org_model, test)
         trainer.fit(new_model, train, val)
-        trainer.test(new_model, test)
+        trainer.test(new_model, test, ckpt_path="best")
 
         if debug:
             break

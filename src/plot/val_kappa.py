@@ -61,7 +61,7 @@ def get_delta_kappa_step(
         how="left",
     )
     delta_kappa = kappa.with_columns(
-        (pl.col("old_kappa") - pl.col("value")).alias("delta_kappa")
+        (pl.col("org_kappa") - pl.col("value")).alias("delta_kappa")
     )
 
     return delta_kappa

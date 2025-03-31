@@ -3,6 +3,7 @@ from peft import LoraConfig, get_peft_model
 
 from src.interfaces.framework_model import FrameworkModel
 from src.interfaces.strategies.adapter_method import AdapterMethod
+from src.utils.classification import is_classification_parameter
 
 
 class LoRA(AdapterMethod):
@@ -14,8 +15,11 @@ class LoRA(AdapterMethod):
 
     def apply(self, model: FrameworkModel, **kwargs) -> FrameworkModel:
         target_modules = []
+
         for name, module in model.named_modules():
-            if isinstance(module, torch.nn.Conv1d):
+            if "classifier" in name or "dense" in name:
+                continue
+            elif isinstance(module, torch.nn.Conv1d):
                 target_modules.append(name)
 
             elif isinstance(module, torch.nn.Linear):
@@ -31,5 +35,9 @@ class LoRA(AdapterMethod):
             target_modules=target_modules,
         )
         peft_model = get_peft_model(model, lora_conf)  # type: ignore
+
+        for name, param in peft_model.named_parameters():
+            if is_classification_parameter(name, model):
+                param.requires_grad = True
 
         return peft_model  # type: ignore

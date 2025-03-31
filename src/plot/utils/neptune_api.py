@@ -208,7 +208,7 @@ def get_run_data(run: Run) -> RunData:
     )
 
 
-def get_orginal(tag_data: dict[int, RunData], tag: str) -> DataFrame:
+def get_original(tag_data: dict[int, RunData], tag: str) -> DataFrame:
     org_dfs = []
     for fold, run in tag_data.items():
         org = run.original_performance.kappa

@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from typing import Any
 
+import pandas as pd
 from dotenv import load_dotenv
 from neptune import Project, Run, init_project, init_run
 from pandas import DataFrame
@@ -205,6 +206,21 @@ def get_run_data(run: Run) -> RunData:
         new_training=new_training,
         new_validation=new_validation,
     )
+
+
+def get_orginal(tag_data: dict[int, RunData], tag: str) -> DataFrame:
+    org_dfs = []
+    for fold, run in tag_data.items():
+        org = run.original_performance.kappa
+        org_df = DataFrame([rec.model_dump() for rec in org])
+        org_df["tag"] = tag
+        org_df["dataset"] = run.config.experiment.dataset
+        org_df["method"] = run.config.experiment.method
+        org_df["fold"] = fold
+
+        org_dfs.append(org_df)
+
+    return pd.concat(org_dfs, ignore_index=True)
 
 
 if __name__ == "__main__":

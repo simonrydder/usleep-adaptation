@@ -149,6 +149,8 @@ class UsleepModel(FrameworkModel):
         )
         assert x_eeg.shape[1] == 1, "Only one EEG channel allowed"
 
+        self.batch_size = x_eeg.shape[0]
+
         if self.include_eog:
             assert len(x_eog.shape) == 3, (
                 "EOG shape must be on the form (batch_size, num_channels, data)"

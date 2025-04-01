@@ -50,8 +50,30 @@ class ParameterData(BaseModel):
     model: TrainableParameterData
 
 
+class Split(BaseModel):
+    train: float
+    val: float
+    test: float
+
+
+class Sizes(BaseModel):
+    train: int
+    validation: int
+    test: int
+
+
+class Data(BaseModel):
+    batch_size: int
+    num_batches: int
+    random_state: int
+    sleep_epochs: int
+    split_percentages: Split
+    sizes: Sizes
+
+
 class ConfigData(BaseModel):
     experiment: Experiment
+    data: Data
 
 
 class Kappa(BaseModel):
@@ -254,4 +276,7 @@ def convert_to_polars(values: Sequence[BaseModel]) -> pl.DataFrame:
 
 
 if __name__ == "__main__":
+    run = get_run("US-157")
+    get_run_data(run)
+
     res = get_tag_data("1bv9KeTFq")

@@ -25,7 +25,7 @@ class AdapterSetting(BaseModel):
     @field_serializer("kernel")
     def serialize_tuple(self, v):
         if isinstance(v, tuple):
-            return list(v)
+            return str(v)
 
         return v
 

@@ -26,18 +26,14 @@ def plot_delta_kappas_vs_methods(tag_ids: list[str]) -> None:
                 method = tag_data.config.experiment.method
                 dataset_name = tag_data.config.experiment.dataset
 
-                delta_kappas = [
-                    kappa_new.value - kappa_old.value
-                    for kappa_new, kappa_old in zip(
-                        tag_data.new_performance.kappa,
-                        tag_data.original_performance.kappa,
-                    )
+                kappas = [
+                    kappa_old.value for kappa_old in tag_data.new_performance.kappa
                 ]
-                for dk in delta_kappas:
+                for kap in kappas:
                     plot_data.append(
                         {
                             "Method": method,
-                            "Delta Kappa": dk,
+                            "Kappa": kap,
                             "TagID": tag_id,
                             "Fold": fold_index,
                         }
@@ -54,13 +50,11 @@ def plot_delta_kappas_vs_methods(tag_ids: list[str]) -> None:
     sns.set_style("whitegrid")
 
     plt.figure(figsize=(10, 7))
-    sns.boxplot(
-        x="Method", y="Delta Kappa", data=df, palette="pastel", showfliers=False
-    )
+    sns.boxplot(x="Method", y="Kappa", data=df, palette="pastel", showfliers=False)
 
     sns.stripplot(
         x="Method",
-        y="Delta Kappa",
+        y="Kappa",
         data=df,
         color="black",
         jitter=True,
@@ -69,9 +63,9 @@ def plot_delta_kappas_vs_methods(tag_ids: list[str]) -> None:
     )
 
     plt.xlabel("Adapter Method")
-    plt.ylabel("Delta Kappa (New Kappa - Old Kappa)")
+    plt.ylabel("Kappa")
     plt.title(
-        f"Change in Kappa Score by Method \nDataset: {dataset_name}"  # type: ignore
+        f"Kappa Score by Method \nDataset: {dataset_name}"  # type: ignore
     )
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()

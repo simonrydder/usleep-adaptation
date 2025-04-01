@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+import numpy as np
 import pandas as pd
 import seaborn as sns
 
@@ -35,14 +37,25 @@ def plot_delta_kappas_vs_parameter_count(tag_ids: list[str]) -> None:
                         tag_data.original_performance.kappa,
                     )
                 ]
-                parameter_count = tag_data.parameters.model.free
+                parameters_free_percentage = 100 * (
+                    1
+                    - (
+                        (
+                            np.abs(
+                                tag_data.parameters.model.free
+                                - tag_data.parameters.total
+                            )
+                        )
+                        / (tag_data.parameters.total)
+                    )
+                )
 
                 for dk in delta_kappas:
                     plot_data.append(
                         {
                             "Method": method,
                             "Delta Kappa": dk,
-                            "Parameter Count": parameter_count,
+                            "Parameter Free Percentage": parameters_free_percentage,
                             "TagID": tag_id,
                             "Fold": fold_index,
                         }
@@ -61,7 +74,7 @@ def plot_delta_kappas_vs_parameter_count(tag_ids: list[str]) -> None:
 
     df = (
         df.groupby("Method")
-        .agg({"Delta Kappa": "mean", "Parameter Count": "mean"})
+        .agg({"Delta Kappa": "mean", "Parameter Free Percentage": "mean"})
         .reset_index()
     )
     # --- Create Scatter Plot with Optional Log Scale and Regression Line ---
@@ -71,30 +84,33 @@ def plot_delta_kappas_vs_parameter_count(tag_ids: list[str]) -> None:
     # Create scatter plot
     ax = sns.scatterplot(
         data=df,
-        x="Parameter Count",
+        x="Parameter Free Percentage",
         y="Delta Kappa",
         hue="Method",  # Color points by method
         style="Method",  # Different markers per method
         s=80,  # Adjust point size
         alpha=0.8,  # Set transparency
     )
-
+    # Format x-axis as percentage
+    ax.xaxis.set_major_formatter(mticker.PercentFormatter(xmax=100))
     # Option: To add trend lines, you can loop over methods and use regplot
     methods = df["Method"].unique()
     for m in methods:
         method_data = df[df["Method"] == m]
         sns.regplot(
             data=method_data,
-            x="Parameter Count",
+            x="Parameter Free Percentage",
             y="Delta Kappa",
             scatter=False,
             ax=ax,
             label=f"{m} Trend",
         )
 
-    plt.xlabel("Parameter Count")
+    plt.xlabel("Parameter Free Percentage")
     plt.ylabel("Delta Kappa (New Kappa - Old Kappa)")
-    plt.title(f"Delta Kappa vs. Parameter Count by Method \nDataset: {dataset_name}")  # type: ignore
+    plt.title(
+        f"Delta Kappa vs. Parameter Free Percentage by Method \nDataset: {dataset_name}"
+    )  # type: ignore
     # Adjust legend to combine scatter and trend lines neatly
     plt.legend(title="Adapter Method", bbox_to_anchor=(1.05, 1), loc="upper left")
     plt.tight_layout()
@@ -102,5 +118,4 @@ def plot_delta_kappas_vs_parameter_count(tag_ids: list[str]) -> None:
 
 
 if __name__ == "__main__":
-    plot_delta_kappas_vs_parameter_count(["1aYTnFXcM", "1wHtRWs0"])
     plot_delta_kappas_vs_parameter_count(["1aYTnFXcM", "1wHtRWs0"])

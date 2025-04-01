@@ -14,11 +14,12 @@ class LoRA(AdapterMethod):
         super().__init__()
 
     def apply(self, model: FrameworkModel, **kwargs) -> FrameworkModel:
+        exclude_modules = []
         target_modules = []
 
         for name, module in model.named_modules():
             if "classifier" in name or "dense" in name:
-                continue
+                exclude_modules.append(name)
             elif isinstance(module, torch.nn.Conv1d):
                 target_modules.append(name)
 
@@ -33,6 +34,10 @@ class LoRA(AdapterMethod):
             lora_alpha=self.alpha,  # type: ignore
             lora_dropout=self.dropout,
             target_modules=target_modules,
+            exclude_modules=exclude_modules,
+            bias="lora_only",
+            fan_in_fan_out=True,
+            use_rslora=True,
         )
         peft_model = get_peft_model(model, lora_conf)  # type: ignore
 

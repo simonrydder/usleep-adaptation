@@ -4,10 +4,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from src.plot.utils.neptune_api import get_tag_data
 
-
-def plot_delta_kappas_vs_parameter_count(tag_ids: list[str]) -> None:
+def plot_delta_kappas_vs_parameter_percentage(data: dict) -> None:
     """
     Plots the improvement in kappa (delta kappa) versus the free parameter count
     for different finetuning methods.
@@ -16,15 +14,8 @@ def plot_delta_kappas_vs_parameter_count(tag_ids: list[str]) -> None:
         tag_ids: A list of tag IDs to fetch data for.
     """
     plot_data = []  # List to store data for DataFrame creation
-
-    for tag_id in tag_ids:
-        tag_data_dict = get_tag_data(tag_id)
-
-        if not tag_data_dict:
-            print(f"Warning: No data found for tag_id {tag_id}")
-            continue
-
-        for fold_index, tag_data in tag_data_dict.items():
+    for id in data.keys():
+        for fold_index, tag_data in data[id].items():
             try:
                 method = tag_data.config.experiment.method
                 dataset_name = tag_data.config.experiment.dataset
@@ -56,13 +47,13 @@ def plot_delta_kappas_vs_parameter_count(tag_ids: list[str]) -> None:
                             "Method": method,
                             "Delta Kappa": dk,
                             "Parameter Free Percentage": parameters_free_percentage,
-                            "TagID": tag_id,
+                            "TagID": id,
                             "Fold": fold_index,
                         }
                     )
             except Exception as e:
                 print(
-                    f"Warning: An unexpected error occurred processing fold {fold_index} for tag {tag_id}: {e}"
+                    f"Warning: An unexpected error occurred processing fold {fold_index} for tag {id}: {e}"
                 )
 
     if not plot_data:
@@ -109,13 +100,9 @@ def plot_delta_kappas_vs_parameter_count(tag_ids: list[str]) -> None:
     plt.xlabel("Parameter Free Percentage")
     plt.ylabel("Delta Kappa (New Kappa - Old Kappa)")
     plt.title(
-        f"Delta Kappa vs. Parameter Free Percentage by Method \nDataset: {dataset_name}"
+        f"Delta Kappa vs. Parameter Free Percentage by Method \nDataset: {dataset_name}"  # type: ignore
     )  # type: ignore
     # Adjust legend to combine scatter and trend lines neatly
     plt.legend(title="Adapter Method", bbox_to_anchor=(1.05, 1), loc="upper left")
     plt.tight_layout()
-    plt.show()
-
-
-if __name__ == "__main__":
-    plot_delta_kappas_vs_parameter_count(["1aYTnFXcM", "1wHtRWs0"])
+    plt.savefig("fig/delta_kap_vs_param_perc.png")

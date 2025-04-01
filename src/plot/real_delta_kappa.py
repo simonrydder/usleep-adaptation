@@ -2,10 +2,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from src.plot.utils.neptune_api import get_tag_data
 
-
-def plot_delta_kappas_vs_methods(tag_ids: list[str]) -> None:
+def plot_delta_kappas_vs_methods(data: dict) -> None:
     """
     Plots Delta Kappa values for different methods using Seaborn boxplot and stripplot,
     aggregating data across all available folds (provided as a dictionary) for each tag ID.
@@ -14,14 +12,8 @@ def plot_delta_kappas_vs_methods(tag_ids: list[str]) -> None:
         tag_ids: A list of tag IDs to fetch data for.
     """
     plot_data: list = []  # List to store data for DataFrame creation
-
-    for tag_id in tag_ids:
-        tag_data_dict = get_tag_data(tag_id)
-
-        if not tag_data_dict:
-            print(f"Warning: No data found for tag_id {tag_id}")
-            continue
-        for fold_index, tag_data in tag_data_dict.items():
+    for id in data.keys():
+        for fold_index, tag_data in data[id].items():
             try:
                 method = tag_data.config.experiment.method
                 dataset_name = tag_data.config.experiment.dataset
@@ -38,14 +30,14 @@ def plot_delta_kappas_vs_methods(tag_ids: list[str]) -> None:
                         {
                             "Method": method,
                             "Delta Kappa": dk,
-                            "TagID": tag_id,
+                            "TagID": id,
                             "Fold": fold_index,
                         }
                     )
 
             except Exception as e:
                 print(
-                    f"Warning: An unexpected error occurred processing fold {fold_index} for tag {tag_id}: {e}"
+                    f"Warning: An unexpected error occurred processing fold {fold_index} for tag {id}: {e}"
                 )
     if not plot_data:
         print("No data available to plot.")
@@ -75,8 +67,4 @@ def plot_delta_kappas_vs_methods(tag_ids: list[str]) -> None:
     )
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
-    plt.show()
-
-
-if __name__ == "__main__":
-    plot_delta_kappas_vs_methods(["1aYTnFXcM", "1wHtRWs0", "fctKJw55"])
+    plt.savefig("fig/delta_kap_vs_methods_boxplot.png")

@@ -222,12 +222,27 @@ def get_original(tag_data: dict[int, RunData], tag: str) -> DataFrame:
         org_df = DataFrame([rec.model_dump() for rec in org])
         org_df["tag"] = tag
         org_df["dataset"] = run.config.experiment.dataset
-        org_df["method"] = run.config.experiment.method
+        org_df["method"] = "original"
         org_df["fold"] = fold
 
         org_dfs.append(org_df)
 
     return pd.concat(org_dfs, ignore_index=True)
+
+
+def get_test(tag_data: dict[int, RunData], tag: str) -> DataFrame:
+    new_dfs = []
+    for fold, run in tag_data.items():
+        new = run.new_performance.kappa
+        new_df = DataFrame([rec.model_dump() for rec in new])
+        new_df["tag"] = tag
+        new_df["dataset"] = run.config.experiment.dataset
+        new_df["method"] = run.config.experiment.method
+        new_df["fold"] = fold
+
+        new_dfs.append(new_df)
+
+    return pd.concat(new_dfs, ignore_index=True)
 
 
 def convert_to_polars(values: Sequence[BaseModel]) -> pl.DataFrame:

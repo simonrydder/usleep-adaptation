@@ -13,13 +13,15 @@ class DataConfig(BaseModel):
     sleep_epochs: int = 35
     num_batches: int = 3
     num_workers: int | tuple[int, int, int]
-    split_percentages: tuple[float, float, float]
+    train_size: int | None = None
+    validation_size: int
+    num_fold: int
     random_state: int
     num_samples: int | None = None
 
-    @field_serializer("split_percentages")
-    def serialize_split(self, v):
-        return {"train": v[0], "val": v[1], "test": v[2]}
+    # @field_serializer("split_percentages")
+    # def serialize_split(self, v):
+    #     return {"train": v[0], "val": v[1], "test": v[2]}
 
     @field_serializer("num_workers")
     def serialize_num_workers(self, v):

@@ -1,4 +1,0 @@
-dataset: eesm23
-method: conv_adapter
-model: usleep
-trainer: usleep

@@ -1,4 +1,4 @@
 dataset: eesm19
-method: bitfit
+method: BitFit
 model: usleep
 trainer: usleep

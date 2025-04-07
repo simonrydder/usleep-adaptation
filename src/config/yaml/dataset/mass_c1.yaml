@@ -1,6 +1,9 @@
 dataset: 'mass_c1'
 type: 'hdf5'
 batch_size: 4
+num_batches: 4
 num_workers: 1
-split_percentages: [0.8, 0.1, 0.1]
+num_fold: 20
+train_size: null
+validation_size: 2
 random_state: 42

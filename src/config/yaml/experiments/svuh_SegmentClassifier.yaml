@@ -1,0 +1,4 @@
+dataset: svuh
+method: SegmentClassifier
+model: usleep
+trainer: usleep

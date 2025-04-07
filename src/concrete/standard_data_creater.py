@@ -35,10 +35,10 @@ class StandardDataCreater(DataCreater):
     def __iter__(self) -> Iterator[tuple[DataLoader, DataLoader, DataLoader]]:
         for fold, test in self.folds.items():
             rest = list(
-                chain(*[subjects for i, subjects in self.folds.items() if i != fold])
+                chain(*[subjects for i, subjects in self.folds.items() if i != fold])  # type: ignore
             )
             np.random.seed(self.seed)
-            np.random.shuffle(rest)
+            np.random.shuffle(rest)  # type: ignore
             val = rest[: self.val_size]
             end_idx = (
                 self.train_size

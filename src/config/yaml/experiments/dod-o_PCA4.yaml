@@ -1,0 +1,4 @@
+dataset: dod-o
+method: PCA4
+model: usleep
+trainer: usleep

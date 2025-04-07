@@ -1,0 +1,4 @@
+dataset: mass_c1
+method: Fish 20
+model: usleep
+trainer: usleep

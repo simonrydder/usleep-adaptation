@@ -1,0 +1,4 @@
+dataset: eesm19
+method: SegmentClassifier
+model: usleep
+trainer: usleep

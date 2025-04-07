@@ -1,4 +1,0 @@
-dataset: svuh
-method: lora_small
-model: usleep
-trainer: usleep

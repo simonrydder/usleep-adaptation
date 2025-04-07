@@ -1,0 +1,4 @@
+dataset: eesm23
+method: FullFinetuning
+model: usleep
+trainer: usleep

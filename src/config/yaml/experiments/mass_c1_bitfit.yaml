@@ -1,4 +1,4 @@
 dataset: mass_c1
-method: bitfit
+method: BitFit
 model: usleep
 trainer: usleep

@@ -1,4 +1,0 @@
-dataset: sedf_st
-method: batch_norm
-model: usleep
-trainer: usleep

@@ -1,4 +1,0 @@
-dataset: sedf_st
-method: conv_adapter
-model: usleep
-trainer: usleep

@@ -1,4 +1,0 @@
-dataset: isruc_sg3
-method: conv_adapter
-model: usleep
-trainer: usleep

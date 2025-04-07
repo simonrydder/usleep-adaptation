@@ -1,0 +1,4 @@
+dataset: mass_c1
+method: SegmentClassifier
+model: usleep
+trainer: usleep

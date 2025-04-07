@@ -1,4 +1,0 @@
-dataset: svuh
-method: batch_norm
-model: usleep
-trainer: usleep

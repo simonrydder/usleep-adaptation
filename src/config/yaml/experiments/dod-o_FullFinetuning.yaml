@@ -1,0 +1,4 @@
+dataset: dod-o
+method: FullFinetuning
+model: usleep
+trainer: usleep

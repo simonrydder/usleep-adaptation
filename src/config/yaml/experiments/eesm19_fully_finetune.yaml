@@ -1,4 +1,0 @@
-dataset: eesm19
-method: fully_finetune
-model: usleep
-trainer: usleep

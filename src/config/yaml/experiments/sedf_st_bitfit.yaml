@@ -1,4 +1,0 @@
-dataset: sedf_st
-method: bitfit
-model: usleep
-trainer: usleep

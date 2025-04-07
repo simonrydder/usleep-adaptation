@@ -1,4 +1,0 @@
-dataset: dod-h
-method: fish
-model: usleep
-trainer: usleep

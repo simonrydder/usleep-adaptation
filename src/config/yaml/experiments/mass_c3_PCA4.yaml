@@ -1,0 +1,4 @@
+dataset: mass_c3
+method: PCA4
+model: usleep
+trainer: usleep

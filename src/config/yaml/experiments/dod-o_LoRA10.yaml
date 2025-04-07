@@ -1,0 +1,4 @@
+dataset: dod-o
+method: LoRA10
+model: usleep
+trainer: usleep

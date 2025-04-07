@@ -1,4 +1,4 @@
 dataset: svuh
-method: bitfit
+method: BitFit
 model: usleep
 trainer: usleep

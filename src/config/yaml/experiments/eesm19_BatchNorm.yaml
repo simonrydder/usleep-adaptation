@@ -1,0 +1,4 @@
+dataset: eesm19
+method: BatchNorm
+model: usleep
+trainer: usleep

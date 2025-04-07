@@ -1,0 +1,4 @@
+dataset: svuh
+method: FullFinetuning
+model: usleep
+trainer: usleep

@@ -1,0 +1,4 @@
+dataset: dod-o
+method: Fish 50
+model: usleep
+trainer: usleep

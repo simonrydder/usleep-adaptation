@@ -1,4 +1,0 @@
-dataset: dod-h
-method: lora_big
-model: usleep
-trainer: usleep

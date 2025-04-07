@@ -1,0 +1,4 @@
+dataset: dod-o
+method: SCL4
+model: usleep
+trainer: usleep

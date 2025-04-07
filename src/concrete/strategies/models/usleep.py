@@ -70,6 +70,7 @@ class UsleepModel(FrameworkModel):
         pred, label, records = self.predict_step(batch, batch_index)
         measurements = self.measurements(pred, label)
         self._log_measurements(measurements, "train")
+        self.train_records.append(records)
 
         return measurements["loss"]
 

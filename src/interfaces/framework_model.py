@@ -12,12 +12,23 @@ class FrameworkModel(LightningModule, ABC):
         self.parameter_count: dict[str, dict | float | int] = {}
 
     def on_fit_start(self) -> None:
+        self.train_records = []
+
         if isinstance(self.logger, CSVLogger):
             print(self.parameter_count)
         elif isinstance(self.logger, NeptuneLogger):
             self.logger.experiment["model/parameter_count"] = self.parameter_count
             self.logger.experiment["model/config"] = getattr(self, "config")
             self.logger.experiment["sys/tags"].add(getattr(self, "experiment_id"))
+        return None
+
+    def on_fit_end(self) -> None:
+        if isinstance(self.logger, NeptuneLogger):
+            mode = "org" if getattr(self, "original_model") else "new"
+            self.logger.experiment[f"training/{mode}/train/records"].log(
+                self.train_records
+            )
+
         return None
 
     def on_validation_epoch_end(self) -> None:

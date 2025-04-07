@@ -1,7 +1,7 @@
 method: conv-adapter
 parameter_count: grad
 settings:
-  forward_pass: parallel
+  forward_pass: sequential
   activation: relu
-  reduction: 4
-  layer: True
+  reduction: 8
+  layer: False

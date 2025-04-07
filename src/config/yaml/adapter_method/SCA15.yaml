@@ -3,5 +3,5 @@ parameter_count: grad
 settings:
   forward_pass: sequential
   activation: relu
-  reduction: 4
-  layer: True
+  reduction: 15
+  layer: False

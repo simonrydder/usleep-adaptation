@@ -1,8 +1,9 @@
 import os
+from itertools import chain
 from typing import Any, Iterator
 
 import h5py
-from sklearn.model_selection import KFold, train_test_split
+import numpy as np
 from torch.utils.data import DataLoader, Dataset
 
 from csdp.csdp_pipeline.pipeline_elements.models import Dataset_Split, Split
@@ -18,26 +19,34 @@ class StandardDataCreater(DataCreater):
 
         self.batch_size = config.batch_size
         self._define_number_of_workers(config.num_workers)
-        self._define_splits(config.split_percentages)
         self.seed = config.random_state
-
-        self.kfold = KFold(
-            n_splits=int(self.test_size * 100),
-            shuffle=True,
-            random_state=self.seed,
-        )
+        self.val_size = config.validation_size
+        self.train_size = config.train_size
 
         splitter = HDF5Splitter
         self.splitter = splitter(config)
+        self.subjects = self.splitter.get_splits()
+
+        np.random.seed(self.seed)
+        np.random.shuffle(self.subjects)
+        subject_split = np.array_split(self.subjects, config.num_fold)
+        self.folds = {fold: sub.tolist() for fold, sub in enumerate(subject_split)}
 
     def __iter__(self) -> Iterator[tuple[DataLoader, DataLoader, DataLoader]]:
-        splits = self.splitter.get_splits()
-        for fold, (other, test) in enumerate(self.kfold.split(splits)):
-            other = [splits[i] for i in other]
-            test = [splits[i] for i in test]
-            train, val = train_test_split(
-                other, test_size=self.val_size, random_state=self.seed
+        for fold, test in self.folds.items():
+            rest = list(
+                chain(*[subjects for i, subjects in self.folds.items() if i != fold])
             )
+            np.random.seed(self.seed)
+            np.random.shuffle(rest)
+            val = rest[: self.val_size]
+            end_idx = (
+                self.train_size
+                if self.train_size is None
+                else self.val_size + self.train_size
+            )
+            train = rest[self.val_size : end_idx]
+
             self.train, self.validation, self.test = self.splitter.get_datasets(
                 train,
                 val,
@@ -115,7 +124,7 @@ class HDF5Splitter:
         self.training_iterations = config.batch_size * self.num_batches
 
     def get_splits(self) -> list[Any]:
-        return self.subjects
+        return self.subjects.copy()
 
     def get_datasets(
         self, train: list[Any], val: list[Any], test: list[Any]

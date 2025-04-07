@@ -50,8 +50,30 @@ class ParameterData(BaseModel):
     model: TrainableParameterData
 
 
+class Split(BaseModel):
+    train: float
+    val: float
+    test: float
+
+
+class Sizes(BaseModel):
+    train: int
+    validation: int
+    test: int
+
+
+class Data(BaseModel):
+    batch_size: int
+    num_batches: int
+    random_state: int
+    sleep_epochs: int
+    split_percentages: Split
+    sizes: Sizes
+
+
 class ConfigData(BaseModel):
     experiment: Experiment
+    data: Data
 
 
 class Kappa(BaseModel):
@@ -95,10 +117,6 @@ class Training(BaseModel):
     accuracy_epoch: list[Epoch]
     loss_step: list[Step]
     loss_epoch: list[Epoch]
-
-
-class Validation(BaseModel):
-    val: Training
     records: list[Record]
 
 
@@ -107,7 +125,7 @@ class RunData(BaseModel):
     config: ConfigData
     original_performance: Performance
     new_performance: Performance
-    new_validation: Validation
+    new_validation: Training
     new_training: Training
 
 
@@ -181,6 +199,7 @@ def _get_training(run: Run, mode: str, type: str) -> Training:
     accuracy_epoch = _get_epoch(run, mode, type, "accuracy")
     loss_step = _get_steps(run, mode, type, "loss")
     loss_epoch = _get_epoch(run, mode, type, "loss")
+    records = _get_records(run, mode, type)
 
     return Training(
         kappa_step=kappa_step,
@@ -189,6 +208,7 @@ def _get_training(run: Run, mode: str, type: str) -> Training:
         accuracy_epoch=accuracy_epoch,
         loss_step=loss_step,
         loss_epoch=loss_epoch,
+        records=records,
     )
 
 
@@ -200,10 +220,7 @@ def get_run_data(run: Run) -> RunData:
     new_performance = _get_performance(run, "new")
 
     new_training = _get_training(run, "new", "train")
-    new_validation = Validation(
-        val=_get_training(run, "new", "val"),
-        records=_get_records(run, "new", "val"),
-    )
+    new_validation = _get_training(run, "new", "val")
 
     return RunData(
         parameters=param_data,
@@ -254,4 +271,7 @@ def convert_to_polars(values: Sequence[BaseModel]) -> pl.DataFrame:
 
 
 if __name__ == "__main__":
+    run = get_run("US-157")
+    get_run_data(run)
+
     res = get_tag_data("1bv9KeTFq")

@@ -20,6 +20,9 @@ class ConvBNELU(nn.Module):
         self.padding = (
             self.kernel_size + (self.kernel_size - 1) * (self.dilation - 1) - 1
         ) // 2
+        self.stride = 1
+        self.groups = 1
+        self.bias = True
 
         self.layers = nn.Sequential(
             nn.ConstantPad1d(
@@ -30,7 +33,9 @@ class ConvBNELU(nn.Module):
                 out_channels=self.out_channels,
                 kernel_size=self.kernel_size,
                 dilation=self.dilation,
-                bias=True,
+                stride=self.stride,
+                groups=self.groups,
+                bias=self.bias,
             ),
             nn.ELU(),
             nn.BatchNorm1d(self.out_channels),

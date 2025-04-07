@@ -1,10 +1,17 @@
-from typing import Type
+from typing import Literal, Type
 
 import torch
 import torch.nn as nn
 from lightning import LightningModule
 from pydantic import BaseModel
 
+from csdp.ml_architectures.usleep.usleep import (
+    ConvBNELU,
+    Decoder,
+    Dense,
+    Encoder,
+    SegmentClassifier,
+)
 from src.interfaces.framework_model import FrameworkModel
 from src.interfaces.strategies.adapter_method import AdapterMethod
 from src.interfaces.strategies.forward_pass import ForwardPass
@@ -26,7 +33,9 @@ class ConvAdapter(AdapterMethod):
         self,
         forward_pass: ForwardPass,
         activation: Type[nn.Module],
-        reduction: int | None | None = None,
+        layer: bool,
+        section: Literal["encoder", "decoder", "both"] = "both",
+        reduction: int | None = None,
         kernel: int | tuple[int] | tuple[int, int] | None = None,
     ) -> None:
         super().__init__()
@@ -34,18 +43,36 @@ class ConvAdapter(AdapterMethod):
         self.reduction = reduction
         self.activation = activation
         self.kernel = kernel
+        self.layer = layer
+        self.section = section
 
     def apply(self, model: FrameworkModel, **kwargs) -> FrameworkModel:
-        for name, child_module in model.named_children():
-            setattr(model, name, self.recursive_apply(child_module))
+        usleep = getattr(model, "model")
+        assert isinstance(usleep, LightningModule) or isinstance(usleep, nn.Module), (
+            "Model is not a LightningModule or pytorch Module"
+        )
+
+        setattr(model, "model", self.recursive_apply(usleep))
 
         return model
 
     def recursive_apply(self, parent: nn.Module | LightningModule) -> nn.Module:
-        if isinstance(parent, nn.Conv1d):
+        if isinstance(parent, Dense) or isinstance(parent, SegmentClassifier):
+            return parent  # skip segment classifier
+
+        if self.section == "encoder" and isinstance(parent, Decoder):
+            return parent  # skip decoder if section is not 'both' or 'decoder'
+
+        if self.section == "decoder" and isinstance(parent, Encoder):
+            return parent  # skip encoder if section is not 'both' or 'encoder'
+
+        if self.layer and isinstance(parent, ConvBNELU):
+            return self.create_adapter_module(parent)  # type: ignore
+
+        if not self.layer and isinstance(parent, nn.Conv1d):
             return self.create_adapter_module(parent)
 
-        if isinstance(parent, nn.Conv2d):
+        if not self.layer and isinstance(parent, nn.Conv2d):
             return self.create_adapter_module(parent)
 
         for name, child in parent.named_children():
@@ -60,8 +87,9 @@ class ConvAdapter(AdapterMethod):
 
     def create_adapter(self, module: nn.Conv2d | nn.Conv1d):
         setting = self.create_conv_setting(module)
+        conv_type = type(module) if not self.layer else nn.Conv1d
         adapter = ConvAdapterBlock(
-            self.reduction, self.kernel, self.activation, type(module), setting
+            self.reduction, self.kernel, self.activation, conv_type, setting
         )
 
         return adapter

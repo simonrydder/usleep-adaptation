@@ -37,7 +37,7 @@ def run_experiment(experiment: Experiment, debug: bool = False):
 if __name__ == "__main__":
     exp = Experiment(
         dataset="eesm19",
-        method="bitfit",
+        method="lora_small",
         model="usleep",
         trainer="usleep_debug_neptune",
     )

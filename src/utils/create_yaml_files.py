@@ -7,14 +7,8 @@ def create_experiments():
     datasets_path = Path("src/config/yaml/dataset")
     methods_path = Path("src/config/yaml/adapter_method")
 
-    datasets = []
-    methods = []
-
-    for file in datasets_path.iterdir():
-        datasets.append(file.name.split(".")[0])
-
-    for file in methods_path.iterdir():
-        methods.append(file.name.split(".")[0])
+    datasets = [file.name.split(".")[0] for file in datasets_path.iterdir()]
+    methods = [file.name.split(".")[0] for file in methods_path.iterdir()]
 
     for dataset in datasets:
         for method in methods:

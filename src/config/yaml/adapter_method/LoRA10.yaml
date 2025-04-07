@@ -1,6 +1,6 @@
 method : lora
 parameter_count: grad
 settings:
-    rank : 4
+    rank : 10
     alpha : 1
     dropout : 0

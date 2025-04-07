@@ -15,8 +15,7 @@ def main():
         slurm_id = int(str_id)
     except Exception:
         print("SLURM_ARRAY_TASK_ID not found or invalid. Exiting.")
-        slurm_id = 50
-        # sys.exit(1)
+        sys.exit(1)
 
     config_folder = Path("src/config/yaml/experiments")  # <- update this!
     config_files = sorted([f for f in config_folder.glob("*.yaml") if f.is_file()])

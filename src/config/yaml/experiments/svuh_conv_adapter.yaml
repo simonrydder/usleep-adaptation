@@ -1,0 +1,4 @@
+dataset: svuh
+method: conv_adapter
+model: usleep
+trainer: usleep

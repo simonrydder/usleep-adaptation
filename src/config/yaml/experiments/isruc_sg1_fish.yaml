@@ -1,0 +1,4 @@
+dataset: isruc_sg1
+method: fish
+model: usleep
+trainer: usleep

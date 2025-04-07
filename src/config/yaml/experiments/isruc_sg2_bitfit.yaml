@@ -1,0 +1,4 @@
+dataset: isruc_sg2
+method: bitfit
+model: usleep
+trainer: usleep

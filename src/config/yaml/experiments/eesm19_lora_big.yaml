@@ -1,0 +1,4 @@
+dataset: eesm19
+method: lora_big
+model: usleep
+trainer: usleep

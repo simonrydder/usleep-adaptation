@@ -1,0 +1,4 @@
+dataset: dod-o
+method: conv_adapter
+model: usleep
+trainer: usleep

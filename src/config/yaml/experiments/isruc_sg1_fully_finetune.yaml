@@ -1,0 +1,4 @@
+dataset: isruc_sg1
+method: fully_finetune
+model: usleep
+trainer: usleep

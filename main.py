@@ -1,5 +1,41 @@
+import os
+import sys
+from pathlib import Path
+
+import yaml
+
+from src.config.experiment import Experiment
+from src.experiment import run_experiment
+
+
 def main():
-    pass
+    try:
+        str_id = os.getenv("SLURM_ARRAY_TASK_ID")
+        assert isinstance(str_id, str)
+        slurm_id = int(str_id)
+    except Exception:
+        print("SLURM_ARRAY_TASK_ID not found or invalid. Exiting.")
+        slurm_id = 50
+        # sys.exit(1)
+
+    config_folder = Path("src/config/yaml/experiments")  # <- update this!
+    config_files = sorted([f for f in config_folder.glob("*.yaml") if f.is_file()])
+
+    try:
+        config_file = config_files[slurm_id]
+    except IndexError:
+        print(
+            f"SLURM ID {slurm_id} out of range. Only {len(config_files)} config files."
+        )
+        sys.exit(1)
+
+    print(f"Running job for config file: {config_file.name}")
+
+    with open(config_file) as f:
+        config = yaml.safe_load(f)
+
+    experiment = Experiment(**config)
+    run_experiment(experiment, False)
 
 
 if __name__ == "__main__":

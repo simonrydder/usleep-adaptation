@@ -1,0 +1,4 @@
+dataset: dod-h
+method: fully_finetune
+model: usleep
+trainer: usleep

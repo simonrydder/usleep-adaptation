@@ -1,0 +1,4 @@
+dataset: svuh
+method: lora_medium
+model: usleep
+trainer: usleep

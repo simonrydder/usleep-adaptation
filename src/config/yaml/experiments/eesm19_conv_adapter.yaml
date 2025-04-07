@@ -1,0 +1,4 @@
+dataset: eesm19
+method: conv_adapter
+model: usleep
+trainer: usleep

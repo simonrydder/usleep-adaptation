@@ -1,0 +1,4 @@
+dataset: isruc_sg1
+method: batch_norm
+model: usleep
+trainer: usleep

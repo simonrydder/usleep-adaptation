@@ -1,0 +1,4 @@
+dataset: svuh
+method: fish
+model: usleep
+trainer: usleep

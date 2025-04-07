@@ -3,14 +3,12 @@ from typing import Any, Iterator
 
 import h5py
 from sklearn.model_selection import KFold, train_test_split
-from torch.utils.data import DataLoader, Dataset, Subset
+from torch.utils.data import DataLoader, Dataset
 
 from csdp.csdp_pipeline.pipeline_elements.models import Dataset_Split, Split
 from csdp.csdp_pipeline.pipeline_elements.pipeline import PipelineDataset
 from csdp.csdp_pipeline.pipeline_elements.samplers import Determ_sampler, Random_Sampler
 from src.config._data_config import DataConfig
-from src.dataset.resnet.simple_images import SimpleImages
-from src.dataset.simple.simple_linear import SimpleLinear
 from src.interfaces.data_creater import DataCreater
 
 
@@ -29,7 +27,7 @@ class StandardDataCreater(DataCreater):
             random_state=self.seed,
         )
 
-        splitter = HDF5Splitter if config.type == "hdf5" else CustomSplitter
+        splitter = HDF5Splitter
         self.splitter = splitter(config)
 
     def __iter__(self) -> Iterator[tuple[DataLoader, DataLoader, DataLoader]]:
@@ -134,35 +132,4 @@ class HDF5Splitter:
             PipelineDataset(train_sampler, []),
             PipelineDataset(val_sampler, []),
             PipelineDataset(test_sampler, []),
-        )
-
-
-class CustomSplitter:
-    def __init__(self, config: DataConfig) -> None:
-        assert config.num_samples is not None, (
-            "CustomSplitter must have number of samples defined."
-        )
-        self.num_samples = config.num_samples
-        match config.dataset:
-            case "linear":
-                self.dataset = SimpleLinear(self.num_samples, distribution=2)
-            case "images":
-                self.dataset = SimpleImages(
-                    self.num_samples, num_classes=3, distribution="shifted"
-                )
-            case _:
-                NotImplementedError(
-                    f"Dataset: {config.dataset} is not a custom dataset."
-                )
-
-    def get_splits(self) -> list[Any]:
-        return list(range(self.num_samples))
-
-    def get_datasets(
-        self, train: list[Any], val: list[Any], test: list[Any]
-    ) -> tuple[Dataset, Dataset, Dataset]:
-        return (
-            Subset(self.dataset, train),
-            Subset(self.dataset, val),
-            Subset(self.dataset, test),
         )

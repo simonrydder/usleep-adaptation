@@ -1,4 +1,4 @@
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, field_serializer
 
@@ -15,6 +15,8 @@ class AdapterSetting(BaseModel):
     alpha: int | None = None
     dropout: float | None = None
     forward_pass: Annotated[str, validate_forward_pass] | None = None
+    layer: bool | None = None
+    section: Literal["encoder", "decoder", "both"] | None = None
     location: Annotated[str, validate_location] | None = None
     reduction: int | None = None
     activation: Annotated[str, validate_activation] | None = None
@@ -61,5 +63,11 @@ class AdapterSetting(BaseModel):
 
         if self.location is not None:
             settings["location"] = self.location
+
+        if self.layer is not None:
+            settings["layer"] = self.layer
+
+        if self.section is not None:
+            settings["section"] = self.section
 
         return settings

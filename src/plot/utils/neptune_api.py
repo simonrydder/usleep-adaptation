@@ -50,12 +50,6 @@ class ParameterData(BaseModel):
     model: TrainableParameterData
 
 
-class Split(BaseModel):
-    train: float
-    val: float
-    test: float
-
-
 class Sizes(BaseModel):
     train: int
     validation: int
@@ -67,8 +61,10 @@ class Data(BaseModel):
     num_batches: int
     random_state: int
     sleep_epochs: int
-    split_percentages: Split
     sizes: Sizes
+    num_fold: int
+    validation_size: int
+    train_size: int | str = "all"
 
 
 class ConfigData(BaseModel):
@@ -271,7 +267,8 @@ def convert_to_polars(values: Sequence[BaseModel]) -> pl.DataFrame:
 
 
 if __name__ == "__main__":
-    run = get_run("US-157")
-    get_run_data(run)
+    # run = get_run("US-157")
+    # get_run_data(run)
 
-    res = get_tag_data("1bv9KeTFq")
+    res = get_tag_data("1hqEMMl4T")
+    pass

@@ -42,7 +42,7 @@ class UsleepModel(FrameworkModel):
 
         self.lr = lr
         self.batch_size = batch_size
-        self.lr_patience = lr_patience
+        self.lr_patience = 10
         self.lr_factor = lr_factor
         self.lr_minimum = lr_minimum
         self.loss_weights = loss_weights
@@ -70,7 +70,7 @@ class UsleepModel(FrameworkModel):
         pred, label, records = self.predict_step(batch, batch_index)
         measurements = self.measurements(pred, label)
         self._log_measurements(measurements, "train")
-        self.train_records.append(records)
+        self.train_records += [str(record) for record in records]
 
         return measurements["loss"]
 

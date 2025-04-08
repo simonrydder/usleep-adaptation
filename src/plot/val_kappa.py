@@ -47,7 +47,7 @@ def get_delta_kappa_step(
     run_data: RunData,
     org_kappa: pl.DataFrame,
 ) -> pl.DataFrame:
-    kappa_step = convert_to_polars(run_data.new_validation.val.kappa_step)
+    kappa_step = convert_to_polars(run_data.new_validation.kappa_step)
 
     kappa_records = convert_to_polars(run_data.new_validation.records)
 

@@ -3,7 +3,7 @@ type: 'hdf5'
 batch_size: 4
 num_batches: 4
 num_workers: 1
-num_fold: 20
+num_fold: 10
 train_size: null
-validation_size: 2
+validation_size: 4
 random_state: 42

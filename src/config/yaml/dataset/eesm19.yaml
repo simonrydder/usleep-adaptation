@@ -1,7 +1,7 @@
 dataset: 'eesm19'
 type: 'hdf5'
-batch_size: 4
-num_batches: 4
+batch_size: 64
+num_batches: 3
 num_workers: 1
 num_fold: 10
 train_size: null

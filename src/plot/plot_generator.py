@@ -8,7 +8,7 @@ from src.plot.val_kappa import generate_validation_delta_kappa_plot
 
 
 def main():
-    tags = ["1wHtRWs0", "1aYTnFXcM"]
+    tags = ["lLeqTtsL", "CZQINJTk"]
     data = {tag: get_tag_data(tag) for tag in tags}
 
     generate_validation_delta_kappa_plot(data)
@@ -19,3 +19,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    pass

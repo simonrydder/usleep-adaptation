@@ -10,6 +10,10 @@ from src.interfaces.framework_model import FrameworkModel
 class ModelConfig(BaseModel):
     model: type[FrameworkModel]
     ckpt: str
+    lr: float = 1e-6
+    lr_patience: int = 10
+    lr_minimum: float = 1e-7
+    lr_factor: float = 0.5
 
     @field_serializer("model")
     def serialize_class(self, v):

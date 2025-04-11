@@ -1,6 +1,6 @@
 model: usleep
 ckpt: data/ckpt/usleep/alternative_big_sleep.ckpt
 lr: 1e-6
-lr_patience: 10
+lr_patience: 5
 lr_factor: 0.5
 lr_minimum: 1e-7

@@ -29,6 +29,7 @@ def run_experiment(experiment: Experiment, debug: bool = False):
             trainer,
             config.experiment.dataset,
             config.experiment.method,
+            config.experiment.model,
             str(config.experiment.id),
         )
 

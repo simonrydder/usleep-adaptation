@@ -10,7 +10,7 @@ class Experiment(BaseModel):
 
 
 def get_experiment_name(experiment: Experiment) -> str:
-    return "_".join(experiment.model_dump().values())
+    return experiment.trainer
 
 
 def generate_experiments(datasets: list[str]): ...

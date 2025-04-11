@@ -1,4 +1,4 @@
-max_epochs: 5
+max_epochs: 50
 accelerator: gpu
 early_stopping:
     monitor: new/val/kappa

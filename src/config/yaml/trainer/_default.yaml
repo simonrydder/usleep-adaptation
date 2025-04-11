@@ -3,6 +3,7 @@ accelerator: gpu
 early_stopping:
     monitor: new/val/kappa
     mode: max
+    patience: 10
 timer: true
 logger: neptune
 model_summary_depth: -1

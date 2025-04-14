@@ -1,2 +1,3 @@
+default: !include _default.yaml
 method: 'batch-norm'
 parameter_count: grad

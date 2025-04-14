@@ -39,16 +39,17 @@ def run_experiment(experiment: Experiment, debug: bool = False):
         trainer.test(new_model, test, ckpt_path="best")
 
         del trainer
-        if debug and fold == 1:
+        if debug:
             break
 
 
 if __name__ == "__main__":
     exp = Experiment(
         dataset="eesm19",
-        method="SCA8",
+        method="BitFit",
         model="usleep",
         trainer="usleep_debug_neptune",
+        id=1,
     )
-    run_experiment(exp, True)
+    run_experiment(exp, False)
     pass

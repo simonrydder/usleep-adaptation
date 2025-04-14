@@ -10,6 +10,7 @@ class StandardAdapter(Adapter):
         super().__init__(config)
 
         settings = config.settings.get_settings()
+        self.optimizer_settings = config.optimizer_settings.get_settings()
         self.adapter_method = config.method(**settings)
         self.param_count_method = config.parameter_count()
 
@@ -18,6 +19,7 @@ class StandardAdapter(Adapter):
         setattr(new_model, "original_model", False)
         new_model = self._freeze_all_parameters(new_model)
         new_model = self._unfreeze_segmentation_later(new_model)
+        self._add_optimizer_settings(new_model)
 
         self.adapter_method.apply(new_model, **kwargs)
         new_model = self.param_count_method.set_parameter_count(new_model)
@@ -39,3 +41,9 @@ class StandardAdapter(Adapter):
         print("Segment classifier parameters are unfrozen")
 
         return model
+
+    def _add_optimizer_settings(self, new_model: FrameworkModel) -> None:
+        setattr(new_model, "lr", self.optimizer_settings.get("lr"))
+        setattr(new_model, "lr_patience", self.optimizer_settings.get("lr_patience"))
+        setattr(new_model, "lr_minimum", self.optimizer_settings.get("lr_minimum"))
+        setattr(new_model, "lr_factor", self.optimizer_settings.get("lr_factor"))

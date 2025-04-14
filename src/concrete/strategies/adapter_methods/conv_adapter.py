@@ -5,13 +5,15 @@ import torch.nn as nn
 from lightning import LightningModule
 from pydantic import BaseModel
 
-from src.concrete.strategies.forward_passes.sequential_forward_pass import SequentialForwardPass
 from csdp.ml_architectures.usleep.usleep import (
     ConvBNELU,
     Decoder,
     Dense,
     Encoder,
     SegmentClassifier,
+)
+from src.concrete.strategies.forward_passes.sequential_forward_pass import (
+    SequentialForwardPass,
 )
 from src.interfaces.framework_model import FrameworkModel
 from src.interfaces.strategies.adapter_method import AdapterMethod
@@ -99,25 +101,28 @@ class ConvAdapter(AdapterMethod):
     def create_conv_setting(self, module: nn.Conv2d | nn.Conv1d) -> ConvolutionSetting:
         in_channels = module.in_channels
         out_channels = module.out_channels
+        padding = module.padding
+
         try:
             # ConvBNELU module
-            ceil_pad = getattr(module, 'ceil_pad')
+            ceil_pad = getattr(module, "ceil_pad")
         except AttributeError:
             ceil_pad = False
-                    
+
         if isinstance(self.forward_pass, SequentialForwardPass):
             in_channels = out_channels
-        
+            padding = "same"
+
         return ConvolutionSetting(
             in_channels=in_channels,
             out_channels=out_channels,
             kernel_size=module.kernel_size,  # type: ignore
             stride=module.stride,  # type: ignore
             dilation=module.dilation,  # type: ignore
-            padding=module.padding,  # type: ignore
+            padding=padding,  # type: ignore
             groups=module.groups,
             bias=module.bias is not None,
-            ceil_pad=ceil_pad
+            ceil_pad=ceil_pad,
         )
 
 
@@ -134,7 +139,7 @@ class ConvAdapterBlock(nn.Module):
         in_channels = conv_settings.in_channels
         out_channels = conv_settings.out_channels
         self.ceil_pad = conv_settings.ceil_pad
-        
+
         del conv_settings.in_channels
         del conv_settings.out_channels
         del conv_settings.ceil_pad
@@ -162,15 +167,14 @@ class ConvAdapterBlock(nn.Module):
             alpha_shape = (*alpha_shape, 1)
 
         self.alpha_scale = nn.Parameter(torch.ones(alpha_shape), requires_grad=True)
-        
-        self.ceil_padding = nn.ConstantPad1d(padding=(0, 1), value=0)
 
+        self.ceil_padding = nn.ConstantPad1d(padding=(0, 1), value=0)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         h = self.W_down(x)
         h = self.activation(h)
         h = self.W_up(h)
-        
+
         if self.ceil_pad and h.shape[2] % 2 == 1:
             h = self.ceil_padding(h)
 

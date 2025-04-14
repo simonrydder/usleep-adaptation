@@ -41,3 +41,8 @@ def add_tags(trainer: Trainer, *tags: str) -> None:
     if isinstance(trainer.logger, NeptuneLogger):
         for tag in tags:
             trainer.logger.experiment["sys/tags"].add(tag)
+
+
+def add_fold(trainer: Trainer, fold: int) -> None:
+    if isinstance(trainer.logger, NeptuneLogger):
+        trainer.logger.experiment["fold"] = fold

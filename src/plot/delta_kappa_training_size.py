@@ -2,7 +2,7 @@ import polars as pl
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-from src.plot.utils.neptune_api import RunData, get_original, get_tag_data
+from src.plot.utils.neptune_api_old import RunData, get_original, get_tag_data
 
 
 def delta_kappa_training_size(data: dict[str, dict[int, RunData]]) -> None:

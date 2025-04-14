@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import polars as pl
 import seaborn as sns
 
-from src.plot.utils.neptune_api import (
+from src.plot.utils.neptune_api_old import (
     RunData,
     convert_to_polars,
     get_original,

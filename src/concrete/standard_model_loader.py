@@ -15,6 +15,5 @@ class StandardModelLoader(ModelLoader):
         setattr(model, "config", config.model_dump())
         setattr(model, "original_model", True)
         setattr(model, "experiment_id", generate_base62_id())
-        model.configure_optimizers()
 
         return model

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from src.plot.utils.neptune_api import get_tag_data
+from src.plot.utils.neptune_api_old import get_tag_data
 
 
 def plot_delta_kappas_vs_methods(tag_ids: list[str]) -> None:

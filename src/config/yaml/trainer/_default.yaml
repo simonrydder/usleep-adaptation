@@ -1,9 +1,9 @@
-max_epochs: 50
+max_epochs: 75
 accelerator: gpu
 early_stopping:
     monitor: new/val/kappa
     mode: max
-    patience: 10
+    patience: 15
 timer: true
 logger: neptune
 model_summary_depth: -1

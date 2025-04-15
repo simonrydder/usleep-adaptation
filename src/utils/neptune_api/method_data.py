@@ -43,7 +43,7 @@ def save_method_data(method_data: MethodData, dataset: str, method: str) -> None
         os.makedirs(folder)
 
     with open(file, "w") as f:
-        json.dump(x.model_dump(), f, indent=4)
+        json.dump(method_data.model_dump(), f, indent=4)
 
 
 def load_method_data(dataset: str, method: str) -> MethodData:

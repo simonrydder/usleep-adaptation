@@ -1,5 +1,6 @@
 import os
-from typing import Iterator
+
+from tqdm import tqdm
 
 from src.utils.neptune_api.method_data import (
     MethodData,
@@ -10,21 +11,39 @@ from src.utils.neptune_api.method_data import (
 from src.utils.neptune_api.neptune_api import get_project
 
 
-def method_ids_iterator(dataset: str) -> Iterator[tuple[str, list[str]]]:
-    project = get_project()
-    runs = project.fetch_runs_table(tag=dataset).to_pandas()
-    method_info = "model/config/experiment/method"
-    methods = runs[method_info].unique()
+class MethodIterator:
+    def __init__(self, dataset: str) -> None:
+        self.dataset = dataset
+        self.project = get_project()
+        runs = self.project.fetch_runs_table(
+            tag=dataset, progress_bar=False
+        ).to_pandas()
+        self.runs = runs.loc[~runs["sys/failed"]]
+        self.method_column = "model/config/experiment/method"
+        self.methods = self.runs[self.method_column].unique().tolist()
 
-    for method in methods:
-        method_runs = runs.loc[runs[method_info] == method]
-        run_ids = method_runs["sys/id"].values.tolist()
-        yield method, run_ids
+    def __len__(self) -> int:
+        return len(self.methods)
+
+    def __iter__(self) -> "MethodIterator":
+        self.index = 0
+        return self
+
+    def __next__(self) -> tuple[str, list[str]]:
+        if self.index >= len(self):
+            raise StopIteration
+
+        method = self.methods[self.index]
+        method_runs = self.runs.loc[self.runs[self.method_column] == method]
+        runs_ids = method_runs["sys/id"].values.tolist()
+        self.index += 1
+
+        return method, runs_ids
 
 
 def get_data(dataset: str) -> dict[str, MethodData]:
     data = {}
-    for method, ids in method_ids_iterator(dataset):
+    for method, ids in tqdm(MethodIterator(dataset), desc=f"Downloading {dataset}"):
         method_data = get_method_data(ids)
         save_method_data(method_data, dataset, method)
 
@@ -44,6 +63,6 @@ def load_data(dataset: str) -> dict[str, MethodData]:
 
 
 if __name__ == "__main__":
-    # get_data("eesm19")
-    x = load_data("eesm19")
+    get_data("eesm19")
+    # x = load_data("eesm19")
     pass

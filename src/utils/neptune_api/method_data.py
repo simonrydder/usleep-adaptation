@@ -2,9 +2,10 @@ import json
 import os
 
 from pydantic import BaseModel
+from tqdm import tqdm
 
 from src.utils.neptune_api.fold_data import FoldData, get_fold_data
-from src.utils.neptune_api.neptune_api import get_run
+from src.utils.neptune_api.neptune_api import get_data_scalar, get_run
 from src.utils.neptune_api.performance_data import PerformanceData, get_performance_data
 
 
@@ -18,12 +19,12 @@ def get_method_data(run_ids: list[str]) -> MethodData:
     folds = {}
     org_performance = []
     new_performance = []
-    for id in run_ids:
+    for id in tqdm(run_ids, desc="Iterating over runs"):
         run = get_run(id)
         fold_data = get_fold_data(run)
 
-        # fold_id = get_data_scalar(run, "fold")
-        folds.update({len(folds): fold_data})
+        fold_id = get_data_scalar(run, "fold")
+        folds.update({fold_id: fold_data})
 
         org_performance += get_performance_data(run, "org", "test")
         new_performance += get_performance_data(run, "new", "test")

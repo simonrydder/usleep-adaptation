@@ -1,6 +1,8 @@
 import json
 import os
+from typing import Literal
 
+import polars as pl
 from pydantic import BaseModel
 from tqdm import tqdm
 
@@ -53,6 +55,30 @@ def load_method_data(dataset: str, method: str) -> MethodData:
         data = json.load(f)
 
     return MethodData(**data)
+
+
+def get_performance_list(
+    data: MethodData, mode: Literal["new", "org"]
+) -> list[PerformanceData]:
+    match mode:
+        case "new":
+            return data.new_performance
+        case "org":
+            return data.original_performance
+        case _:
+            raise ValueError(f"Unknown mode: {mode}")
+
+
+def extract_performance(
+    data: dict[str, MethodData], mode: Literal["new", "org"]
+) -> pl.DataFrame:
+    dfs = []
+    for method, method_data in data.items():
+        perf = get_performance_list(method_data, mode)
+        df = pl.DataFrame(perf).with_columns(pl.lit(method).alias("method"))
+        dfs.append(df)
+
+    return pl.concat(dfs, how="vertical")
 
 
 if __name__ == "__main__":

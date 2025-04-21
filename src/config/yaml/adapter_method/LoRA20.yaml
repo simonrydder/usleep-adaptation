@@ -1,10 +1,9 @@
-method: conv-adapter
+method : lora
 parameter_count: grad
 settings:
-  forward_pass: sequential
-  activation: relu
-  reduction: 3
-  layer: True
+    rank : 10
+    alpha : 1
+    dropout : 0
 optimizer_settings: 
   lr: 1e-3
   lr_patience: 5

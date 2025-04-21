@@ -3,8 +3,8 @@ parameter_count: grad
 settings:
   forward_pass: sequential
   activation: relu
-  reduction: 3
-  layer: False
+  reduction: 10
+  layer: True
 optimizer_settings: 
   lr: 1e-3
   lr_patience: 5

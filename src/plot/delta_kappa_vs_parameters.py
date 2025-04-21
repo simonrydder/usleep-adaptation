@@ -11,7 +11,7 @@ from src.utils.neptune_api.method_data import (
 )
 
 
-def prepare_data(data: dict[str, MethodData]) -> pl.DataFrame:
+def prepare_data(data: list[MethodData]) -> pl.DataFrame:
     base = extract_performance(data, "org")
     test = extract_performance(data, "new")
 
@@ -39,7 +39,7 @@ def prepare_data(data: dict[str, MethodData]) -> pl.DataFrame:
 
 
 def plot_delta_kappa_vs_parameters(
-    data: dict[str, MethodData], dataset: str, show: bool = False
+    data: list[MethodData], dataset: str, show: bool = False
 ) -> None:
     df = prepare_data(data)
     df_pandas = df.to_pandas()

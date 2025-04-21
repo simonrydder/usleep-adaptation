@@ -107,10 +107,7 @@ def load_data(
         for id in ids:
             id_folder = os.path.join(dataset_folder, str(id))
             for method in os.listdir(id_folder):
-                if methods is None:
-                    continue
-
-                if method.split(".")[0] not in methods:
+                if methods is not None and method.split(".")[0] not in methods:
                     continue
 
                 data.append(load_method_data(dataset, id, method))

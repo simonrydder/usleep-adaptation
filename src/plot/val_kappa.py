@@ -8,7 +8,7 @@ from src.utils.neptune_api.method_data import MethodData, extract_performance
 
 
 def plot_validation_kappa(
-    data: dict[str, MethodData], dataset: str, show: bool = False
+    data: list[MethodData], dataset: str, show: bool = False
 ) -> None:
     df = prepare_data(data)
     epoch_df = (
@@ -39,25 +39,25 @@ def plot_validation_kappa(
         sns.lineplot,
         x="epoch",
         y="kappa",
-        # units="fold",
-        # estimator=None,
-        # color="gray",
-        linewidth=2,
-        # alpha=0.5,
+        units="fold",
+        estimator=None,
+        color="gray",
+        linewidth=1,
+        alpha=0.5,
     )
-    # for ax, method in zip(g.axes.flatten(), g.col_names):
-    #     method_df = fold_avg[fold_avg["method"] == method]
-    #     sns.lineplot(
-    #         data=method_df,
-    #         x="epoch",
-    #         y="kappa",
-    #         ax=ax,
-    #         color="C0",  # Or pick your own color
-    #         linewidth=2,
-    #         label="Mean",
-    #     )
-    #     ax.legend(loc="lower right")
-    #     ax.set_ylim((0.0, 0.85))
+    for ax, method in zip(g.axes.flatten(), g.col_names):
+        method_df = fold_avg[fold_avg["method"] == method]
+        sns.lineplot(
+            data=method_df,
+            x="epoch",
+            y="kappa",
+            ax=ax,
+            color="C0",  # Or pick your own color
+            linewidth=2,
+            label="Mean",
+        )
+        ax.legend(loc="lower right")
+        ax.set_ylim((0.0, 0.85))
 
     g.set_axis_labels("Epoch", "Kappa")
     g.figure.subplots_adjust(top=0.95)
@@ -74,7 +74,7 @@ def plot_validation_kappa(
         plt.show()
 
 
-def prepare_data(data: dict[str, MethodData]) -> pl.DataFrame:
+def prepare_data(data: list[MethodData]) -> pl.DataFrame:
     val = extract_validation_data(data)
     base = extract_performance(data, mode="org")
 
@@ -86,14 +86,14 @@ def prepare_data(data: dict[str, MethodData]) -> pl.DataFrame:
     return delta_val
 
 
-def extract_validation_data(data: dict[str, MethodData]) -> pl.DataFrame:
+def extract_validation_data(data: list[MethodData]) -> pl.DataFrame:
     dfs = []
-    for method, method_data in data.items():
+    for method_data in data:
         for fold, fold_data in method_data.folds.items():
             validation = pl.DataFrame(fold_data.validation_step)
             validation = (
                 validation.with_columns(
-                    pl.lit(method).alias("method"),
+                    pl.lit(method_data.method).alias("method"),
                     pl.lit(fold).alias("fold"),
                 )
                 .with_row_index("step")
@@ -111,5 +111,5 @@ def extract_validation_data(data: dict[str, MethodData]) -> pl.DataFrame:
 if __name__ == "__main__":
     from src.utils.neptune_api.data_loader import load_data
 
-    data = load_data("eesm19")
+    data = load_data()
     plot_validation_kappa(data, "eesm19", show=True)

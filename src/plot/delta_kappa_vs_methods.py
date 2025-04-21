@@ -8,7 +8,7 @@ from src.utils.neptune_api.method_data import MethodData, extract_performance
 
 
 def plot_delta_kappa_vs_methods(
-    data: dict[str, MethodData], dataset: str, show: bool = False
+    data: list[MethodData], dataset: str, show: bool = False
 ) -> None:
     df = prepare_data(data)
     df = df.to_pandas()
@@ -39,7 +39,7 @@ def plot_delta_kappa_vs_methods(
     pass
 
 
-def prepare_data(data: dict[str, MethodData]) -> pl.DataFrame:
+def prepare_data(data: list[MethodData]) -> pl.DataFrame:
     base = extract_performance(data, "org")
     test = extract_performance(data, "new")
 
@@ -55,5 +55,5 @@ def prepare_data(data: dict[str, MethodData]) -> pl.DataFrame:
 if __name__ == "__main__":
     from src.utils.neptune_api.data_loader import load_data
 
-    data = load_data("eesm19")
+    data = load_data()
     plot_delta_kappa_vs_methods(data, "eesm19", show=True)

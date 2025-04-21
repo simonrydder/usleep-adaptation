@@ -39,5 +39,6 @@ def model_checkpoint(monitor: str) -> Callback:
         filename="best",
         save_top_k=1,
         monitor=monitor,
+        mode="max",
         save_last=True,
     )

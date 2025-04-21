@@ -19,6 +19,10 @@ def get_parameter_data(run: Run) -> ParameterData:
     return ParameterData(**get_data_scalar(run, "model/parameter_count"))
 
 
+def extract_free_parameter_count(data: ParameterData) -> int:
+    return data.classification.free + data.model.free
+
+
 if __name__ == "__main__":
     x = get_parameter_data(get_run("US-524"))
     pass

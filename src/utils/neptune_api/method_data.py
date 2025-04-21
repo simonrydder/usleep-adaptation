@@ -6,7 +6,11 @@ import polars as pl
 from pydantic import BaseModel
 from tqdm import tqdm
 
-from src.utils.neptune_api.fold_data import FoldData, get_fold_data
+from src.utils.neptune_api.fold_data import (
+    FoldData,
+    extract_fold_settings,
+    get_fold_data,
+)
 from src.utils.neptune_api.neptune_api import get_data_scalar, get_run
 from src.utils.neptune_api.performance_data import PerformanceData, get_performance_data
 
@@ -57,7 +61,7 @@ def load_method_data(dataset: str, method: str) -> MethodData:
     return MethodData(**data)
 
 
-def get_performance_list(
+def _get_performance_list(
     data: MethodData, mode: Literal["new", "org"]
 ) -> list[PerformanceData]:
     match mode:
@@ -74,9 +78,20 @@ def extract_performance(
 ) -> pl.DataFrame:
     dfs = []
     for method, method_data in data.items():
-        perf = get_performance_list(method_data, mode)
+        perf = _get_performance_list(method_data, mode)
         df = pl.DataFrame(perf).with_columns(pl.lit(method).alias("method"))
         dfs.append(df)
+
+    return pl.concat(dfs, how="vertical")
+
+
+def extract_settings(data: dict[str, MethodData]) -> pl.DataFrame:
+    dfs = []
+    for method, method_data in data.items():
+        for fold, fold_data in method_data.folds.items():
+            fold_setting = extract_fold_settings(fold_data, fold)
+            df = fold_setting.with_columns(pl.lit(method).alias("method"))
+            dfs.append(df)
 
     return pl.concat(dfs, how="vertical")
 

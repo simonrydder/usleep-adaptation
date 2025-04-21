@@ -60,7 +60,7 @@ def plot_validation_delta_kappa(
 
     g.set_axis_labels("Epoch", "Kappa")
     g.figure.subplots_adjust(top=0.95)
-    g.figure.suptitle(f"{dataset} Validation Kappa vs Epoch for methods")
+    g.figure.suptitle(f"{dataset} - Validation Kappa vs Epoch for methods")
     # plt.tight_layout()
 
     folder = os.path.join("figures", dataset)

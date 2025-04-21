@@ -2,7 +2,7 @@ import os
 
 from pydantic import BaseModel, Field, field_serializer
 
-from config._optimizer_setting import OptimizerSettings
+from src.config._optimizer_setting import OptimizerSettings
 from src.config._adapter_setting import AdapterSetting
 from src.config._registries import ADAPTER_METHOD_REG, PARAMETER_COUNT_REG
 from src.config.utils import load_yaml_content

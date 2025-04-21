@@ -30,7 +30,7 @@ def run_experiment(experiment: Experiment, debug: bool = False):
             config.experiment.dataset,
             config.experiment.method,
             config.experiment.model,
-            config.experiment.id,
+            str(config.experiment.id),
         )
         add_fold(trainer, fold)
 
@@ -44,11 +44,6 @@ def run_experiment(experiment: Experiment, debug: bool = False):
 
 
 if __name__ == "__main__":
-    exp = Experiment(
-        dataset="eesm19",
-        method="SegCls",
-        model="usleep",
-        trainer="usleep"
-    )
+    exp = Experiment(dataset="eesm19", method="SCA10", model="usleep", trainer="usleep")
     run_experiment(exp, False)
     pass

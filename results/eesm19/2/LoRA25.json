@@ -1,4 +1,8 @@
 {
+    "method": "LoRA25",
+    "dataset": "eesm19",
+    "id": 2,
+    "model": "usleep",
     "original_performance": [
         {
             "record": "('sub-015', 'ses-001')",

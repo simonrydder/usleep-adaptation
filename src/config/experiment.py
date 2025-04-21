@@ -6,7 +6,7 @@ class Experiment(BaseModel):
     method: str
     model: str
     trainer: str
-    id: str = "Id_0"
+    id: int | str = 0
 
 
 def get_experiment_name(experiment: Experiment) -> str:

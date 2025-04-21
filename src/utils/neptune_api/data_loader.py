@@ -87,23 +87,38 @@ def get_data(
     return data
 
 
-def load_data() -> list[MethodData]:
+def load_data(
+    datasets: list[str] | None = None,
+    methods: list[str] | None = None,
+    ids: list[str | int] | list[str] | list[int] | None = None,
+) -> list[MethodData]:
     data = []
 
     root = os.path.join("results")
-    for dataset in os.listdir(root):
+    if datasets is None:
+        datasets = os.listdir(root)
+
+    for dataset in datasets:
         dataset_folder = os.path.join(root, dataset)
 
-        for id in os.listdir(dataset_folder):
-            id_folder = os.path.join(dataset_folder, id)
+        if ids is None:
+            ids = os.listdir(dataset_folder)
 
+        for id in ids:
+            id_folder = os.path.join(dataset_folder, str(id))
             for method in os.listdir(id_folder):
+                if methods is None:
+                    continue
+
+                if method.split(".")[0] not in methods:
+                    continue
+
                 data.append(load_method_data(dataset, id, method))
 
     return data
 
 
 if __name__ == "__main__":
-    get_data()
-    x = load_data()
+    # get_data()
+    x = load_data(methods=["BitFit"])
     pass

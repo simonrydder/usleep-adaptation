@@ -1,5 +1,5 @@
 optimizer_settings : 
-    lr: 1e-6
+    lr: 1e-4
     lr_patience: 5
     lr_factor: 0.5
     lr_minimum: 1e-7

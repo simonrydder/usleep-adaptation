@@ -41,7 +41,7 @@ def prepare_data(data: dict[str, MethodData]) -> pl.DataFrame:
     return result
 
 
-def plot_delta_kappas_vs_parameter(
+def plot_delta_kappa_vs_parameters(
     data: dict[str, MethodData], dataset: str, show: bool = False
 ) -> None:
     df = prepare_data(data)
@@ -181,4 +181,4 @@ if __name__ == "__main__":
     from src.utils.neptune_api.data_loader import load_data
 
     data = load_data("eesm19")
-    plot_delta_kappas_vs_parameter(data, "eesm19", show=True)
+    plot_delta_kappa_vs_parameters(data, "eesm19", show=True)

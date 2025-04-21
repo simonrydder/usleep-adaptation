@@ -7,7 +7,7 @@ import seaborn as sns
 from src.utils.neptune_api.method_data import MethodData, extract_performance
 
 
-def plot_performance_delta_kappa_vs_methods(
+def plot_delta_kappa_vs_methods(
     data: dict[str, MethodData], dataset: str, show: bool = False
 ) -> None:
     df = prepare_data(data)
@@ -56,4 +56,4 @@ if __name__ == "__main__":
     from src.utils.neptune_api.data_loader import load_data
 
     data = load_data("eesm19")
-    plot_performance_delta_kappa_vs_methods(data, "eesm19", show=True)
+    plot_delta_kappa_vs_methods(data, "eesm19", show=True)

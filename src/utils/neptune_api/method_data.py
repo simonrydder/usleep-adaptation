@@ -16,6 +16,9 @@ from src.utils.neptune_api.performance_data import PerformanceData, get_performa
 
 
 class MethodData(BaseModel):
+    # method: str
+    # dataset: str
+    # id: int
     original_performance: list[PerformanceData]
     new_performance: list[PerformanceData]
     folds: dict[int, FoldData]

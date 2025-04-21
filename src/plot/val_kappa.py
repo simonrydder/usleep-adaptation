@@ -22,12 +22,12 @@ def plot_validation_kappa(
     epoch_df = epoch_df.to_pandas()
     fold_avg = fold_avg.to_pandas()
 
-    sns.set_theme(style="whitegrid")
+    sns.set_theme(style="whitegrid", context="paper")
 
     g = sns.FacetGrid(
         epoch_df,
         col="method",
-        col_wrap=3,
+        col_wrap=5,
         sharey=True,
         sharex=True,
         height=3.5,
@@ -39,24 +39,25 @@ def plot_validation_kappa(
         sns.lineplot,
         x="epoch",
         y="kappa",
-        units="fold",
-        estimator=None,
-        color="gray",
-        linewidth=1,
-        alpha=0.4,
+        # units="fold",
+        # estimator=None,
+        # color="gray",
+        linewidth=2,
+        # alpha=0.5,
     )
-    for ax, method in zip(g.axes.flatten(), g.col_names):
-        method_df = fold_avg[fold_avg["method"] == method]
-        sns.lineplot(
-            data=method_df,
-            x="epoch",
-            y="kappa",
-            ax=ax,
-            color="C0",  # Or pick your own color
-            linewidth=2.5,
-            label="Mean",
-        )
-        ax.legend(loc="lower right")
+    # for ax, method in zip(g.axes.flatten(), g.col_names):
+    #     method_df = fold_avg[fold_avg["method"] == method]
+    #     sns.lineplot(
+    #         data=method_df,
+    #         x="epoch",
+    #         y="kappa",
+    #         ax=ax,
+    #         color="C0",  # Or pick your own color
+    #         linewidth=2,
+    #         label="Mean",
+    #     )
+    #     ax.legend(loc="lower right")
+    #     ax.set_ylim((0.0, 0.85))
 
     g.set_axis_labels("Epoch", "Kappa")
     g.figure.subplots_adjust(top=0.95)

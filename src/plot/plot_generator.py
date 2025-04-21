@@ -19,6 +19,6 @@ def generate_plots(data: dict[str, MethodData]) -> None:
 
 if __name__ == "__main__":
     data = load_data("eesm19")  # Load saved data from results folder
-    # data = get_data('eesm19') # Get data from neptune
+    # data = get_data("eesm19")  # Get data from neptune
     generate_plots(data)
     pass

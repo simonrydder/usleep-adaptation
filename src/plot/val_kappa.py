@@ -40,24 +40,24 @@ def plot_validation_kappa(
         sns.lineplot,
         x="epoch",
         y="kappa",
-        # units="fold",
-        # estimator=None,
-        # color="black",
-        linewidth=2,
-        # alpha=0.5,
+        units="fold",
+        estimator=None,
+        color="black",
+        linewidth=1,
+        alpha=0.5,
     )
     for ax, method in zip(g.axes.flatten(), g.col_names):
         assert isinstance(ax, Axes)
-        # method_df = fold_avg[fold_avg["method"] == method]
-        # sns.lineplot(
-        #     data=method_df,
-        #     x="epoch",
-        #     y="kappa",
-        #     ax=ax,
-        #     color="C0",  # Or pick your own color
-        #     linewidth=2,
-        #     label="Mean",
-        # )
+        method_df = fold_avg[fold_avg["method"] == method]
+        sns.lineplot(
+            data=method_df,
+            x="epoch",
+            y="kappa",
+            ax=ax,
+            color="C0",  # Or pick your own color
+            linewidth=2,
+            label="Mean",
+        )
         ax.legend(loc="lower right")
         ax.set_ylim((0.0, 0.85))
 

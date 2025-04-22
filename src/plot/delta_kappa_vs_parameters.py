@@ -52,7 +52,6 @@ def plot_delta_kappa_vs_parameters(
         x="free_parameters",
         y="delta_kappa",
         hue="method_type",
-        # palette=sns.color_palette("tab20"),
     )
 
     plt.xscale("log")

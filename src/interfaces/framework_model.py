@@ -11,7 +11,7 @@ class FrameworkModel(LightningModule, ABC):
         super().__init__()
         self.parameter_count: dict[str, dict | float | int] = {}
 
-    def on_fit_start(self) -> None:
+    def on_train_epoch_start(self) -> None:
         self.train_records = []
 
         if isinstance(self.logger, CSVLogger):
@@ -22,7 +22,7 @@ class FrameworkModel(LightningModule, ABC):
             self.logger.experiment["sys/tags"].add(getattr(self, "experiment_id"))
         return None
 
-    def on_fit_end(self) -> None:
+    def on_train_epoch_end(self) -> None:
         if isinstance(self.logger, NeptuneLogger):
             mode = "org" if getattr(self, "original_model") else "new"
             self.logger.experiment[f"training/{mode}/train/records"].log(

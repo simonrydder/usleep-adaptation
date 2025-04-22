@@ -1,9 +1,5 @@
+default: !include _default.yaml
 dataset: 'eesm19'
-type: 'hdf5'
-batch_size: 64
-num_batches: 3
-num_workers: 1
 num_fold: 10
 train_size: null
 validation_size: 2
-random_state: 42

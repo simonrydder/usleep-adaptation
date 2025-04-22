@@ -1,9 +1,5 @@
+default: !include _default.yaml
 dataset: 'mass_c1'
-type: 'hdf5'
-batch_size: 4
-num_batches: 4
-num_workers: 1
 num_fold: 10
 train_size: null
 validation_size: 4
-random_state: 42

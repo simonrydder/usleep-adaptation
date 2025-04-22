@@ -1,9 +1,5 @@
+default: !include _default.yaml
 dataset: 'isruc_sg2'
-type: 'hdf5'
-batch_size: 4
-num_batches: 4
-num_workers: 1
 num_fold: 6
 train_size: null
 validation_size: 1
-random_state: 42

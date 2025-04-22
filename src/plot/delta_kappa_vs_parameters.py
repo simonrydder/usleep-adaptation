@@ -54,8 +54,8 @@ def plot_delta_kappa_vs_parameters(
         hue="method_type",
     )
 
-    plt.xscale("log")
-    plt.xlim(left=10)
+    # plt.xscale("log")
+    # plt.xlim(left=10)
 
     plt.title(f"{dataset} - Delta Kappa vs. Number of Free Parameters")
     plt.xlabel("Number of Free Parameters")
@@ -78,5 +78,5 @@ def plot_delta_kappa_vs_parameters(
 if __name__ == "__main__":
     from src.utils.neptune_api.data_loader import load_data
 
-    data = load_data(ids=[2])
+    data = load_data(datasets=["eesm19"], ids=[3])
     plot_delta_kappa_vs_parameters(data, "eesm19", show=True)

@@ -55,5 +55,5 @@ def prepare_data(data: list[MethodData]) -> pl.DataFrame:
 if __name__ == "__main__":
     from src.utils.neptune_api.data_loader import load_data
 
-    data = load_data()
+    data = load_data(datasets=["eesm19"], ids=[3])
     plot_delta_kappa_vs_methods(data, "eesm19", show=True)

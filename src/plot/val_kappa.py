@@ -3,6 +3,7 @@ import os
 import polars as pl
 import seaborn as sns
 from matplotlib import pyplot as plt
+from matplotlib.axes import Axes
 
 from src.utils.neptune_api.method_data import MethodData, extract_performance
 
@@ -46,6 +47,7 @@ def plot_validation_kappa(
         alpha=0.5,
     )
     for ax, method in zip(g.axes.flatten(), g.col_names):
+        assert isinstance(ax, Axes)
         method_df = fold_avg[fold_avg["method"] == method]
         sns.lineplot(
             data=method_df,
@@ -111,5 +113,5 @@ def extract_validation_data(data: list[MethodData]) -> pl.DataFrame:
 if __name__ == "__main__":
     from src.utils.neptune_api.data_loader import load_data
 
-    data = load_data()
+    data = load_data(datasets=["eesm19"], ids=[3])
     plot_validation_kappa(data, "eesm19", show=True)

@@ -7,6 +7,7 @@ class Experiment(BaseModel):
     model: str
     trainer: str
     id: int | str = 0
+    seed: int = 42
 
 
 def get_experiment_name(experiment: Experiment) -> str:

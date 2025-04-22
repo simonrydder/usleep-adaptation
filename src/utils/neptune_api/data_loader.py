@@ -118,9 +118,3 @@ def load_data(
                 data.append(load_method_data(dataset, id, method))
 
     return data
-
-
-if __name__ == "__main__":
-    get_data()
-    # x = load_data(methods=["BitFit"])
-    pass

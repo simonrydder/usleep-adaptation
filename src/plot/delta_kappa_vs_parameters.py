@@ -79,5 +79,5 @@ def plot_delta_kappa_vs_parameters(
 if __name__ == "__main__":
     from src.utils.neptune_api.data_loader import load_data
 
-    data = load_data("eesm19")
+    data = load_data(ids=[2])
     plot_delta_kappa_vs_parameters(data, "eesm19", show=True)

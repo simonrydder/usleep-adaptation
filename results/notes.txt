@@ -1,0 +1,3 @@
+id=2 -> LR-start = 1e-4, LR-stop=1e-7
+id=3 -> LR-start = 1e-3, LR-stop=1e-7
+id=4 -> LR-start = 1e-6, LR-stop=1e-8

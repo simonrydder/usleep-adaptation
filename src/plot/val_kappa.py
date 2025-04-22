@@ -40,11 +40,11 @@ def plot_validation_kappa(
         sns.lineplot,
         x="epoch",
         y="kappa",
-        units="fold",
-        estimator=None,
-        color="black",
-        linewidth=1,
-        alpha=0.5,
+        # units="fold",
+        # estimator=None,
+        # color="black",
+        linewidth=2,
+        # alpha=0.5,
     )
     for ax, method in zip(g.axes.flatten(), g.col_names):
         assert isinstance(ax, Axes)

@@ -16,7 +16,6 @@ class DataConfig(BaseModel):
     train_size: int | None = None
     validation_size: int
     num_fold: int
-    random_state: int
     num_samples: int | None = None
 
     # @field_serializer("split_percentages")

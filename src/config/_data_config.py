@@ -10,10 +10,10 @@ class DataConfig(BaseModel):
     dataset: str
     type: Literal["custom", "hdf5"]
     batch_size: int
-    sleep_epochs: int = 35
-    num_batches: int = 3
+    sleep_epochs: int
+    num_batches: int
     num_workers: int | tuple[int, int, int]
-    train_size: int | None = None
+    train_size: int | None
     validation_size: int
     num_fold: int
     num_samples: int | None = None

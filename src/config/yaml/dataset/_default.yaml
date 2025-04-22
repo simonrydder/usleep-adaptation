@@ -2,3 +2,4 @@ type: 'hdf5'
 batch_size: 64
 num_batches: 3
 num_workers: 1
+sleep_epochs: 35

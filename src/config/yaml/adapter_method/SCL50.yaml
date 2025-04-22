@@ -5,8 +5,3 @@ settings:
   activation: relu
   reduction: 2
   layer: True
-optimizer_settings: 
-  lr: 1e-3
-  lr_patience: 5
-  lr_factor: 0.5
-  lr_minimum: 1e-7

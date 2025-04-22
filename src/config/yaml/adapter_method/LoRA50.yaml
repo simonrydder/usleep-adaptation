@@ -4,8 +4,3 @@ settings:
     rank : 25
     alpha : 1
     dropout : 0
-optimizer_settings: 
-  lr: 1e-3
-  lr_patience: 5
-  lr_factor: 0.5
-  lr_minimum: 1e-7

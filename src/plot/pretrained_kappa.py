@@ -31,6 +31,7 @@ def pretrained_kappa_performance_plot(
         data=kappa,
         x="dataset",
         y="kappa",
+        hue="dataset",
         palette="pastel",
         showfliers=False,
     )

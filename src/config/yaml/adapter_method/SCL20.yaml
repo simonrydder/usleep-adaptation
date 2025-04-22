@@ -1,3 +1,4 @@
+default: !include _default.yaml
 method: conv-adapter
 parameter_count: grad
 settings:

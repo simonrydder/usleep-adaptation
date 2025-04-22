@@ -1,8 +1,8 @@
 import os
+from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
 import polars as pl
-from tqdm import tqdm
 
 from src.utils.neptune_api.method_data import (
     MethodData,
@@ -70,21 +70,26 @@ class ExperimentIterator:
         return runs_ids
 
 
+def _fetch_and_save(run_ids: list[str]) -> MethodData:
+    method_data = get_method_data(run_ids)
+    save_method_data(method_data)
+    return method_data
+
+
 def get_data(
     datasets: list[str] | None = None,
     methods: list[str] | None = None,
     ids: list[int] | None = None,
 ) -> list[MethodData]:
-    data = []
-    for run_ids in tqdm(
-        ExperimentIterator(datasets, methods, ids), desc="Downloading experiments"
-    ):
-        method_data = get_method_data(run_ids)
-        save_method_data(method_data)
-
-        data.append(method_data)
-
-    return data
+    with ThreadPoolExecutor() as executor:
+        results = list(
+            # tqdm(
+            executor.map(_fetch_and_save, ExperimentIterator(datasets, methods, ids)),
+            # total=len(ExperimentIterator(datasets, methods, ids)),
+            # desc="Downloading experiments (parallel)",
+            # )
+        )
+    return results
 
 
 def load_data(
@@ -116,6 +121,6 @@ def load_data(
 
 
 if __name__ == "__main__":
-    # get_data()
-    x = load_data(methods=["BitFit"])
+    get_data()
+    # x = load_data(methods=["BitFit"])
     pass

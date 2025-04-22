@@ -95,7 +95,10 @@ def extract_performance(
     dfs = []
     for method_data in data:
         perf = _get_performance_list(method_data, mode)
-        df = pl.DataFrame(perf).with_columns(pl.lit(method_data.method).alias("method"))
+        df = pl.DataFrame(perf).with_columns(
+            pl.lit(method_data.method).alias("method"),
+            pl.lit(method_data.dataset).alias("dataset"),
+        )
         dfs.append(df)
 
     return pl.concat(dfs, how="vertical")
@@ -106,7 +109,10 @@ def extract_settings(data: list[MethodData]) -> pl.DataFrame:
     for method_data in data:
         for fold, fold_data in method_data.folds.items():
             fold_setting = extract_fold_settings(fold_data, fold)
-            df = fold_setting.with_columns(pl.lit(method_data.method).alias("method"))
+            df = fold_setting.with_columns(
+                pl.lit(method_data.method).alias("method"),
+                pl.lit(method_data.dataset).alias("dataset"),
+            )
             dfs.append(df)
 
     return pl.concat(dfs, how="vertical")

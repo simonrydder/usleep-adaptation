@@ -1,4 +1,0 @@
-dataset: dod-h
-method: BatchNorm
-model: usleep
-trainer: usleep

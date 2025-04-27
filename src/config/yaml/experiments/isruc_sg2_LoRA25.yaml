@@ -1,4 +1,0 @@
-dataset: isruc_sg2
-method: LoRA25
-model: usleep
-trainer: usleep

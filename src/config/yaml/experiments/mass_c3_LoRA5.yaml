@@ -1,4 +1,0 @@
-dataset: mass_c3
-method: LoRA5
-model: usleep
-trainer: usleep

@@ -1,4 +1,0 @@
-dataset: mass_c3
-method: BatchNorm
-model: usleep
-trainer: usleep

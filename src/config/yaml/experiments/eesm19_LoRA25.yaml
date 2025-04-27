@@ -1,4 +1,0 @@
-dataset: eesm19
-method: LoRA25
-model: usleep
-trainer: usleep

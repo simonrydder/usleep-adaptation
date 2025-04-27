@@ -1,4 +1,0 @@
-dataset: isruc_sg2
-method: PCA4
-model: usleep
-trainer: usleep

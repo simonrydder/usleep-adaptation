@@ -1,4 +1,0 @@
-dataset: svuh
-method: SCA4
-model: usleep
-trainer: usleep

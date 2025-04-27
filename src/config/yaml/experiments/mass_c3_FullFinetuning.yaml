@@ -1,4 +1,0 @@
-dataset: mass_c3
-method: FullFinetuning
-model: usleep
-trainer: usleep

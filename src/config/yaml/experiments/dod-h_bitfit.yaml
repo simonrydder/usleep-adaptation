@@ -1,4 +1,0 @@
-dataset: dod-h
-method: BitFit
-model: usleep
-trainer: usleep

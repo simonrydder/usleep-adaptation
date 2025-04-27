@@ -1,5 +1,5 @@
 default: !include _default.yaml
 dataset: 'eesm19'
 num_fold: 10
-train_size: null
+train_size: 5
 validation_size: 2

@@ -3,11 +3,9 @@ from src.plot.pretrained_kappa import plot_pretrained_kappa_performance
 from src.plot.val_kappa import (
     plot_validation_kappa,
 )
-from src.utils.neptune_api.data_loader import get_data, load_data
-from src.utils.neptune_api.method_data import MethodData
 
 
-def generate_plots(data: list[MethodData]) -> None:
+def generate_plots() -> None:
     plot_validation_kappa()
     plot_kappa_vs_methods()
     plot_pretrained_kappa_performance()
@@ -17,16 +15,5 @@ def generate_plots(data: list[MethodData]) -> None:
 
 
 if __name__ == "__main__":
-    use_downloaded = False
-
-    datasets = None
-    ids = [0, 1, 2]
-    methods = None
-
-    if use_downloaded:
-        data = load_data(datasets, methods, ids)
-    else:
-        data = get_data(datasets, methods, ids)
-
-    generate_plots(data)
+    generate_plots()
     pass

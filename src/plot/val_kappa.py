@@ -20,20 +20,6 @@ def plot_validation_kappa(cols: int = 4, show: bool = False) -> None:
 
 
 def _get_validation_kappa_data() -> pl.DataFrame:
-    # raw_data = load_data(
-    #     ids=[99],
-    #     methods=[
-    #         "Full_3",
-    #         "LoRA20_3",
-    #         "SCL20_3",
-    #         "Full_4",
-    #         "Full_6",
-    #         "LoRA20_4",
-    #         "LoRA20_6",
-    #         "SCL20_4",
-    #         "SCL20_6",
-    #     ],
-    # )
     raw_data = load_data(ids=[0])
 
     dfs = []
@@ -124,4 +110,4 @@ def _plot_validation_kappa(data: pl.DataFrame, cols: int, show: bool) -> None:
 
 
 if __name__ == "__main__":
-    plot_validation_kappa(show=True, cols=5)
+    plot_validation_kappa(show=True, cols=3)

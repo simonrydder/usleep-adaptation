@@ -125,18 +125,5 @@ def load_data(
 
 
 if __name__ == "__main__":
-    get_data(
-        ids=[99],
-        methods=[
-            "Full_3",
-            "Full_4",
-            "Full_6",
-            "LoRA20_3",
-            "LoRA20_4",
-            # "LoRA20_6",
-            "SCL20_3",
-            "SCL20_4",
-            "SCL20_6",
-        ],
-    )
+    get_data(ids=[99])
     # load_data(datasets=["eesm19"], methods=["BitFit"])

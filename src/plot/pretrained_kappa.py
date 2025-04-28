@@ -4,65 +4,79 @@ import polars as pl
 import seaborn as sns
 from matplotlib import pyplot as plt
 
+from src.plot.colors import BASE_COLOR
 from src.utils.neptune_api.data_loader import load_data
-from src.utils.neptune_api.method_data import MethodData, extract_performance
+from src.utils.neptune_api.method_data import extract_performance
 
 
-def prepare_data(data: list[MethodData]) -> pl.DataFrame:
-    return (
-        extract_performance(data, "org")
-        .unique(["record", "dataset"], keep="any")
-        .sort("dataset")
-    )
+def plot_pretrained_kappa_performance(show: bool = False) -> None:
+    data = _get_pretrained_kappa_data()
+    _plot_pretrained_kappa_performance(data, show=show)
 
 
-def pretrained_kappa_performance_plot(
-    data: list[MethodData], show: bool = False
-) -> None:
-    kappa = prepare_data(data)
-    kappa_info = kappa.group_by("dataset").agg(
+def _get_pretrained_kappa_data() -> pl.DataFrame:
+    raw_data = load_data(ids=[0])
+
+    dfs = []
+    for method_data in raw_data:
+        base = extract_performance(method_data, "org")
+        dfs.append(base)
+
+    concat: pl.DataFrame = pl.concat(dfs, how="vertical")
+    single_org = concat.unique(["record", "dataset"], keep="any")
+    result = single_org.select("dataset", "record", "kappa")
+    return result.sort("dataset")
+
+
+def _plot_pretrained_kappa_performance(data: pl.DataFrame, show: bool = False) -> None:
+    kappa_info = data.group_by("dataset").agg(
         pl.col("kappa").mean().alias("mean_kappa"),
         pl.col("kappa").std().alias("std_kappa"),
         pl.col("kappa").max().alias("max_kappa"),
     )
 
+    dataset_order = data.get_column("dataset").unique().sort().to_list()
+
     plt.figure(figsize=(10, 6))
     ax = sns.boxplot(
-        data=kappa,
+        data=data.to_pandas(),
         x="dataset",
         y="kappa",
         hue="dataset",
-        palette="pastel",
+        palette=BASE_COLOR,
         showfliers=False,
+        order=dataset_order,
     )
 
     sns.swarmplot(
-        data=kappa,
+        data=data.to_pandas(),
         x="dataset",
         y="kappa",
         color="black",
         size=4,
         alpha=0.6,
+        order=dataset_order,
     )
 
-    for i, row in enumerate(kappa_info.iter_rows(named=True)):
-        box_color = ax.patches[i].get_facecolor()
-        plt.text(
-            i,
-            0.9,
-            f"{row['mean_kappa']:.2f}",
-            ha="center",
-            va="bottom",
-            fontsize=10,
-            color=box_color,
-            fontdict={"weight": "bold"},
-        )
-
-    # Formatting
-    plt.xlabel("Dataset")
-    plt.ylabel("Kappa")
-    plt.title("Kappa of Pretrained Model")
+    plt.suptitle("Kappa of Pretrained Model", size=14)
+    plt.xlabel("Dataset", fontsize=12)
+    plt.ylabel("Kappa", fontsize=12)
     plt.ylim(top=1)
+    plt.subplots_adjust(left=0.1, right=0.97, top=0.86, bottom=0.1)
+
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize=10)
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=10)
+
+    secax = ax.secondary_xaxis("top", functions=(lambda x: x, lambda x: x))
+
+    secax.set_xticks(range(len(dataset_order)))
+    secax.set_xticklabels(
+        [f"{mean:.2f}" for mean in kappa_info.get_column("mean_kappa")],
+        ha="center",
+        fontsize=10,
+        fontweight="bold",
+    )
+    secax.set_xlabel("Mean Kappa", fontsize=12)
 
     folder = os.path.join("figures")
     if not os.path.exists(folder):
@@ -72,10 +86,10 @@ def pretrained_kappa_performance_plot(
 
     if show:
         plt.show()
+
     pass
 
 
 if __name__ == "__main__":
-    data = load_data(ids=[3])
-    pretrained_kappa_performance_plot(data, show=True)
+    plot_pretrained_kappa_performance(show=True)
     pass

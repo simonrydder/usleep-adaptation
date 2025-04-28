@@ -21,6 +21,8 @@ src/usleep/weights/
 
 lightning_logs/
 data/
+results/
+ckpt_results/
 tests.py
 .env
 .neptune

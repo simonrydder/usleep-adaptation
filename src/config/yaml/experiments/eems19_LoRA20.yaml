@@ -1,6 +1,0 @@
-dataset: eems19
-id: 2
-method: LoRA20
-model: usleep
-seed: 42
-trainer: usleep

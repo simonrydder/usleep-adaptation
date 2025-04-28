@@ -1,6 +1,0 @@
-dataset: eems19
-id: 2
-method: PCL10
-model: usleep
-seed: 42
-trainer: usleep

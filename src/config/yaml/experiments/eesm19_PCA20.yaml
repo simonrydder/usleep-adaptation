@@ -1,6 +1,0 @@
-dataset: eesm19
-id: 2
-method: PCA20
-model: usleep
-seed: 42
-trainer: usleep

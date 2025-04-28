@@ -1,0 +1,8 @@
+default: !include _default.yaml
+method : fully-finetune
+parameter_count: grad
+optimizer_settings : 
+    lr: 1e-6
+    lr_patience: 5
+    lr_factor: 0.5
+    lr_minimum: 1e-7

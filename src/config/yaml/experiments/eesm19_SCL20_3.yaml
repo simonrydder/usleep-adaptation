@@ -1,6 +1,6 @@
 dataset: eesm19
-id: 2
-method: SCA50
+id: 99
+method: SCL20_3
 model: usleep
 seed: 42
 trainer: usleep

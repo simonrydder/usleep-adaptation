@@ -1,0 +1,12 @@
+default: !include _default.yaml
+method : lora
+parameter_count: grad
+settings:
+    rank : 10
+    alpha : 1
+    dropout : 0
+optimizer_settings : 
+    lr: 1e-3
+    lr_patience: 5
+    lr_factor: 0.5
+    lr_minimum: 1e-7

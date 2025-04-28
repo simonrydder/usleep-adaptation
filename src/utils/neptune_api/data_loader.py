@@ -86,7 +86,7 @@ def get_data(
             # tqdm(
             executor.map(_fetch_and_save, ExperimentIterator(datasets, methods, ids)),
             # total=len(ExperimentIterator(datasets, methods, ids)),
-            # desc="Downloading experiments (parallel)",
+            # desc="Downloading experiments",
             # )
         )
     return results
@@ -95,26 +95,32 @@ def get_data(
 def load_data(
     datasets: list[str] | None = None,
     methods: list[str] | None = None,
-    ids: list[str | int] | list[str] | list[int] | None = None,
+    ids: list[int] | None = None,
 ) -> list[MethodData]:
     data = []
 
-    root = os.path.join("results")
-    if datasets is None:
-        datasets = os.listdir(root)
+    root = "results"
+    for folder, _, files in os.walk(root):
+        for file in files:
+            method, _ = os.path.splitext(file)
 
-    for dataset in datasets:
-        dataset_folder = os.path.join(root, dataset)
+            if methods is not None and method not in methods:
+                continue
 
-        if ids is None:
-            ids = os.listdir(dataset_folder)
+            folders = os.path.normpath(folder).split(os.sep)
+            assert len(folders) == 3, f"Unexpected folder structure: {folders}"
+            _, dataset, id = folders
 
-        for id in ids:
-            id_folder = os.path.join(dataset_folder, str(id))
-            for method in os.listdir(id_folder):
-                if methods is not None and method.split(".")[0] not in methods:
-                    continue
+            if datasets is not None and dataset not in datasets:
+                continue
 
-                data.append(load_method_data(dataset, id, method))
+            if ids is not None and id not in ids:
+                continue
+
+            data.append(load_method_data(dataset, id, file))
 
     return data
+
+
+if __name__ == "__main__":
+    load_data(datasets=["eesm19"], methods=["BitFit"])

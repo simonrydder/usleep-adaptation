@@ -1,3 +1,3 @@
 id=0 -> train_size = None (all)
-id=1 -> train_size = 5
-id=4 -> LR-start = 1e-6, LR-stop=1e-8
+id=1 -> train_size = 5 (20)
+id=2 -> train_size = 10 (40)

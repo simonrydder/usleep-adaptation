@@ -89,6 +89,7 @@ def _plot_kappa_vs_methods(data: pl.DataFrame, show: bool = False) -> None:
         fontsize=10,
         fontweight="bold",
     )
+    secax.set_xlabel("Mean Kappa", fontsize=12)
 
     folder = os.path.join("figures", dataset)
     if not os.path.exists(folder):

@@ -46,6 +46,7 @@ class ExperimentIterator:
             .sort(self.dataset_col, self.id_col, self.method_col)
             .with_row_index()
         )
+        print()
 
     def __len__(self) -> int:
         return len(self.experiments)
@@ -110,6 +111,7 @@ def load_data(
             folders = os.path.normpath(folder).split(os.sep)
             assert len(folders) == 3, f"Unexpected folder structure: {folders}"
             _, dataset, id = folders
+            id = int(id)
 
             if datasets is not None and dataset not in datasets:
                 continue
@@ -123,4 +125,18 @@ def load_data(
 
 
 if __name__ == "__main__":
-    load_data(datasets=["eesm19"], methods=["BitFit"])
+    get_data(
+        ids=[99],
+        methods=[
+            "Full_3",
+            "Full_4",
+            "Full_6",
+            "LoRA20_3",
+            "LoRA20_4",
+            # "LoRA20_6",
+            "SCL20_3",
+            "SCL20_4",
+            "SCL20_6",
+        ],
+    )
+    # load_data(datasets=["eesm19"], methods=["BitFit"])

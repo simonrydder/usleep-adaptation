@@ -89,31 +89,46 @@ def _get_performance_list(
             raise ValueError(f"Unknown mode: {mode}")
 
 
-def extract_performance(
-    data: list[MethodData], mode: Literal["new", "org"]
-) -> pl.DataFrame:
+def _add_index_columns(df: pl.DataFrame, data: MethodData) -> pl.DataFrame:
+    return df.with_columns(
+        pl.lit(data.dataset).alias("dataset"),
+        pl.lit(data.method).alias("method"),
+        pl.lit(data.id).alias("id"),
+    )
+
+
+def extract_performance(data: MethodData, mode: Literal["new", "org"]) -> pl.DataFrame:
+    perf = _get_performance_list(data, mode)
+    df = pl.DataFrame(perf)
+
+    return _add_index_columns(df, data)
+
+
+def extract_settings(data: MethodData) -> pl.DataFrame:
     dfs = []
-    for method_data in data:
-        perf = _get_performance_list(method_data, mode)
-        df = pl.DataFrame(perf).with_columns(
-            pl.lit(method_data.method).alias("method"),
-            pl.lit(method_data.dataset).alias("dataset"),
-        )
+    for fold, fold_data in data.folds.items():
+        fold_setting = extract_fold_settings(fold_data, fold)
+        df = _add_index_columns(fold_setting, data)
         dfs.append(df)
 
     return pl.concat(dfs, how="vertical")
 
 
-def extract_settings(data: list[MethodData]) -> pl.DataFrame:
+def extract_validation_data(data: MethodData) -> pl.DataFrame:
     dfs = []
-    for method_data in data:
-        for fold, fold_data in method_data.folds.items():
-            fold_setting = extract_fold_settings(fold_data, fold)
-            df = fold_setting.with_columns(
-                pl.lit(method_data.method).alias("method"),
-                pl.lit(method_data.dataset).alias("dataset"),
+    for fold, fold_data in data.folds.items():
+        validation = pl.DataFrame(fold_data.validation_step)
+        validation = _add_index_columns(validation, data)
+        validation = (
+            validation.with_columns(pl.lit(fold).alias("fold"))
+            .with_row_index("step")
+            .with_columns(
+                (pl.col("step") // fold_data.config.data.sizes.validation).alias(
+                    "epoch"
+                )
             )
-            dfs.append(df)
+        )
+        dfs.append(validation)
 
     return pl.concat(dfs, how="vertical")
 

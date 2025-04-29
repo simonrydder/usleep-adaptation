@@ -1,6 +1,6 @@
 dataset: eesm19
-id: 99
-method: SCL20_4
+id: 43
+method: Fish10
 model: usleep
-seed: 42
+seed: 43
 trainer: usleep

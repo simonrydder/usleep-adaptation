@@ -1,0 +1,6 @@
+dataset: eesm19
+id: 44
+method: SCL20
+model: usleep
+seed: 44
+trainer: usleep

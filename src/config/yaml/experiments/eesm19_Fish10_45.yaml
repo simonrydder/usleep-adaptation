@@ -1,0 +1,6 @@
+dataset: eesm19
+id: 45
+method: Fish10
+model: usleep
+seed: 45
+trainer: usleep

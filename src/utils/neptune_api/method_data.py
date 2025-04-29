@@ -21,6 +21,7 @@ class MethodData(BaseModel):
     dataset: str
     id: int
     model: str
+    seed: int
     original_performance: list[PerformanceData]
     new_performance: list[PerformanceData]
     folds: dict[int, FoldData]
@@ -52,21 +53,22 @@ def get_method_data(run_ids: list[str]) -> MethodData:
         dataset=experiment.dataset,
         id=experiment.id,
         model=experiment.model,
+        seed=experiment.seed,
         original_performance=org_performance,
         new_performance=new_performance,
         folds=folds,
     )
 
 
-def save_method_data(method_data: MethodData) -> None:
-    folder = os.path.join("results", method_data.dataset, str(method_data.id))
-    file = os.path.join(folder, f"{method_data.method}.json")
+def save_method_data(data: MethodData) -> None:
+    folder = os.path.join("results", data.dataset, str(data.id))
+    file = os.path.join(folder, f"{data.method}_{data.seed}.json")
 
     if not os.path.exists(folder):
         os.makedirs(folder)
 
     with open(file, "w") as f:
-        json.dump(method_data.model_dump(), f, indent=4)
+        json.dump(data.model_dump(), f, indent=4)
 
 
 def load_method_data(dataset: str, id: str | int, method_file: str) -> MethodData:

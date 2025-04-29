@@ -14,18 +14,20 @@ from src.interfaces.data_creater import DataCreater
 
 
 class StandardDataCreater(DataCreater):
-    def __init__(self, config: DataConfig) -> None:
+    def __init__(self, config: DataConfig, seed: int) -> None:
         super().__init__()
 
         self.batch_size = config.batch_size
         self._define_number_of_workers(config.num_workers)
         self.val_size = config.validation_size
         self.train_size = config.train_size
+        self.seed = seed
 
         splitter = HDF5Splitter
         self.splitter = splitter(config)
         self.subjects = self.splitter.get_splits()
 
+        np.random.seed(self.seed)
         np.random.shuffle(self.subjects)
         subject_split = np.array_split(self.subjects, config.num_fold)
         self.folds = {fold: sub.tolist() for fold, sub in enumerate(subject_split)}
@@ -35,6 +37,7 @@ class StandardDataCreater(DataCreater):
             rest = list(
                 chain(*[subjects for i, subjects in self.folds.items() if i != fold])  # type: ignore
             )
+            np.random.seed(self.seed)
             np.random.shuffle(rest)  # type: ignore
             val = rest[: self.val_size]
             end_idx = (

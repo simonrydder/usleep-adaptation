@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
 import polars as pl
+from tqdm import tqdm
 
 from src.utils.neptune_api.method_data import (
     MethodData,
@@ -19,78 +20,100 @@ class ExperimentIterator:
         datasets: list[str] | None = None,
         methods: list[str] | None = None,
         ids: list[int] | None = None,
+        seeds: list[int] | None = None,
     ) -> None:
         self.project = get_project()
-        runs: pd.DataFrame = self.project.fetch_runs_table(
+        raw_runs: pd.DataFrame = self.project.fetch_runs_table(
             progress_bar=False
         ).to_pandas()
 
-        self.runs = pl.from_pandas(runs)
-        self.runs = self.runs.filter(~pl.col("sys/failed"))
+        self.raw_runs = pl.from_pandas(raw_runs)
+        self.raw_runs = self.raw_runs.filter(~pl.col("sys/failed"))
 
-        self.dataset_col = "model/config/experiment/dataset"
+        self.runs = self.raw_runs.select(
+            pl.col("sys/id"),
+            pl.col("sys/tags").alias("tags"),
+            pl.col("model/config/experiment/dataset").cast(pl.String).alias("dataset"),
+            pl.col("model/config/experiment/method").cast(pl.String).alias("method"),
+            pl.col("model/config/experiment/id").cast(pl.Int64()).alias("id"),
+            pl.col("model/config/experiment/seed").cast(pl.Int64()).alias("seed"),
+            pl.col("model/config/experiment/model").cast(pl.String).alias("model"),
+        ).filter(pl.col("model").is_not_null())
+
         if datasets is not None:
-            self.runs = self.runs.filter(pl.col(self.dataset_col).is_in(datasets))
+            self.runs = self.runs.filter(pl.col("dataset").is_in(datasets))
 
-        self.method_col = "model/config/experiment/method"
         if methods is not None:
-            self.runs = self.runs.filter(pl.col(self.method_col).is_in(methods))
+            self.runs = self.runs.filter(pl.col("method").is_in(methods))
 
-        self.id_col = "model/config/experiment/id"
         if ids is not None:
-            self.runs = self.runs.filter(pl.col(self.id_col).is_in(ids))
+            self.runs = self.runs.filter(pl.col("id").is_in(ids))
+
+        if seeds is not None:
+            self.runs = self.runs.filter(pl.col("seed").is_in(seeds))
 
         self.experiments = (
-            self.runs.select([self.dataset_col, self.method_col, self.id_col])
+            self.runs.with_columns(
+                pl.col("tags").str.split(",").alias("tag_parts"),
+                pl.concat_list(["dataset", "method", "id", "model", "seed"]).alias(
+                    "known_parts"
+                ),
+            )
+            .with_columns(
+                pl.struct(["tag_parts", "known_parts"])
+                .map_elements(
+                    lambda row: next(
+                        iter(set(row["tag_parts"]) - set(row["known_parts"])), None
+                    ),
+                    return_dtype=pl.String(),
+                )
+                .alias("key")
+            )
+            .select("sys/id", "key")
+        )
+
+        self.keys = (
+            self.experiments.select("key")
             .unique(keep="any")
-            .sort(self.dataset_col, self.id_col, self.method_col)
+            .sort("key")
             .with_row_index()
         )
-        print()
 
     def __len__(self) -> int:
-        return len(self.experiments)
+        return len(self.keys)
 
     def __iter__(self) -> "ExperimentIterator":
         self.index = 0
         return self
 
-    def __next__(self) -> list[str]:
+    def __next__(self) -> tuple[str, list[str]]:
         if self.index >= len(self):
             raise StopIteration
 
-        experiment = self.experiments.row(self.index, named=True)
-        runs_ids = self.runs.filter(
-            pl.col(self.dataset_col) == experiment[self.dataset_col],
-            pl.col(self.method_col) == experiment[self.method_col],
-            pl.col(self.id_col) == experiment[self.id_col],
-        )
+        key = self.keys.row(self.index, named=True)["key"]
+        runs_ids = self.experiments.filter(pl.col("key") == key)
         runs_ids = runs_ids.get_column("sys/id").to_list()
         self.index += 1
 
-        return runs_ids
+        return key, runs_ids
 
 
-def _fetch_and_save(run_ids: list[str]) -> MethodData:
-    method_data = get_method_data(run_ids)
-    save_method_data(method_data)
-    return method_data
+def _download(key: str, run_ids: list[str], pbar: tqdm | None) -> None:
+    method_data = get_method_data(run_ids, key, pbar)
+    save_method_data(method_data, key)
 
 
-def get_data(
+def download_data(
     datasets: list[str] | None = None,
     methods: list[str] | None = None,
     ids: list[int] | None = None,
-) -> list[MethodData]:
-    with ThreadPoolExecutor() as executor:
-        results = list(
-            # tqdm(
-            executor.map(_fetch_and_save, ExperimentIterator(datasets, methods, ids)),
-            # total=len(ExperimentIterator(datasets, methods, ids)),
-            # desc="Downloading experiments",
-            # )
-        )
-    return results
+) -> None:
+    iterator = ExperimentIterator(datasets, methods, ids)
+    total_runs = sum(len(run_ids) for _, run_ids in iterator)
+
+    with tqdm(total=total_runs, desc="Downloading data") as pbar:
+        with ThreadPoolExecutor() as executor:
+            executor.map(lambda args: _download(*args, pbar=pbar), iterator)
 
 
 def load_data(
@@ -125,5 +148,5 @@ def load_data(
 
 
 if __name__ == "__main__":
-    get_data(ids=[99])
+    download_data(ids=[99])
     # load_data(datasets=["eesm19"], methods=["BitFit"])

@@ -1,4 +1,5 @@
 import contextlib
+import logging
 import os
 import sys
 from io import StringIO
@@ -9,6 +10,7 @@ from neptune import Project, Run, init_project, init_run
 from pandas import DataFrame
 
 load_dotenv()
+logging.getLogger("neptune").setLevel(logging.WARNING)
 
 
 @contextlib.contextmanager
@@ -22,11 +24,12 @@ def suppress_stdout():
 
 
 def get_project(project_name: str = "S4MODEL/Usleep-Adaptation") -> Project:
-    return init_project(
-        project=project_name,
-        api_token=os.getenv("NEPTUNE_KEY"),
-        mode="read-only",
-    )
+    with suppress_stdout():
+        return init_project(
+            project=project_name,
+            api_token=os.getenv("NEPTUNE_KEY"),
+            mode="read-only",
+        )
 
 
 def get_run(id: str) -> Run:

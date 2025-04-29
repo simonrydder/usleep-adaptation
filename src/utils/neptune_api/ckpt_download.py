@@ -26,14 +26,17 @@ def download_checkpoint(run: Run) -> None:
 def get_checkpoint_path(run: Run) -> str:
     dataset = get_data_scalar(run, "model/config/data/dataset")
     method = get_data_scalar(run, "model/config/experiment/method")
-    fold = get_data_scalar(run, "fold")
+    model = get_data_scalar(run, "model/config/experiment/model")
     id = get_data_scalar(run, "model/config/experiment/id")
+    tags = get_data_scalar(run, "sys/tags")
+    fold = get_data_scalar(run, "fold")
+    key = next(iter((tags - {dataset, method, model, str(id)})))
 
-    return combine_checkpoint_path(dataset, method, fold, id)
+    return combine_checkpoint_path(dataset, method, key, str(fold))
 
 
-def combine_checkpoint_path(dataset: str, method: str, fold: str, id: str) -> str:
-    return os.path.join("ckpt_results", dataset, method, f"fold={fold}_id={id}.ckpt")
+def combine_checkpoint_path(dataset: str, method: str, key: str, fold: str) -> str:
+    return os.path.join("ckpt_results", dataset, method, f"{key}_{fold}.ckpt")
 
 
 def _download_checkpoint_for_run(run_row: dict) -> None:

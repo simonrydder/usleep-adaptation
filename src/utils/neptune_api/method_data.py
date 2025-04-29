@@ -1,5 +1,6 @@
 import json
 import os
+from threading import Lock
 from typing import Literal
 
 import polars as pl
@@ -15,6 +16,8 @@ from src.utils.neptune_api.fold_data import (
 from src.utils.neptune_api.neptune_api import get_data_scalar, get_run
 from src.utils.neptune_api.performance_data import PerformanceData, get_performance_data
 
+tqdm_lock = Lock()
+
 
 class MethodData(BaseModel):
     method: str
@@ -27,13 +30,15 @@ class MethodData(BaseModel):
     folds: dict[int, FoldData]
 
 
-def get_method_data(run_ids: list[str]) -> MethodData:
+def get_method_data(
+    run_ids: list[str], key: str, pbar: tqdm | None = None
+) -> MethodData:
     """Gets the method data for a list of run_ids. These MUST be ids of the different folds for the same experiment."""
     folds = {}
     org_performance = []
     new_performance = []
     experiment = None
-    for id in tqdm(run_ids, desc="Iterating over runs"):
+    for id in run_ids:
         run = get_run(id)
         fold_data = get_fold_data(run)
         fold_id = get_data_scalar(run, "fold")
@@ -42,6 +47,10 @@ def get_method_data(run_ids: list[str]) -> MethodData:
         org_performance += get_performance_data(run, "org", "test")
         new_performance += get_performance_data(run, "new", "test")
         experiment = Experiment(**get_data_scalar(run, "model/config/experiment"))
+
+        if pbar is not None:
+            with tqdm_lock:
+                pbar.update(1)
 
     assert experiment is not None
 
@@ -60,9 +69,10 @@ def get_method_data(run_ids: list[str]) -> MethodData:
     )
 
 
-def save_method_data(data: MethodData) -> None:
+def save_method_data(data: MethodData, key: str) -> None:
+    filename = "_".join([data.method, key])
     folder = os.path.join("results", data.dataset, str(data.id))
-    file = os.path.join(folder, f"{data.method}_{data.seed}.json")
+    file = os.path.join(folder, f"{filename}.json")
 
     if not os.path.exists(folder):
         os.makedirs(folder)
@@ -133,15 +143,3 @@ def extract_validation_data(data: MethodData) -> pl.DataFrame:
         dfs.append(validation)
 
     return pl.concat(dfs, how="vertical")
-
-
-if __name__ == "__main__":
-    x = get_method_data(
-        [
-            "US-950",
-            "US-949",
-        ]
-    )
-    save_method_data(x)
-    y = load_method_data(x.dataset, x.id, x.method)
-    pass

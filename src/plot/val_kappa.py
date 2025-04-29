@@ -5,7 +5,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 
-from src.plot.colors import BASE_COLOR
+from src.plot.colors import HIGHLIGHT_COLOR
 from src.utils.neptune_api.data_loader import load_data
 from src.utils.neptune_api.method_data import (
     extract_validation_data,
@@ -35,7 +35,7 @@ def _get_validation_kappa_data() -> pl.DataFrame:
 
 def _plot_validation_kappa(data: pl.DataFrame, cols: int, show: bool) -> None:
     dataset: str = data.item(0, "dataset")
-    color = BASE_COLOR[dataset.lower()]
+    color = HIGHLIGHT_COLOR[dataset.lower()]
 
     epoch_df = (
         data.group_by("epoch", "method", "fold")

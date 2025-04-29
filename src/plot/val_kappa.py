@@ -1,11 +1,10 @@
-import os
-
 import polars as pl
 import seaborn as sns
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 
 from src.plot.colors import HIGHLIGHT_COLOR
+from src.utils.figures import save_figure
 from src.utils.neptune_api.data_loader import load_data
 from src.utils.neptune_api.method_data import (
     extract_validation_data,
@@ -99,11 +98,7 @@ def _plot_validation_kappa(data: pl.DataFrame, cols: int, show: bool) -> None:
         f"{dataset.upper()} - Validation Kappa for each Method", fontsize=14
     )
 
-    folder = os.path.join("figures", dataset)
-    if not os.path.exists(folder):
-        os.makedirs(folder)
-
-    plt.savefig(f"figures/{dataset}_validation_kappa.png", dpi=300)
+    save_figure(g.figure, f"figures/{dataset}_validation_kappa.png")
 
     if show:
         plt.show()

@@ -1,10 +1,9 @@
-import os
-
 import matplotlib.pyplot as plt
 import polars as pl
 import seaborn as sns
 
 from src.plot.colors import BASE_COLOR, HIGHLIGHT_COLOR
+from src.utils.figures import save_figure
 from src.utils.neptune_api.data_loader import load_data
 from src.utils.neptune_api.method_data import extract_performance
 
@@ -48,7 +47,7 @@ def _plot_kappa_vs_methods(data: pl.DataFrame, show: bool = False) -> None:
         for method in method_order
     }
 
-    plt.figure(figsize=(18, 6))
+    fig = plt.figure(figsize=(18, 6))
     plt.subplots_adjust(left=0.05, right=0.97, top=0.95, bottom=0.07)
     sns.set_theme(style="whitegrid", context="paper")
     ax = sns.boxplot(
@@ -95,11 +94,7 @@ def _plot_kappa_vs_methods(data: pl.DataFrame, show: bool = False) -> None:
     )
     secax.set_xlabel("Mean Kappa", fontsize=12)
 
-    folder = os.path.join("figures", dataset)
-    if not os.path.exists(folder):
-        os.makedirs(folder)
-
-    plt.savefig(f"figures/{dataset}_kappa_vs_method.png", dpi=300)
+    save_figure(fig=fig, path=f"figures/{dataset}_kappa_vs_method.png")
 
     if show:
         plt.show()

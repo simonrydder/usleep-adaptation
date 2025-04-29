@@ -1,10 +1,9 @@
-import os
-
 import polars as pl
 import seaborn as sns
 from matplotlib import pyplot as plt
 
 from src.plot.colors import BASE_COLOR
+from src.utils.figures import save_figure
 from src.utils.neptune_api.data_loader import load_data
 from src.utils.neptune_api.method_data import extract_performance
 
@@ -37,7 +36,7 @@ def _plot_pretrained_kappa_performance(data: pl.DataFrame, show: bool = False) -
 
     dataset_order = data.get_column("dataset").unique().sort().to_list()
 
-    plt.figure(figsize=(10, 6))
+    fig = plt.figure(figsize=(10, 6))
     ax = sns.boxplot(
         data=data.to_pandas(),
         x="dataset",
@@ -78,11 +77,7 @@ def _plot_pretrained_kappa_performance(data: pl.DataFrame, show: bool = False) -
     )
     secax.set_xlabel("Mean Kappa", fontsize=12)
 
-    folder = os.path.join("figures")
-    if not os.path.exists(folder):
-        os.makedirs(folder)
-
-    plt.savefig("figures/original_kappa.png", dpi=300)
+    save_figure(fig, "figures/original_kappa.png")
 
     if show:
         plt.show()

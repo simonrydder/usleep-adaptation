@@ -58,6 +58,7 @@ def _plot_kappa_vs_methods(data: pl.DataFrame, show: bool = False) -> None:
         showfliers=False,
         fill=True,
         order=method_order,
+        hue="method",
         palette=palette,
     )
     sns.swarmplot(
@@ -80,6 +81,9 @@ def _plot_kappa_vs_methods(data: pl.DataFrame, show: bool = False) -> None:
     ax.set_xticks(range(len(method_order)))
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=10)
     ax.set_yticklabels(ax.get_yticklabels(), fontsize=10)
+    for label in ax.get_xticklabels():
+        if label.get_text() == "original":
+            label.set_fontweight("bold")
 
     secax = ax.secondary_xaxis("top")
     secax.set_xticks(range(len(method_order)))

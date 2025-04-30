@@ -17,7 +17,7 @@ def run_experiment(experiment: Experiment, debug: bool = False):
     model_loader = StandardModelLoader(config.model)
     org_model = model_loader.load_pretrained(config)
 
-    dataload_generator = StandardDataCreater(config.data)
+    dataload_generator = StandardDataCreater(config.data, experiment.seed)
 
     for fold, (train, val, test) in enumerate(dataload_generator):
         adapter = StandardAdapter(config.adapter)

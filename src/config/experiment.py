@@ -17,7 +17,7 @@ class Experiment(BaseModel):
 
 
 def get_experiment_name(experiment: Experiment) -> str:
-    return "_".join([experiment.dataset, experiment.method, str(experiment.id)])
+    return "_".join([experiment.dataset, experiment.method, str(experiment.seed)])
 
 
 def generate_experiments(

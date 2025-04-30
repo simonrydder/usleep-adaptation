@@ -41,11 +41,16 @@ def combine_checkpoint_path(dataset: str, method: str, key: str, fold: str) -> s
 
 def _download_checkpoint_for_run(run_row: dict) -> None:
     id = run_row["sys/id"]
+    exp_id = run_row["model/config/experiment/id"]
+
+    if exp_id in [42, 43, 44, 45, 46, 99]:
+        return None
+
     run = get_run(id)
 
     path = get_checkpoint_path(run)
     if os.path.exists(path):
-        return
+        return None
 
     download_checkpoint(run)
 

@@ -30,9 +30,7 @@ class MethodData(BaseModel):
     folds: dict[int, FoldData]
 
 
-def get_method_data(
-    run_ids: list[str], key: str, pbar: tqdm | None = None
-) -> MethodData:
+def get_method_data(run_ids: list[str], pbar: tqdm | None = None) -> MethodData:
     """Gets the method data for a list of run_ids. These MUST be ids of the different folds for the same experiment."""
     folds = {}
     org_performance = []
@@ -143,3 +141,22 @@ def extract_validation_data(data: MethodData) -> pl.DataFrame:
         dfs.append(validation)
 
     return pl.concat(dfs, how="vertical")
+
+
+if __name__ == "__main__":
+    data = get_method_data(
+        [
+            "US-2755",
+            "US-2751",
+            "US-2746",
+            "US-2738",
+            "US-2732",
+            "US-2727",
+            "US-2720",
+            "US-2708",
+            "US-2703",
+            "US-2684",
+        ]
+    )
+    save_method_data(data, "10GqLXxB3")
+    pass

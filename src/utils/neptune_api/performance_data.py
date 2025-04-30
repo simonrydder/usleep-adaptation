@@ -1,11 +1,12 @@
 from neptune import Run
 from pydantic import BaseModel
 
-from src.utils.neptune_api.neptune_api import get_data_series, get_run
+from src.utils.neptune_api.neptune_api import get_data_scalar, get_data_series, get_run
 
 
 class PerformanceData(BaseModel):
     record: str
+    fold: int
     kappa: float
     accuracy: float
     loss: float
@@ -19,9 +20,12 @@ def get_performance_data(run: Run, mode: str, type: str) -> list[PerformanceData
     accuracies = get_data_series(run, f"{folder}/accuracy_step")["value"].tolist()
     losses = get_data_series(run, f"{folder}/loss_step")["value"].tolist()
     f1s = get_data_series(run, f"{folder}/f1_step")["value"].tolist()
+    fold = get_data_scalar(run, "fold")
 
     return [
-        PerformanceData(record=rec, kappa=kappa, accuracy=acc, loss=loss, f1=f1)
+        PerformanceData(
+            record=rec, fold=fold, kappa=kappa, accuracy=acc, loss=loss, f1=f1
+        )
         for rec, kappa, acc, loss, f1 in zip(records, kappas, accuracies, losses, f1s)
     ]
 

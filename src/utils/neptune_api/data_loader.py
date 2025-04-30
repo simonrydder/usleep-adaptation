@@ -99,7 +99,7 @@ class ExperimentIterator:
 
 
 def _download(key: str, run_ids: list[str], pbar: tqdm | None) -> None:
-    method_data = get_method_data(run_ids, key, pbar)
+    method_data = get_method_data(run_ids, pbar)
     save_method_data(method_data, key)
 
 
@@ -112,7 +112,7 @@ def download_data(
     total_runs = sum(len(run_ids) for _, run_ids in iterator)
 
     with tqdm(total=total_runs, desc="Downloading data") as pbar:
-        with ThreadPoolExecutor() as executor:
+        with ThreadPoolExecutor(max_workers=10) as executor:
             executor.map(lambda args: _download(*args, pbar=pbar), iterator)
 
 
@@ -148,5 +148,5 @@ def load_data(
 
 
 if __name__ == "__main__":
-    download_data(ids=[99])
+    download_data()
     # load_data(datasets=["eesm19"], methods=["BitFit"])

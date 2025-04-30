@@ -9,7 +9,7 @@ if __name__ == "__main__":
         "SCL20",
     ]  # Methods to generate experiments for (None = 'all').
     id = 90
-    seed = 42
+    seed = 46
 
     for exp in generate_experiments(datasets, methods, id, seed):
         save_experiment(exp)

@@ -19,7 +19,6 @@ class FrameworkModel(LightningModule, ABC):
         elif isinstance(self.logger, NeptuneLogger):
             self.logger.experiment["model/parameter_count"] = self.parameter_count
             self.logger.experiment["model/config"] = getattr(self, "config")
-            self.logger.experiment["sys/tags"].add(getattr(self, "experiment_id"))
         return None
 
     def on_train_epoch_end(self) -> None:

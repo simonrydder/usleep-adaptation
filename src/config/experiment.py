@@ -16,7 +16,7 @@ class Experiment(BaseModel):
     method: str
     model: str
     trainer: str
-    train_size: int | None
+    train_size: int | None = None
     fold: int
     seed: int
 

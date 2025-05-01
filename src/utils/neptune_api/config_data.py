@@ -18,8 +18,6 @@ class DataConfig(BaseModel):
     sleep_epochs: int
     sizes: Sizes
     validation_size: int
-    train_size: int | str = "all"
-    # random_state: int
 
 
 class ConfigData(BaseModel):

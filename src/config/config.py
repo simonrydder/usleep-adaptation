@@ -18,7 +18,7 @@ class Config(BaseModel):
 def load_config(experiment: Experiment) -> Config:
     return Config(
         model=get_model_config(experiment.model),
-        data=get_data_config(experiment.dataset, experiment.train_size),
+        data=get_data_config(experiment.dataset),
         adapter=get_adapter_method_config(experiment.method),
         trainer=get_trainer_config(experiment.trainer),
         experiment=experiment,

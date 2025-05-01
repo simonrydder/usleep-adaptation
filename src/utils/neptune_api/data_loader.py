@@ -19,8 +19,10 @@ class ExperimentIterator:
         self,
         datasets: list[str] | None = None,
         methods: list[str] | None = None,
-        ids: list[int] | None = None,
         seeds: list[int] | None = None,
+        folds: list[int] | None = None,
+        keys: list[str] | None = None,
+        train_sizes: list[int | None] | None = None,
     ) -> None:
         self.project = get_project()
         raw_runs: pd.DataFrame = self.project.fetch_runs_table(
@@ -35,13 +37,24 @@ class ExperimentIterator:
             pl.col("model/config/experiment/key").cast(pl.String()).alias("key"),
             pl.col("model/config/experiment/dataset").cast(pl.String).alias("dataset"),
             pl.col("model/config/experiment/method").cast(pl.String).alias("method"),
-            pl.col("model/config/experiment/model").cast(pl.String).alias("model"),
             pl.col("model/config/experiment/seed").cast(pl.Int64()).alias("seed"),
-            pl.col("model/config/experiment/train_size")
-            .cast(pl.Int64())
-            .alias("train_size"),
-            pl.col("fold").cast(pl.Int64()).alias("fold"),
-        ).filter(pl.col("completed") is True)
+            pl.col("fold").cast(pl.Int16()).alias("fold"),
+            pl.col("completed").cast(pl.Boolean()),
+        )
+
+        if "model/config/experiment/train_size" in self.raw_runs.columns:
+            train_size = self.raw_runs.select(
+                pl.col("model/config/experiment/train_size")
+                .cast(pl.Int64())
+                .alias("train_size")
+            )
+            self.runs = self.runs.with_columns(train_size)
+        else:
+            self.runs = self.runs.with_columns(
+                pl.lit(None).cast(pl.Int16()).alias("train_size")
+            )
+
+        self.runs = self.runs.filter(pl.col("completed"))
 
         if datasets is not None:
             self.runs = self.runs.filter(pl.col("dataset").is_in(datasets))
@@ -49,11 +62,19 @@ class ExperimentIterator:
         if methods is not None:
             self.runs = self.runs.filter(pl.col("method").is_in(methods))
 
-        if ids is not None:
-            self.runs = self.runs.filter(pl.col("id").is_in(ids))
+        if keys is not None:
+            self.runs = self.runs.filter(pl.col("key").is_in(keys))
 
         if seeds is not None:
             self.runs = self.runs.filter(pl.col("seed").is_in(seeds))
+
+        if folds is not None:
+            self.runs = self.runs.filter(pl.col("fold").is_in(folds))
+
+        if train_sizes is not None:
+            self.runs = self.runs.filter(
+                pl.col("train_size").is_in(train_sizes, nulls_equal=True)
+            )
 
         self.experiments = self.runs
 
@@ -91,9 +112,12 @@ def _download(key: str, run_ids: list[str], pbar: tqdm | None) -> None:
 def download_data(
     datasets: list[str] | None = None,
     methods: list[str] | None = None,
-    ids: list[int] | None = None,
+    seeds: list[int] | None = None,
+    folds: list[int] | None = None,
+    keys: list[str] | None = None,
+    train_sizes: list[int | None] | None = None,
 ) -> None:
-    iterator = ExperimentIterator(datasets, methods, ids)
+    iterator = ExperimentIterator(datasets, methods, seeds, folds, keys, train_sizes)
     total_runs = sum(len(run_ids) for _, run_ids in iterator)
 
     with tqdm(total=total_runs, desc="Downloading data") as pbar:
@@ -104,7 +128,6 @@ def download_data(
 def load_data(
     datasets: list[str] | None = None,
     methods: list[str] | None = None,
-    ids: list[int] | None = None,
 ) -> list[MethodData]:
     data = []
 
@@ -124,14 +147,11 @@ def load_data(
             if datasets is not None and dataset not in datasets:
                 continue
 
-            if ids is not None and id not in ids:
-                continue
-
-            data.append(load_method_data(dataset, id, file))
+            data.append(load_method_data(dataset, file))
 
     return data
 
 
 if __name__ == "__main__":
-    download_data()
+    download_data(keys=["complete_test"], train_sizes=[None])
     # load_data(datasets=["eesm19"], methods=["BitFit"])

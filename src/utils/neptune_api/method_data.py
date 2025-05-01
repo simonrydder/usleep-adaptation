@@ -66,7 +66,7 @@ def get_method_data(run_ids: list[str], pbar: tqdm | None = None) -> MethodData:
 
 def save_method_data(data: MethodData, key: str) -> None:
     filename = "_".join([data.method, key])
-    folder = os.path.join("results", data.dataset, str(data.key))
+    folder = os.path.join("results", data.dataset)
     file = os.path.join(folder, f"{filename}.json")
 
     if not os.path.exists(folder):
@@ -76,8 +76,8 @@ def save_method_data(data: MethodData, key: str) -> None:
         json.dump(data.model_dump(), f, indent=4)
 
 
-def load_method_data(dataset: str, key: str, method_file: str) -> MethodData:
-    file = os.path.join("results", dataset, str(key), method_file)
+def load_method_data(dataset: str, method_file: str) -> MethodData:
+    file = os.path.join("results", dataset, method_file)
     with open(file, "r") as f:
         data = json.load(f)
 
@@ -98,10 +98,10 @@ def _get_performance_list(
 
 def _add_index_columns(df: pl.DataFrame, data: MethodData) -> pl.DataFrame:
     return df.with_columns(
+        pl.lit(data.key).alias("key"),
         pl.lit(data.dataset).alias("dataset"),
         pl.lit(data.method).alias("method"),
-        pl.lit(data.fold),
-        pl.lit(data.id).alias("id"),
+        pl.lit(data.seed).alias("seed"),
     )
 
 
@@ -122,10 +122,12 @@ def extract_settings(data: MethodData) -> pl.DataFrame:
     return pl.concat(dfs, how="vertical")
 
 
-def extract_validation_data(data: MethodData) -> pl.DataFrame:
+def extract_validation_data(data: MethodData, train: bool = False) -> pl.DataFrame:
     dfs = []
     for fold, fold_data in data.folds.items():
-        validation = pl.DataFrame(fold_data.validation_step)
+        step_data = fold_data.train_step if train else fold_data.validation_step
+
+        validation = pl.DataFrame(step_data)
         validation = _add_index_columns(validation, data)
         validation = (
             validation.with_columns(pl.lit(fold).alias("fold"))
@@ -144,4 +146,5 @@ def extract_validation_data(data: MethodData) -> pl.DataFrame:
 if __name__ == "__main__":
     data = get_method_data(["US-3490"])
     save_method_data(data, "test")
+    loaded = load_method_data("eesm19", "LoRA10_test.json")
     pass

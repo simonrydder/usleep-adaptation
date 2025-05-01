@@ -20,9 +20,9 @@ tqdm_lock = Lock()
 
 
 class MethodData(BaseModel):
+    key: str
     method: str
     dataset: str
-    id: int
     model: str
     seed: int
     original_performance: list[PerformanceData]
@@ -52,13 +52,10 @@ def get_method_data(run_ids: list[str], pbar: tqdm | None = None) -> MethodData:
 
     assert experiment is not None
 
-    if isinstance(experiment.id, str):
-        experiment.id = int(experiment.id.split("_")[-1])  # type: ignore
-
     return MethodData(
+        key=experiment.key,
         method=experiment.method,
         dataset=experiment.dataset,
-        id=experiment.id,
         model=experiment.model,
         seed=experiment.seed,
         original_performance=org_performance,
@@ -69,7 +66,7 @@ def get_method_data(run_ids: list[str], pbar: tqdm | None = None) -> MethodData:
 
 def save_method_data(data: MethodData, key: str) -> None:
     filename = "_".join([data.method, key])
-    folder = os.path.join("results", data.dataset, str(data.id))
+    folder = os.path.join("results", data.dataset, str(data.key))
     file = os.path.join(folder, f"{filename}.json")
 
     if not os.path.exists(folder):
@@ -79,8 +76,8 @@ def save_method_data(data: MethodData, key: str) -> None:
         json.dump(data.model_dump(), f, indent=4)
 
 
-def load_method_data(dataset: str, id: str | int, method_file: str) -> MethodData:
-    file = os.path.join("results", dataset, str(id), method_file)
+def load_method_data(dataset: str, key: str, method_file: str) -> MethodData:
+    file = os.path.join("results", dataset, str(key), method_file)
     with open(file, "r") as f:
         data = json.load(f)
 
@@ -103,7 +100,7 @@ def _add_index_columns(df: pl.DataFrame, data: MethodData) -> pl.DataFrame:
     return df.with_columns(
         pl.lit(data.dataset).alias("dataset"),
         pl.lit(data.method).alias("method"),
-        pl.lit(data.fold)
+        pl.lit(data.fold),
         pl.lit(data.id).alias("id"),
     )
 
@@ -145,19 +142,6 @@ def extract_validation_data(data: MethodData) -> pl.DataFrame:
 
 
 if __name__ == "__main__":
-    data = get_method_data(
-        [
-            "US-2755",
-            "US-2751",
-            "US-2746",
-            "US-2738",
-            "US-2732",
-            "US-2727",
-            "US-2720",
-            "US-2708",
-            "US-2703",
-            "US-2684",
-        ]
-    )
-    save_method_data(data, "10GqLXxB3")
+    data = get_method_data(["US-3490"])
+    save_method_data(data, "test")
     pass

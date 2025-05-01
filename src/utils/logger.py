@@ -46,3 +46,8 @@ def add_tags(trainer: Trainer, *tags: str) -> None:
 def add_fold(trainer: Trainer, fold: int) -> None:
     if isinstance(trainer.logger, NeptuneLogger):
         trainer.logger.experiment["fold"] = fold
+
+
+def add_completed(trainer: Trainer) -> None:
+    if isinstance(trainer.logger, NeptuneLogger):
+        trainer.logger.experiment["completed"] = True

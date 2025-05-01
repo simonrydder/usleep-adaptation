@@ -31,7 +31,7 @@ def get_performance_data(run: Run, mode: str, type: str) -> list[PerformanceData
 
 
 if __name__ == "__main__":
-    run = get_run("US-523")
+    run = get_run("US-3490")
     x = get_performance_data(run, "new", "val")
     y = get_performance_data(run, "org", "test")
     pass

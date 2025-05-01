@@ -7,7 +7,7 @@ from src.concrete.standard_model_loader import StandardModelLoader
 from src.concrete.standard_model_trainer import StandardModelTrainer
 from src.config.config import load_config
 from src.config.experiment import Experiment
-from src.utils.logger import add_fold, log_size_of_datasets
+from src.utils.logger import add_completed, add_fold, log_size_of_datasets
 
 torch.set_float32_matmul_precision("medium")
 
@@ -36,13 +36,14 @@ def run_experiment(experiment: Experiment):
     trainer.test(org_model, test)
     trainer.fit(new_model, train, val)
     trainer.test(new_model, test, ckpt_path="best")
+    add_completed(trainer)
 
 
 if __name__ == "__main__":
     exp = Experiment(
         key="test",
         dataset="eesm19",
-        method="Full",
+        method="LoRA10",
         model="usleep",
         trainer="usleep_debug_neptune",
         train_size=None,

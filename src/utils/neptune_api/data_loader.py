@@ -41,7 +41,7 @@ class ExperimentIterator:
             .cast(pl.Int64())
             .alias("train_size"),
             pl.col("fold").cast(pl.Int64()).alias("fold"),
-        ).filter(pl.col("model").is_not_null())
+        ).filter(pl.col("completed") is True)
 
         if datasets is not None:
             self.runs = self.runs.filter(pl.col("dataset").is_in(datasets))

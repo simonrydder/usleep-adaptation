@@ -13,7 +13,7 @@ class DataConfig(BaseModel):
     sleep_epochs: int
     num_batches: int
     num_workers: int | tuple[int, int, int]
-    # train_size: int | None
+    train_size: int | None
     validation_size: int
     num_fold: int
     num_samples: int | None = None
@@ -26,9 +26,10 @@ class DataConfig(BaseModel):
         return {"train": v[0], "val": v[1], "test": v[2]}
 
 
-def get_data_config(file: str) -> DataConfig:
+def get_data_config(file: str, train_size: int | None) -> DataConfig:
     data_config_file = os.path.join("dataset", file)
     yaml_content = load_yaml_content(data_config_file)
+    yaml_content["train_size"] = train_size
     return DataConfig(**yaml_content)
 
 

@@ -1,4 +1,3 @@
-from lightning import seed_everything
 from pydantic import BaseModel
 
 from src.config._adapter_config import (
@@ -20,7 +19,6 @@ class Config(BaseModel):
 
 
 def load_config(experiment: Experiment) -> Config:
-    seed_everything(experiment.seed)
     return Config(
         model=get_model_config(experiment.model),
         data=get_data_config(experiment.dataset),
@@ -31,13 +29,4 @@ def load_config(experiment: Experiment) -> Config:
 
 
 if __name__ == "__main__":
-    conf = load_config(
-        Experiment(
-            dataset="eesm19",
-            method="bitfit",
-            model="usleep",
-            trainer="usleep",
-        )
-    )
-
     pass

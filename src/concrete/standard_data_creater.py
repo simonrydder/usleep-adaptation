@@ -1,6 +1,6 @@
 import os
 from itertools import chain
-from typing import Any, Iterator
+from typing import Any
 
 import h5py
 import numpy as np
@@ -20,7 +20,6 @@ class StandardDataCreater(DataCreater):
         self.batch_size = config.batch_size
         self._define_number_of_workers(config.num_workers)
         self.val_size = config.validation_size
-        self.train_size = config.train_size
 
         splitter = HDF5Splitter
         self.splitter = splitter(config)
@@ -30,31 +29,30 @@ class StandardDataCreater(DataCreater):
         subject_split = np.array_split(self.subjects, config.num_fold)
         self.folds = {fold: sub.tolist() for fold, sub in enumerate(subject_split)}
 
-    def __iter__(self) -> Iterator[tuple[DataLoader, DataLoader, DataLoader]]:
-        for fold, test in self.folds.items():
-            rest = list(
-                chain(*[subjects for i, subjects in self.folds.items() if i != fold])  # type: ignore
-            )
-            np.random.shuffle(rest)  # type: ignore
-            val = rest[: self.val_size]
-            end_idx = (
-                self.train_size
-                if self.train_size is None
-                else self.val_size + self.train_size
-            )
-            train = rest[self.val_size : end_idx]
+    def get_dataloaders(
+        self, fold: int, train_size: int | None
+    ) -> tuple[DataLoader, DataLoader, DataLoader]:
+        test = self.folds[fold]
 
-            self.train, self.validation, self.test = self.splitter.get_datasets(
-                train,
-                val,
-                test,  # type: ignore
-            )
+        rest = list(
+            chain(*[subjects for i, subjects in self.folds.items() if i != fold])  # type: ignore
+        )
+        np.random.shuffle(rest)  # type: ignore
+        val = rest[: self.val_size]
+        end_idx = train_size if train_size is None else self.val_size + train_size
+        train = rest[self.val_size : end_idx]
 
-            yield (
-                self.create_training_loader(),
-                self.create_validation_loader(),
-                self.create_test_loader(),
-            )
+        self.train, self.validation, self.test = self.splitter.get_datasets(
+            train,
+            val,
+            test,  # type: ignore
+        )
+
+        return (
+            self.create_training_loader(),
+            self.create_validation_loader(),
+            self.create_test_loader(),
+        )
 
     def create_training_loader(self) -> DataLoader:
         return DataLoader(

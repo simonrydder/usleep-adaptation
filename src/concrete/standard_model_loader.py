@@ -1,7 +1,6 @@
 from src.config.config import Config, ModelConfig
 from src.interfaces.framework_model import FrameworkModel
 from src.interfaces.model_loader import ModelLoader
-from src.utils.id_generation import generate_base62_id
 
 
 class StandardModelLoader(ModelLoader):
@@ -14,6 +13,5 @@ class StandardModelLoader(ModelLoader):
         model = self.model_cls.load_from_checkpoint(self.ckpt)
         setattr(model, "config", config.model_dump())
         setattr(model, "original_model", True)
-        setattr(model, "experiment_id", generate_base62_id())
 
         return model

@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 
 from src.config.experiment import Experiment
-from src.experiment import run_experiment
+from src.experiment_runner import run_experiment
 
 
 def main():

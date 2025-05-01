@@ -13,7 +13,7 @@ class DataConfig(BaseModel):
     sleep_epochs: int
     num_batches: int
     num_workers: int | tuple[int, int, int]
-    train_size: int | None
+    # train_size: int | None
     validation_size: int
     num_fold: int
     num_samples: int | None = None

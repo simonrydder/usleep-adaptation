@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Iterator
 
 from torch.utils.data import DataLoader
 
@@ -9,7 +8,9 @@ class DataCreater(ABC):
         super().__init__()
 
     @abstractmethod
-    def __iter__(self) -> Iterator[tuple[DataLoader, DataLoader, DataLoader]]:
+    def get_dataloaders(
+        self, fold: int, train_size: int | None
+    ) -> tuple[DataLoader, DataLoader, DataLoader]:
         pass
 
     @abstractmethod

@@ -103,6 +103,7 @@ def _add_index_columns(df: pl.DataFrame, data: MethodData) -> pl.DataFrame:
     return df.with_columns(
         pl.lit(data.dataset).alias("dataset"),
         pl.lit(data.method).alias("method"),
+        pl.lit(data.fold)
         pl.lit(data.id).alias("id"),
     )
 

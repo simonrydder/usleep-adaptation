@@ -4,43 +4,66 @@ import os
 import yaml
 from pydantic import BaseModel
 
+from src.config.utils import load_yaml_content
+from src.utils.id_generation import generate_base62_id
+
 _YAML_FOLDER = os.path.join("src", "config", "yaml")
 
 
 class Experiment(BaseModel):
+    key: str
     dataset: str
     method: str
     model: str
     trainer: str
-    id: int | str = 0
-    seed: int = 42
+    train_size: int | None
+    fold: int
+    seed: int
 
 
 def get_experiment_name(experiment: Experiment) -> str:
-    return "_".join([experiment.dataset, experiment.method, str(experiment.id)])
+    return "_".join(
+        [
+            experiment.dataset,
+            experiment.method,
+            str(experiment.fold),
+            experiment.key,
+        ]
+    )
 
 
 def generate_experiments(
-    datasets: list[str],
+    datasets: list[str] | None,
     methods: list[str] | None,
-    id: int,
+    train_size: int | None,
     seed: int = 42,
 ) -> list[Experiment]:
     if methods is None:
         methods = _get_yaml_methods()
 
+    if datasets is None:
+        datasets = _get_yaml_datasets()
+
     exps = []
     for dataset, method in itertools.product(datasets, methods):
-        exp = Experiment(
-            dataset=dataset,
-            method=method,
-            model="usleep",
-            trainer="usleep",
-            id=id,
-            seed=seed,
-        )
+        key = generate_base62_id()
 
-        exps.append(exp)
+        dataset_content = load_yaml_content(os.path.join("dataset", dataset))
+        num_fold = int(dataset_content["num_fold"])
+
+        for fold in range(num_fold):
+            exp = Experiment(
+                key=key,
+                dataset=dataset,
+                method=method,
+                model="usleep",
+                trainer="usleep",
+                train_size=train_size,
+                fold=fold,
+                seed=seed,
+            )
+
+            exps.append(exp)
 
     return exps
 
@@ -54,6 +77,17 @@ def _get_yaml_methods() -> list[str]:
     methods.remove("_default")
 
     return methods
+
+
+def _get_yaml_datasets() -> list[str]:
+    global _YAML_FOLDER
+
+    files = os.listdir(os.path.join(_YAML_FOLDER, "dataset"))
+    datasets = [f.split(".")[0] for f in files]
+
+    datasets.remove("_default")
+
+    return datasets
 
 
 def save_experiment(experiment: Experiment) -> None:

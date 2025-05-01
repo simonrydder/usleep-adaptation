@@ -132,26 +132,31 @@ def load_data(
     data = []
 
     root = "results"
-    for folder, _, files in os.walk(root):
-        for file in files:
-            method, _ = os.path.splitext(file)
+    for dataset in os.listdir(root):
+        folder = os.path.join(root, dataset)
+
+        if not os.path.isdir(folder):
+            continue
+
+        if datasets is not None and dataset not in datasets:
+            continue
+
+        for filename in os.listdir(folder):
+            file = os.path.join(folder, filename)
+
+            if not os.path.isfile(file):
+                continue
+
+            method = filename.split("_")[0]
 
             if methods is not None and method not in methods:
                 continue
 
-            folders = os.path.normpath(folder).split(os.sep)
-            assert len(folders) == 3, f"Unexpected folder structure: {folders}"
-            _, dataset, id = folders
-            id = int(id)
-
-            if datasets is not None and dataset not in datasets:
-                continue
-
-            data.append(load_method_data(dataset, file))
+            data.append(load_method_data(dataset, filename))
 
     return data
 
 
 if __name__ == "__main__":
-    download_data(keys=["complete_test"], train_sizes=[None])
-    # load_data(datasets=["eesm19"], methods=["BitFit"])
+    # download_data(keys=["complete_test"], train_sizes=[None])
+    load_data(datasets=["eesm19"], methods=["LoRA10"])

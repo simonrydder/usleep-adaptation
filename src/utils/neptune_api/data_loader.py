@@ -32,12 +32,15 @@ class ExperimentIterator:
 
         self.runs = self.raw_runs.select(
             pl.col("sys/id"),
-            pl.col("sys/tags").alias("tags"),
+            pl.col("model/config/experiment/key").cast(pl.String()).alias("key"),
             pl.col("model/config/experiment/dataset").cast(pl.String).alias("dataset"),
             pl.col("model/config/experiment/method").cast(pl.String).alias("method"),
-            pl.col("model/config/experiment/id").cast(pl.Int64()).alias("id"),
-            pl.col("model/config/experiment/seed").cast(pl.Int64()).alias("seed"),
             pl.col("model/config/experiment/model").cast(pl.String).alias("model"),
+            pl.col("model/config/experiment/seed").cast(pl.Int64()).alias("seed"),
+            pl.col("model/config/experiment/train_size")
+            .cast(pl.Int64())
+            .alias("train_size"),
+            pl.col("fold").cast(pl.Int64()).alias("fold"),
         ).filter(pl.col("model").is_not_null())
 
         if datasets is not None:
@@ -52,25 +55,7 @@ class ExperimentIterator:
         if seeds is not None:
             self.runs = self.runs.filter(pl.col("seed").is_in(seeds))
 
-        self.experiments = (
-            self.runs.with_columns(
-                pl.col("tags").str.split(",").alias("tag_parts"),
-                pl.concat_list(["dataset", "method", "id", "model", "seed"]).alias(
-                    "known_parts"
-                ),
-            )
-            .with_columns(
-                pl.struct(["tag_parts", "known_parts"])
-                .map_elements(
-                    lambda row: next(
-                        iter(set(row["tag_parts"]) - set(row["known_parts"])), None
-                    ),
-                    return_dtype=pl.String(),
-                )
-                .alias("key")
-            )
-            .select("sys/id", "key")
-        )
+        self.experiments = self.runs
 
         self.keys = (
             self.experiments.select("key")

@@ -34,7 +34,7 @@ def main():
         config = yaml.safe_load(f)
 
     experiment = Experiment(**config)
-    run_experiment(experiment, False)
+    run_experiment(experiment)
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ import torch
 from lightning import seed_everything
 
 from src.concrete.standard_adapter import StandardAdapter
-from src.concrete.standard_data_creater import StandardDataCreater
+from src.concrete.standard_data_creater import ImprovedDataCreater
 from src.concrete.standard_model_loader import StandardModelLoader
 from src.concrete.standard_model_trainer import StandardModelTrainer
 from src.config.config import load_config
@@ -19,7 +19,7 @@ def run_experiment(experiment: Experiment):
     model_loader = StandardModelLoader(config.model)
     org_model = model_loader.load_pretrained(config)
 
-    dataload_generator = StandardDataCreater(config.data)
+    dataload_generator = ImprovedDataCreater(config.data)
     train, val, test = dataload_generator.get_dataloaders(
         experiment.fold, experiment.train_size
     )

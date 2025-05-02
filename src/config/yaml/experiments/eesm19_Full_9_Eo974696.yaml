@@ -1,0 +1,8 @@
+dataset: eesm19
+fold: 9
+key: Eo974696
+method: Full
+model: usleep
+seed: 42
+train_size: null
+trainer: usleep

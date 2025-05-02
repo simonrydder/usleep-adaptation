@@ -4,12 +4,11 @@ if __name__ == "__main__":
     datasets = ["eesm19"]  # Datasets to generate experiments for.
     methods = [
         "Full",
-        "Fish",
-        "LoRA20",
     ]  # Methods to generate experiments for (None = 'all').
     train_size = None
-    folds = [1, 4]
+    folds = None
     seed = 42
+    key = "Eo974696"
 
     for exp in generate_experiments(
         datasets=datasets,
@@ -17,5 +16,6 @@ if __name__ == "__main__":
         train_size=train_size,
         seed=seed,
         folds=folds,
+        key=key,
     ):
         save_experiment(exp)

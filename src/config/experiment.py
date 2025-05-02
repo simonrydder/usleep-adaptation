@@ -38,6 +38,7 @@ def generate_experiments(
     folds: list[int] | None,
     train_size: int | None,
     seed: int = 42,
+    key: str | None = None,
 ) -> list[Experiment]:
     if methods is None:
         methods = _get_yaml_methods()
@@ -47,7 +48,8 @@ def generate_experiments(
 
     exps = []
     for dataset, method in itertools.product(datasets, methods):
-        key = generate_base62_id()
+        if key is None:
+            key = generate_base62_id()
 
         if folds is None:
             dataset_content = load_yaml_content(os.path.join("dataset", dataset))

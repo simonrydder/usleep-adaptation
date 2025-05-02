@@ -1,6 +1,7 @@
 import os
 from abc import ABC, abstractmethod
 from itertools import chain
+from time import sleep
 from typing import Any, Dict, Literal
 
 import h5py
@@ -384,7 +385,15 @@ class UsleepDataset(Dataset):
 
 class ImprovedDataCreater(DataCreater):
     def __init__(self, config: DataConfig) -> None:
-        self.data = load_hdf5_data(config.dataset)
+        for i in range(100):
+            try:
+                print(f"Reading data try number: {i + 1}")
+                self.data = load_hdf5_data(config.dataset)
+                break
+            except Exception:
+                sleep(0.5)
+                continue
+
         self._define_number_of_workers(config.num_workers)
         self.val_size = config.validation_size
         self.batch_size = config.batch_size

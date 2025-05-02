@@ -275,7 +275,8 @@ class RandomSampler(Sampler):
 
     def get_sample(self, data: HDF5Data, index: int) -> SampleData:
         records = data.get_record_names()
-        record = np.random.choice(records, 1)[0]
+        record_index = np.random.choice(range(len(records)), 1)[0]
+        record = records[record_index]
         session = self.get_session(data, record)
 
         hyp = session.hypnogram
@@ -467,7 +468,10 @@ if __name__ == "__main__":
 
     seed_everything(42)
     improved = ImprovedDataCreater(dcnf)
-    _, val, test = improved.get_dataloaders(1, None)
+    train, val, test = improved.get_dataloaders(1, None)
+
+    for loader in train, val, test:
+        fist = next(iter(loader))
 
     seed_everything(42)
     standard = StandardDataCreater(dcnf)

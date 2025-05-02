@@ -34,7 +34,16 @@ def main():
         config = yaml.safe_load(f)
 
     experiment = Experiment(**config)
-    run_experiment(experiment)
+    for i in range(10):
+        try:
+            run_experiment(experiment)
+            break  # Success
+        except RuntimeError as e:
+            if "miopenStatusInternalError" in str(e):
+                print(f"Retrying due to MIOpen error (attempt {i + 1})")
+                continue
+            else:
+                raise  # Re-raise unexpected RuntimeErrors
 
 
 if __name__ == "__main__":

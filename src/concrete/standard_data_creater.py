@@ -237,6 +237,9 @@ class Sampler(ABC):
         pass
 
     @abstractmethod
+    def __len__(self) -> int: ...
+
+    @abstractmethod
     def get_sample(self, data: HDF5Data, index: int) -> SampleData: ...
 
     @abstractmethod
@@ -262,10 +265,14 @@ class Sampler(ABC):
 
 
 class RandomSampler(Sampler):
-    def __init__(self, num_sleep_epochs: int):
+    def __init__(self, num_sleep_epochs: int, num_batches: int):
         self.num_sleep_epochs = num_sleep_epochs
         self.points_pr_sleep_epoch = 30 * 128
+        self.num_batches = num_batches
         super().__init__()
+
+    def __len__(self) -> int:
+        return self.num_batches
 
     def select_signal(self, channels: list[str]) -> str | None:
         try:
@@ -296,8 +303,8 @@ class RandomSampler(Sampler):
         x_end = end_index * self.points_pr_sleep_epoch
 
         return SampleData(
-            eeg=torch.tensor(session.psg[eeg_channel][x_start:x_end]),
-            eog=torch.tensor(session.psg[eog_channel][x_start:x_end]),
+            eeg=torch.tensor(session.psg[eeg_channel][x_start:x_end]).unsqueeze(0),
+            eog=torch.tensor(session.psg[eog_channel][x_start:x_end]).unsqueeze(0),
             labels=torch.tensor(hyp[start_index:end_index]),
             tag=TagData(
                 dataset=data.dataset,
@@ -312,6 +319,9 @@ class RandomSampler(Sampler):
 class DetermSampler(Sampler):
     def __init__(self):
         super().__init__()
+
+    def __len__(self) -> int:
+        return 1
 
     def select_signal(self, channels: list[str]) -> str | None:
         try:
@@ -336,8 +346,8 @@ class DetermSampler(Sampler):
         eog = session.psg[eog_channel]
 
         return SampleData(
-            eeg=torch.tensor(eeg),
-            eog=torch.tensor(eog),
+            eeg=torch.tensor(eeg).unsqueeze(0),
+            eog=torch.tensor(eog).unsqueeze(0),
             labels=torch.tensor(session.hypnogram),
             tag=TagData(
                 dataset=data.dataset,
@@ -359,7 +369,7 @@ class UsleepDataset(Dataset):
         self.print_report()
 
     def __len__(self) -> int:
-        return sum(
+        return len(self.sampler) * sum(
             len(subject_data.sessions) for subject_data in self.data.subjects.values()
         )
 
@@ -385,7 +395,7 @@ class ImprovedDataCreater(DataCreater):
         subject_split = np.array_split(self.subjects, config.num_fold)
         self.folds = {fold: sub.tolist() for fold, sub in enumerate(subject_split)}
 
-        self.random_sampler = RandomSampler(config.sleep_epochs)
+        self.random_sampler = RandomSampler(config.sleep_epochs, config.num_batches)
 
     def get_dataloaders(
         self, fold: int, train_size: int | None

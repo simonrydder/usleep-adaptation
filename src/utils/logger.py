@@ -25,9 +25,9 @@ def neptune_logger(name: str) -> Logger:
 def log_size_of_datasets(
     trainer: Trainer, train: DataLoader, val: DataLoader, test: DataLoader
 ) -> None:
-    train_size = train.dataset.sampler.num_records[0]  # type: ignore
-    val_size = val.dataset.sampler.num_samples  # type: ignore
-    test_size = test.dataset.sampler.num_samples  # type: ignore
+    train_size = len(train.dataset)  # type: ignore
+    val_size = len(val.dataset)  # type: ignore
+    test_size = len(test.dataset)  # type: ignore
 
     if isinstance(trainer.logger, NeptuneLogger):
         trainer.logger.experiment["model/config/data/sizes"] = {

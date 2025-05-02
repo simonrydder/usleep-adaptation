@@ -1,6 +1,8 @@
 dataset: eesm19
-id: 43
+fold: 1
+key: SMlwzqRy
 method: LoRA20
 model: usleep
-seed: 43
+seed: 42
+train_size: null
 trainer: usleep

@@ -1,6 +1,0 @@
-dataset: eesm19
-id: 43
-method: Full
-model: usleep
-seed: 43
-trainer: usleep

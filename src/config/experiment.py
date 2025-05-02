@@ -35,6 +35,7 @@ def get_experiment_name(experiment: Experiment) -> str:
 def generate_experiments(
     datasets: list[str] | None,
     methods: list[str] | None,
+    folds: list[int] | None,
     train_size: int | None,
     seed: int = 42,
 ) -> list[Experiment]:
@@ -48,10 +49,12 @@ def generate_experiments(
     for dataset, method in itertools.product(datasets, methods):
         key = generate_base62_id()
 
-        dataset_content = load_yaml_content(os.path.join("dataset", dataset))
-        num_fold = int(dataset_content["num_fold"])
+        if folds is None:
+            dataset_content = load_yaml_content(os.path.join("dataset", dataset))
+            num_fold = int(dataset_content["num_fold"])
+            folds = list(range(num_fold))
 
-        for fold in range(num_fold):
+        for fold in folds:
             exp = Experiment(
                 key=key,
                 dataset=dataset,

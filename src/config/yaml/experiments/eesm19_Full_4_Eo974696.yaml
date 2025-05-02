@@ -1,6 +1,8 @@
 dataset: eesm19
-id: 44
+fold: 4
+key: Eo974696
 method: Full
 model: usleep
-seed: 44
+seed: 42
+train_size: null
 trainer: usleep

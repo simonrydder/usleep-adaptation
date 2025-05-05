@@ -1,4 +1,8 @@
 import os
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
+
 import sys
 from pathlib import Path
 
@@ -6,8 +10,6 @@ import yaml
 
 from src.config.experiment import Experiment
 from src.experiment_runner import run_experiment
-
-os.environ["MIOPEN_ENABLE_SQLITE"] = "0"
 
 
 def main():

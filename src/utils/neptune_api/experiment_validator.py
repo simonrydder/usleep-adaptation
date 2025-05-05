@@ -8,15 +8,15 @@ def _get_runs_table() -> pl.DataFrame:
     runs_table = project.fetch_runs_table()
     df = pl.from_pandas(runs_table.to_pandas())
     transformed = df.select(
+        pl.col("sys/id"),
         pl.col("sys/failed").alias("failed"),
         pl.col("sys/tags").alias("tags"),
-        pl.col("sys/id"),
         pl.col("fold"),
         # pl.col("model/config/adapter/method").alias("method"),
         pl.col("model/config/data/dataset").alias("dataset"),
         pl.col("model/config/data/sizes/train").alias("train_size_records"),
         pl.col("model/config/data/train_size").alias("train_size_subjects"),
-        pl.col("model/config/experiment/id").alias("id"),
+        pl.col("model/config/experiment/key").alias("key"),
         pl.col("model/config/experiment/method").alias("method"),
     )
     return transformed
@@ -25,6 +25,7 @@ def _get_runs_table() -> pl.DataFrame:
 def validate_experiments() -> None:
     df = _get_runs_table()
     df = df.filter(pl.col("dataset").is_not_null())
+    failed = df.filter(pl.col("completed").is_not_null())
     count = (
         df.filter(~pl.col("failed"))
         .group_by(["dataset", "method", "id"])

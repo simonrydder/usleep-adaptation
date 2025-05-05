@@ -7,6 +7,8 @@ import yaml
 from src.config.experiment import Experiment
 from src.experiment_runner import run_experiment
 
+os.environ["MIOPEN_ENABLE_SQLITE"] = "0"
+
 
 def main():
     try:

@@ -16,7 +16,8 @@ def plot_kappa_vs_methods(show: bool = False) -> None:
 
 
 def get_kappa_data() -> pl.DataFrame:
-    raw_data = load_data(ids=[0])
+    # TODO: Filter to keep only rows with train_size = None
+    raw_data = load_data()
 
     dfs = []
     for method_data in raw_data:
@@ -28,8 +29,8 @@ def get_kappa_data() -> pl.DataFrame:
         dfs.append(kappa)
 
     df: pl.DataFrame = pl.concat(dfs, how="vertical")
-    single_org = df.unique(["record", "dataset", "method", "id"], keep="any")
-    result = single_org.select("dataset", "method", "id", "record", "kappa")
+    single_org = df.unique(["record", "dataset", "method", "key"], keep="any")
+    result = single_org.select("dataset", "method", "key", "record", "kappa")
     return result
 
 

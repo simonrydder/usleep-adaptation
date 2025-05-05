@@ -23,9 +23,13 @@ def neptune_logger(name: str) -> Logger:
 
 
 def log_size_of_datasets(
-    trainer: Trainer, train: DataLoader, val: DataLoader, test: DataLoader
+    trainer: Trainer,
+    train: DataLoader,
+    val: DataLoader,
+    test: DataLoader,
+    num_batches: int,
 ) -> None:
-    train_size = len(train.dataset)  # type: ignore
+    train_size = len(train.dataset) / num_batches  # type: ignore
     val_size = len(val.dataset)  # type: ignore
     test_size = len(test.dataset)  # type: ignore
 

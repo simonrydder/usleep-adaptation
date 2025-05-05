@@ -29,7 +29,7 @@ def run_experiment(experiment: Experiment):
     new_model = adapter.adapt(org_model, dataloader=train)
 
     trainer = StandardModelTrainer(config.trainer, config.experiment).get()
-    log_size_of_datasets(trainer, train, val, test)
+    log_size_of_datasets(trainer, train, val, test, config.data.num_batches)
     add_fold(trainer, experiment.fold)
 
     seed_everything(config.experiment.seed)

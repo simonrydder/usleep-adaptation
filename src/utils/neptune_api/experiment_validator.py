@@ -10,30 +10,36 @@ def _get_runs_table() -> pl.DataFrame:
     transformed = df.select(
         pl.col("sys/id"),
         pl.col("sys/failed").alias("failed"),
-        pl.col("sys/tags").alias("tags"),
+        pl.col("completed"),
         pl.col("fold"),
-        # pl.col("model/config/adapter/method").alias("method"),
         pl.col("model/config/data/dataset").alias("dataset"),
-        pl.col("model/config/data/sizes/train").alias("train_size_records"),
-        pl.col("model/config/data/train_size").alias("train_size_subjects"),
+        pl.col("model/config/data/sizes/train")
+        .cast(pl.Int32())
+        .alias("train_size_records"),
+        pl.col("model/config/experiment/train_size")
+        .cast(pl.Int32())
+        .alias("train_size_subjects"),
         pl.col("model/config/experiment/key").alias("key"),
         pl.col("model/config/experiment/method").alias("method"),
+        pl.col("model/config/experiment/seed").cast(pl.Int32()).alias("seed"),
     )
     return transformed
 
 
 def validate_experiments() -> None:
     df = _get_runs_table()
-    df = df.filter(pl.col("dataset").is_not_null())
-    failed = df.filter(pl.col("completed").is_not_null())
+    failed = df.filter(pl.col("completed").is_null())
+    completed = df.filter(pl.col("completed"))
     count = (
-        df.filter(~pl.col("failed"))
-        .group_by(["dataset", "method", "id"])
+        completed.group_by(["seed", "dataset", "train_size_records", "method"])
         .agg(pl.len())
-        .sort("dataset", "id", "method")
+        .sort("dataset", "method")
     )
-    pivot_df = count.pivot(on="dataset", index=["method", "id"], values="len")
-    id_dfs = [grp for _, grp in pivot_df.group_by("id")]
+
+    pivot_df = count.pivot(
+        on="dataset", index=["train_size_records", "seed", "method"], values="len"
+    )
+    id_dfs = [grp for _, grp in pivot_df.group_by("train_size_records")]
     pl.Config.set_tbl_rows(-1)
     for id_df in id_dfs:
         print(id_df)

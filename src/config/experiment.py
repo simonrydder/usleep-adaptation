@@ -22,7 +22,7 @@ class Experiment(BaseModel):
 
 
 def get_experiment_name(experiment: Experiment) -> str:
-    return "_".join(
+    return "-".join(
         [
             experiment.dataset,
             experiment.method,
@@ -49,7 +49,9 @@ def generate_experiments(
     exps = []
     for dataset, method in itertools.product(datasets, methods):
         if key is None:
-            key = generate_base62_id()
+            fold_key = generate_base62_id()
+        else:
+            fold_key = key
 
         if folds is None:
             dataset_content = load_yaml_content(os.path.join("dataset", dataset))
@@ -58,7 +60,7 @@ def generate_experiments(
 
         for fold in folds:
             exp = Experiment(
-                key=key,
+                key=fold_key,
                 dataset=dataset,
                 method=method,
                 model="usleep",

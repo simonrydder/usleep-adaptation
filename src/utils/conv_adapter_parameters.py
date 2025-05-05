@@ -27,7 +27,16 @@ def create_model(config: Config) -> FrameworkModel:
 
 
 def create_config(reduction: int | None, forward_pass: str, layer: bool) -> Config:
-    exp = Experiment(dataset="eesm19", method="PCA3", model="usleep", trainer="usleep")
+    exp = Experiment(
+        dataset="eesm19",
+        method="PCA3",
+        model="usleep",
+        trainer="usleep",
+        train_size=None,
+        fold=0,
+        seed=42,
+        key="",
+    )
     config = load_config(exp)
 
     config.adapter.settings.reduction = reduction

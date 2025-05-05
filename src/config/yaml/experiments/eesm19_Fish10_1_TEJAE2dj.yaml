@@ -1,8 +1,0 @@
-dataset: eesm19
-fold: 1
-key: TEJAE2dj
-method: Fish10
-model: usleep
-seed: 42
-train_size: null
-trainer: usleep

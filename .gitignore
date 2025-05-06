@@ -22,6 +22,7 @@ src/usleep/weights/
 lightning_logs/
 data/
 results/
+logs/
 ckpt_results/
 tests.py
 .env

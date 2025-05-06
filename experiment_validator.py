@@ -2,6 +2,8 @@ import os
 
 import polars as pl
 
+from experiment_setup_new import EXPERIMENT_SCHEMA
+from src.config.experiment import EXPERIMENTS_FOLDER
 from src.utils.neptune_api.neptune_api import get_project
 
 
@@ -20,71 +22,82 @@ def _get_runs_table() -> pl.DataFrame:
         .alias("train_size_records"),
         pl.col("model/config/experiment/train_size")
         .cast(pl.Int32())
-        .alias("train_size_subjects"),
+        .alias("train_size"),
         pl.col("model/config/experiment/key").alias("key"),
         pl.col("model/config/experiment/method").alias("method"),
+        pl.col("model/config/experiment/model").alias("model"),
+        pl.col("model/config/experiment/trainer").alias("trainer"),
         pl.col("model/config/experiment/seed").cast(pl.Int32()).alias("seed"),
     )
-    return transformed
-
-
-def validate_experiments() -> None:
-    df = _get_runs_table()
-    completed = df.filter(pl.col("completed"))
-    count = (
-        completed.group_by(["dataset", "train_size_records", "method"])
-        .agg(pl.len())
-        .sort("dataset", "method")
+    return transformed.with_columns(
+        [
+            pl.col(col).cast(dtype)
+            for col, dtype in EXPERIMENT_SCHEMA.items()
+            if col in df.columns
+        ]
     )
 
-    pivot_df = count.pivot(
-        on="dataset", index=["train_size_records", "method"], values="len"
-    ).sort("train_size_records")
-    id_dfs = [grp for _, grp in pivot_df.group_by("train_size_records")]
-    pl.Config.set_tbl_rows(-1)
-    for id_df in id_dfs:
-        print(id_df)
-        print()
 
-    sum_ = completed.group_by(["dataset"]).agg(
-        pl.len().alias("total"),
-    )
-    print(sum_.sort("dataset"))
-    print("Total runs:", sum_.sum().item(0, "total"))
-    print()
-    pl.Config.set_tbl_rows(None)
+def _get_experiment_table() -> pl.DataFrame:
+    dfs = []
+    for file in os.listdir(EXPERIMENTS_FOLDER):
+        if not file.endswith(".csv"):
+            continue
 
-
-def delete_experiments() -> None:
-    df = _get_runs_table()
-    df = df.filter(pl.col("completed"))
-    filenames = (
-        df.with_columns(
-            pl.concat_str(
-                pl.col("dataset"),
-                pl.col("method"),
-                pl.col("fold"),
-                pl.col("key"),
-                separator="-",
-            ).alias("filename")
+        df = pl.read_csv(
+            os.path.join(EXPERIMENTS_FOLDER, file), schema=EXPERIMENT_SCHEMA
         )
-        .get_column("filename")
-        .drop_nulls()
-        .to_list()
+        dfs.append(df)
+
+    df: pl.DataFrame = pl.concat(dfs, how="vertical")
+    return df
+
+
+def _update_status_to_match_completed(
+    experiments: pl.DataFrame, runs: pl.DataFrame
+) -> pl.DataFrame:
+    join_columns = [
+        "key",
+        "dataset",
+        "method",
+        "model",
+        "trainer",
+        "train_size",
+        "fold",
+        "seed",
+    ]
+
+    return (
+        experiments.join(runs, on=join_columns, how="left", nulls_equal=True)
+        .with_columns(
+            pl.when(pl.col("status_marker").is_not_null())
+            .then(pl.lit("done"))
+            .otherwise(pl.lit("pending"))
+            .alias("status")
+        )
+        .select(*EXPERIMENT_SCHEMA.keys())
     )
 
-    experiment_names = {f"{file}.yaml" for file in filenames}
-    exp_folder = os.path.join("src", "config", "yaml", "experiments")
-    experiment_files = set(os.listdir(exp_folder))
 
-    completed = experiment_files & experiment_names
+def experiment_validator() -> None:
+    df = _get_runs_table()
+    completed = df.filter(pl.col("completed")).with_columns(
+        pl.lit("done").alias("status_marker")
+    )
 
-    for file in completed:
-        os.remove(os.path.join(exp_folder, file))
+    experiments = _get_experiment_table()
+    updated = _update_status_to_match_completed(experiments, completed)
 
-    pass
+    grper = updated.group_by("dataset")
+    for _, grp in grper:
+        dataset = grp.item(0, "dataset")
+        grp.write_csv(os.path.join(EXPERIMENTS_FOLDER, f"{dataset}.csv"))
+
+    pending_count = grper.agg(
+        (pl.col("status") == "pending").sum().alias("pending_count")
+    ).sort("dataset")
+    print(pending_count)
 
 
 if __name__ == "__main__":
-    validate_experiments()
-    delete_experiments()
+    experiment_validator()

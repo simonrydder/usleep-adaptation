@@ -7,7 +7,8 @@ from pydantic import BaseModel
 from src.config.utils import load_yaml_content
 from src.utils.id_generation import generate_base62_id
 
-_YAML_FOLDER = os.path.join("src", "config", "yaml")
+YAML_FOLDER = os.path.join("src", "config", "yaml")
+EXPERIMENTS_FOLDER = os.path.join(YAML_FOLDER, "experiments")
 
 
 class Experiment(BaseModel):
@@ -76,9 +77,9 @@ def generate_experiments(
 
 
 def _get_yaml_methods() -> list[str]:
-    global _YAML_FOLDER
+    global YAML_FOLDER
 
-    files = os.listdir(os.path.join(_YAML_FOLDER, "adapter_method"))
+    files = os.listdir(os.path.join(YAML_FOLDER, "adapter_method"))
     methods = [f.split(".")[0] for f in files]
 
     methods.remove("_default")
@@ -87,9 +88,9 @@ def _get_yaml_methods() -> list[str]:
 
 
 def _get_yaml_datasets() -> list[str]:
-    global _YAML_FOLDER
+    global YAML_FOLDER
 
-    files = os.listdir(os.path.join(_YAML_FOLDER, "dataset"))
+    files = os.listdir(os.path.join(YAML_FOLDER, "dataset"))
     datasets = [f.split(".")[0] for f in files]
 
     datasets.remove("_default")
@@ -98,9 +99,9 @@ def _get_yaml_datasets() -> list[str]:
 
 
 def save_experiment(experiment: Experiment) -> None:
-    global _YAML_FOLDER
+    global YAML_FOLDER
     name = get_experiment_name(experiment)
     filename = f"{name}.yaml"
 
-    with open(os.path.join(_YAML_FOLDER, "experiments", filename), "w") as f:
+    with open(os.path.join(YAML_FOLDER, "experiments", filename), "w") as f:
         yaml.dump(experiment.model_dump(), f)

@@ -1,1 +1,3 @@
 default: !include _default.yaml
+model_summary_depth: 0
+

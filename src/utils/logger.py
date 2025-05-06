@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from lightning import Trainer
 from lightning.pytorch.loggers import Logger, NeptuneLogger
+from neptune import Run
 from torch.utils.data import DataLoader
 
 load_dotenv()
@@ -55,3 +56,10 @@ def add_fold(trainer: Trainer, fold: int) -> None:
 def add_completed(trainer: Trainer) -> None:
     if isinstance(trainer.logger, NeptuneLogger):
         trainer.logger.experiment["completed"] = True
+
+
+def stop_logger(trainer: Trainer) -> None:
+    logger = trainer.logger
+    if isinstance(logger, NeptuneLogger):
+        assert isinstance(logger.experiment, Run)
+        logger.experiment.stop()

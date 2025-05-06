@@ -1,3 +1,5 @@
+from time import sleep
+
 import torch
 from lightning import seed_everything
 
@@ -7,7 +9,7 @@ from src.concrete.standard_model_loader import StandardModelLoader
 from src.concrete.standard_model_trainer import StandardModelTrainer
 from src.config.config import load_config
 from src.config.experiment import Experiment
-from src.utils.logger import add_completed, add_fold, log_size_of_datasets
+from src.utils.logger import add_completed, add_fold, log_size_of_datasets, stop_logger
 
 torch.set_float32_matmul_precision("medium")
 
@@ -37,6 +39,9 @@ def run_experiment(experiment: Experiment):
     trainer.fit(new_model, train, val)
     trainer.test(new_model, test, ckpt_path="best")
     add_completed(trainer)
+    stop_logger(trainer)
+    print("Experiment: {get_experiment_name(experiment)} is done.")
+    sleep(0.5)
 
 
 if __name__ == "__main__":

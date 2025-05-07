@@ -25,6 +25,7 @@ class MethodData(BaseModel):
     dataset: str
     model: str
     seed: int
+    train_size: int | None = None
     original_performance: list[PerformanceData]
     new_performance: list[PerformanceData]
     folds: dict[int, FoldData]
@@ -58,6 +59,7 @@ def get_method_data(run_ids: list[str], pbar: tqdm | None = None) -> MethodData:
         dataset=experiment.dataset,
         model=experiment.model,
         seed=experiment.seed,
+        train_size=experiment.train_size,
         original_performance=org_performance,
         new_performance=new_performance,
         folds=folds,

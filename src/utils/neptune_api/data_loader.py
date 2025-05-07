@@ -23,7 +23,24 @@ class ExperimentIterator:
         folds: list[int] | None = None,
         keys: list[str] | None = None,
         train_sizes: list[int | None] | None = None,
+        reprocess: bool = False,
     ) -> None:
+        self._define_runs()
+        self._apply_filters(datasets, methods, seeds, folds, keys, train_sizes)
+
+        if not reprocess:
+            self._remove_processed()
+
+        self.experiments = self.runs
+
+        self.keys = (
+            self.experiments.select("key")
+            .unique(keep="any")
+            .sort("key")
+            .with_row_index()
+        )
+
+    def _define_runs(self) -> None:
         self.project = get_project()
         raw_runs: pd.DataFrame = self.project.fetch_runs_table(
             progress_bar=False
@@ -54,6 +71,15 @@ class ExperimentIterator:
                 pl.lit(None).cast(pl.Int16()).alias("train_size")
             )
 
+    def _apply_filters(
+        self,
+        datasets: list[str] | None = None,
+        methods: list[str] | None = None,
+        seeds: list[int] | None = None,
+        folds: list[int] | None = None,
+        keys: list[str] | None = None,
+        train_sizes: list[int | None] | None = None,
+    ) -> None:
         self.runs = self.runs.filter(pl.col("completed"))
 
         if datasets is not None:
@@ -76,14 +102,14 @@ class ExperimentIterator:
                 pl.col("train_size").is_in(train_sizes, nulls_equal=True)
             )
 
-        self.experiments = self.runs
+    def _remove_processed(self) -> None:
+        downloaded_keys = []
+        for _, _, filenames in os.walk("results"):
+            for filename in filenames:
+                key = filename.split("_")[1].split(".")[0]
+                downloaded_keys.append(os.path.join(key))
 
-        self.keys = (
-            self.experiments.select("key")
-            .unique(keep="any")
-            .sort("key")
-            .with_row_index()
-        )
+        self.runs = self.runs.filter(~pl.col("key").is_in(downloaded_keys))
 
     def __len__(self) -> int:
         return len(self.keys)
@@ -158,5 +184,5 @@ def load_data(
 
 
 if __name__ == "__main__":
-    # download_data(keys=["complete_test"], train_sizes=[None])
-    load_data(datasets=["eesm19"], methods=["LoRA10"])
+    download_data(datasets=["dod_h", "eesm23"])
+    # load_data()

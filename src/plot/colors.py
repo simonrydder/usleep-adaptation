@@ -4,8 +4,8 @@ pastel = sns.color_palette("pastel", 10)
 bright = sns.color_palette("bright", 10)
 
 BASE_COLOR = {
-    "dod-h": pastel[0],
-    "dod-o": pastel[1],
+    "dod_h": pastel[0],
+    "dod_o": pastel[1],
     "eesm19": pastel[2],
     "eesm23": pastel[3],
     "isruc_sg1": pastel[4],
@@ -17,8 +17,8 @@ BASE_COLOR = {
 }
 
 HIGHLIGHT_COLOR = {
-    "dod-h": bright[0],
-    "dod-o": bright[1],
+    "dod_h": bright[0],
+    "dod_o": bright[1],
     "eesm19": bright[2],
     "eesm23": bright[3],
     "isruc_sg1": bright[4],

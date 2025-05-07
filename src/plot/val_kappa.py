@@ -19,12 +19,15 @@ def plot_validation_kappa(cols: int = 4, show: bool = False) -> None:
 
 
 def _get_validation_kappa_data() -> pl.DataFrame:
-    raw_data = load_data(ids=[0])
+    raw_data = load_data()
 
     dfs = []
     for method_data in raw_data:
+        if method_data.train_size is not None:
+            continue
+
         val = extract_validation_data(method_data)
-        val = val.drop("accuracy", "loss", "f1", "id")
+        val = val.drop("accuracy", "loss", "f1")
         dfs.append(val)
 
     df = pl.concat(dfs, how="vertical")

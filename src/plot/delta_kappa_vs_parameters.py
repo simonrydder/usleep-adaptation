@@ -26,34 +26,42 @@ def plot_delta_kappa_vs_parameters(show: bool = False) -> None:
 
 
 def _get_delta_kappa_data() -> pl.DataFrame:
-    raw_data = load_data(ids=[0])
+    raw_data = load_data()
 
     dfs = []
     for method_data in raw_data:
+        if method_data.train_size is not None:
+            continue
+
         test = extract_performance(method_data, "new").drop("accuracy", "loss", "f1")
         base = extract_performance(method_data, "org").drop("accuracy", "loss", "f1")
 
         delta_kappa = test.join(
-            base, on=["method", "record", "dataset", "id"], how="inner", suffix="_base"
+            base, on=["method", "record", "dataset", "key"], how="inner", suffix="_base"
         ).with_columns((pl.col("kappa") - pl.col("kappa_base")).alias("delta_kappa"))
 
         parameters = (
             extract_settings(method_data)
-            .select("dataset", "id", "method", "free_parameters")
+            .select("dataset", "key", "method", "free_parameters")
             .unique(keep="any")
         )
         assert len(parameters) == 1, "Parameters should be the same for all folds"
 
         params_delta_kappa = delta_kappa.join(
-            parameters, on=["dataset", "method", "id"], how="left"
+            parameters, on=["dataset", "method", "key"], how="left"
         )
         dfs.append(params_delta_kappa)
 
     df: pl.DataFrame = pl.concat(dfs, how="vertical")
     selected = df.select(
-        "dataset", "method", "id", "kappa", "delta_kappa", "free_parameters"
+        "dataset",
+        "method",
+        "key",
+        "kappa",
+        "delta_kappa",
+        "free_parameters",
     )
-    delta_kappa_mean = selected.group_by(["dataset", "method", "id"]).agg(
+    delta_kappa_mean = selected.group_by(["dataset", "method", "key"]).agg(
         pl.col("kappa").mean(),
         pl.col("delta_kappa").mean(),
         pl.col("free_parameters").mean(),

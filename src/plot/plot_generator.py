@@ -16,5 +16,6 @@ def generate_plots() -> None:
 
 
 if __name__ == "__main__":
+    # download_data(datasets=["eesm19", "isruc_sg2", "isruc_sg3", ""])
     generate_plots()
     pass

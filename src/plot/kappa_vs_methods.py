@@ -21,6 +21,9 @@ def get_kappa_data() -> pl.DataFrame:
 
     dfs = []
     for method_data in raw_data:
+        if method_data.train_size is not None:
+            continue
+
         test = extract_performance(method_data, "new")
         base = extract_performance(method_data, "org").with_columns(
             pl.lit("original").alias("method")
@@ -29,7 +32,7 @@ def get_kappa_data() -> pl.DataFrame:
         dfs.append(kappa)
 
     df: pl.DataFrame = pl.concat(dfs, how="vertical")
-    single_org = df.unique(["record", "dataset", "method", "key"], keep="any")
+    single_org = df.unique(["record", "dataset", "method"], keep="any")
     result = single_org.select("dataset", "method", "key", "record", "kappa")
     return result
 

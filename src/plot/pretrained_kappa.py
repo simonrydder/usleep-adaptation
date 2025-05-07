@@ -14,10 +14,12 @@ def plot_pretrained_kappa_performance(show: bool = False) -> None:
 
 
 def _get_pretrained_kappa_data() -> pl.DataFrame:
-    raw_data = load_data(ids=[0])
+    raw_data = load_data()
 
     dfs = []
     for method_data in raw_data:
+        if method_data.train_size is not None:
+            continue
         base = extract_performance(method_data, "org")
         dfs.append(base)
 

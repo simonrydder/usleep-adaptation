@@ -16,7 +16,7 @@ def _get_runs_table() -> pl.DataFrame:
         pl.col("sys/failed").alias("failed"),
         pl.col("completed"),
         pl.col("fold"),
-        pl.col("model/config/data/dataset").alias("dataset"),
+        pl.col("model/config/experiment/dataset").alias("dataset"),
         pl.col("model/config/data/sizes/train")
         .cast(pl.Int32())
         .alias("train_size_records"),
@@ -99,5 +99,16 @@ def experiment_validator() -> None:
     print(pending_count)
 
 
+def print_duplicates():
+    df = _get_runs_table()
+    complete = df.filter(pl.col("completed"))
+
+    complete.filter(
+        pl.struct(["dataset", "method", "train_size", "seed", "fold"]).is_duplicated()
+    )
+    pass
+
+
 if __name__ == "__main__":
     experiment_validator()
+    # print_duplicates()

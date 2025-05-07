@@ -142,8 +142,11 @@ def download_data(
     folds: list[int] | None = None,
     keys: list[str] | None = None,
     train_sizes: list[int | None] | None = None,
+    reprocess: bool = False,
 ) -> None:
-    iterator = ExperimentIterator(datasets, methods, seeds, folds, keys, train_sizes)
+    iterator = ExperimentIterator(
+        datasets, methods, seeds, folds, keys, train_sizes, reprocess
+    )
     total_runs = sum(len(run_ids) for _, run_ids in iterator)
 
     with tqdm(total=total_runs, desc="Downloading data") as pbar:

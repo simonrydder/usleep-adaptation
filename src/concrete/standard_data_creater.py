@@ -181,7 +181,8 @@ def load_hdf5_data(dataset: str) -> HDF5Data:
     subjects: Dict[str, SubjectData] = {}
 
     with h5py.File(hdf5_file, "r") as hdf5:
-        data_group = hdf5["data"]
+        data_group = hdf5["data"] if "data" in hdf5 else hdf5
+
         for subject_id, subject_group in data_group.items():  # type: ignore
             session_dict: Dict[str, SessionData] = {}
             for session_id, session_group in subject_group.items():
@@ -390,7 +391,8 @@ class ImprovedDataCreater(DataCreater):
                 print(f"Reading data try number: {i + 1}")
                 self.data = load_hdf5_data(config.dataset)
                 break
-            except Exception:
+            except Exception as e:
+                print(e)
                 sleep(0.5)
                 continue
 

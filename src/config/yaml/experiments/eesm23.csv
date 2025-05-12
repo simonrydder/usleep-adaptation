@@ -197,8 +197,8 @@ index,key,dataset,method,model,trainer,train_size,fold,seed,status
 195,zH5gg84C,eesm23,LoRA10,usleep,usleep,8,5,42,done
 196,zH5gg84C,eesm23,LoRA10,usleep,usleep,8,6,42,done
 197,zH5gg84C,eesm23,LoRA10,usleep,usleep,8,7,42,done
-198,zH5gg84C,eesm23,LoRA10,usleep,usleep,8,8,42,pending
-199,zH5gg84C,eesm23,LoRA10,usleep,usleep,8,9,42,pending
+198,zH5gg84C,eesm23,LoRA10,usleep,usleep,8,8,42,done
+199,zH5gg84C,eesm23,LoRA10,usleep,usleep,8,9,42,done
 200,xZru5lZm,eesm23,LoRA10,usleep,usleep,,0,42,done
 201,xZru5lZm,eesm23,LoRA10,usleep,usleep,,1,42,done
 202,xZru5lZm,eesm23,LoRA10,usleep,usleep,,2,42,done
@@ -236,7 +236,7 @@ index,key,dataset,method,model,trainer,train_size,fold,seed,status
 234,mFApXTBE,eesm23,LoRA20,usleep,usleep,,4,42,done
 235,mFApXTBE,eesm23,LoRA20,usleep,usleep,,5,42,done
 236,mFApXTBE,eesm23,LoRA20,usleep,usleep,,6,42,done
-237,mFApXTBE,eesm23,LoRA20,usleep,usleep,,7,42,pending
+237,mFApXTBE,eesm23,LoRA20,usleep,usleep,,7,42,done
 238,mFApXTBE,eesm23,LoRA20,usleep,usleep,,8,42,done
 239,mFApXTBE,eesm23,LoRA20,usleep,usleep,,9,42,done
 240,45l6l95D,eesm23,LoRA50,usleep,usleep,4,0,42,done
@@ -331,7 +331,7 @@ index,key,dataset,method,model,trainer,train_size,fold,seed,status
 329,7pKxdvGt,eesm23,PCA20,usleep,usleep,,9,42,done
 330,1c8TK40EA,eesm23,PCA50,usleep,usleep,4,0,42,done
 331,1c8TK40EA,eesm23,PCA50,usleep,usleep,4,1,42,done
-332,1c8TK40EA,eesm23,PCA50,usleep,usleep,4,2,42,pending
+332,1c8TK40EA,eesm23,PCA50,usleep,usleep,4,2,42,done
 333,1c8TK40EA,eesm23,PCA50,usleep,usleep,4,3,42,done
 334,1c8TK40EA,eesm23,PCA50,usleep,usleep,4,4,42,done
 335,1c8TK40EA,eesm23,PCA50,usleep,usleep,4,5,42,done
@@ -513,7 +513,7 @@ index,key,dataset,method,model,trainer,train_size,fold,seed,status
 511,emB0FRwe,eesm23,SCA50,usleep,usleep,4,1,42,done
 512,emB0FRwe,eesm23,SCA50,usleep,usleep,4,2,42,done
 513,emB0FRwe,eesm23,SCA50,usleep,usleep,4,3,42,done
-514,emB0FRwe,eesm23,SCA50,usleep,usleep,4,4,42,pending
+514,emB0FRwe,eesm23,SCA50,usleep,usleep,4,4,42,done
 515,emB0FRwe,eesm23,SCA50,usleep,usleep,4,5,42,done
 516,emB0FRwe,eesm23,SCA50,usleep,usleep,4,6,42,done
 517,emB0FRwe,eesm23,SCA50,usleep,usleep,4,7,42,done

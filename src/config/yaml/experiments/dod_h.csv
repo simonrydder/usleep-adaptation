@@ -99,7 +99,7 @@ index,key,dataset,method,model,trainer,train_size,fold,seed,status
 97,usiCsGZP,dod_h,LoRA10,usleep,usleep,8,2,42,done
 98,usiCsGZP,dod_h,LoRA10,usleep,usleep,8,3,42,done
 99,usiCsGZP,dod_h,LoRA10,usleep,usleep,8,4,42,done
-100,oTKgVPy7,dod_h,LoRA10,usleep,usleep,,0,42,pending
+100,oTKgVPy7,dod_h,LoRA10,usleep,usleep,,0,42,done
 101,oTKgVPy7,dod_h,LoRA10,usleep,usleep,,1,42,done
 102,oTKgVPy7,dod_h,LoRA10,usleep,usleep,,2,42,done
 103,oTKgVPy7,dod_h,LoRA10,usleep,usleep,,3,42,done
@@ -114,7 +114,7 @@ index,key,dataset,method,model,trainer,train_size,fold,seed,status
 112,vyJftBia,dod_h,LoRA20,usleep,usleep,8,2,42,done
 113,vyJftBia,dod_h,LoRA20,usleep,usleep,8,3,42,done
 114,vyJftBia,dod_h,LoRA20,usleep,usleep,8,4,42,done
-115,A6XXpiYR,dod_h,LoRA20,usleep,usleep,,0,42,pending
+115,A6XXpiYR,dod_h,LoRA20,usleep,usleep,,0,42,done
 116,A6XXpiYR,dod_h,LoRA20,usleep,usleep,,1,42,done
 117,A6XXpiYR,dod_h,LoRA20,usleep,usleep,,2,42,done
 118,A6XXpiYR,dod_h,LoRA20,usleep,usleep,,3,42,done

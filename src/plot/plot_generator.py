@@ -1,3 +1,4 @@
+from src.plot.delta_kappa_training_size import plot_delta_kappa_vs_train_size
 from src.plot.delta_kappa_vs_parameters import plot_delta_kappa_vs_parameters
 from src.plot.kappa_vs_methods import plot_kappa_vs_methods
 from src.plot.pretrained_kappa import plot_pretrained_kappa_performance
@@ -11,6 +12,7 @@ def generate_plots() -> None:
     plot_kappa_vs_methods()
     plot_pretrained_kappa_performance()
     plot_delta_kappa_vs_parameters()
+    plot_delta_kappa_vs_train_size()
 
     # plot_delta_kappa_vs_methods(data, "eesm19")
 

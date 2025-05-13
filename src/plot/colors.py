@@ -12,7 +12,7 @@ BASE_COLOR = {
     "isruc_sg2": pastel[5],
     "isruc_sg3": pastel[6],
     "mass_c1": pastel[7],
-    "mass_c2": pastel[8],
+    "mass_c3": pastel[8],
     "svuh": pastel[9],
 }
 
@@ -25,6 +25,6 @@ HIGHLIGHT_COLOR = {
     "isruc_sg2": bright[5],
     "isruc_sg3": bright[6],
     "mass_c1": bright[7],
-    "mass_c2": bright[8],
+    "mass_c3": bright[8],
     "svuh": bright[9],
 }

@@ -118,6 +118,9 @@ def extract_settings(data: MethodData) -> pl.DataFrame:
     dfs = []
     for fold, fold_data in data.folds.items():
         fold_setting = extract_fold_settings(fold_data, fold)
+        fold_setting = fold_setting.with_columns(
+            pl.lit(fold_data.config.data.sizes.train).alias("train_size")
+        )
         df = _add_index_columns(fold_setting, data)
         dfs.append(df)
 

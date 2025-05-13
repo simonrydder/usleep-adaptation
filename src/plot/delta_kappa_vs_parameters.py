@@ -16,10 +16,10 @@ from src.utils.neptune_api.method_data import (
 def plot_delta_kappa_vs_parameters(show: bool = False) -> None:
     data = _get_delta_kappa_data()
     _plot_delta_kappe_vs_parameters_separate_datasets(
-        data, log=True, col_wrap=3, show=show
+        data, log=True, col_wrap=2, show=show
     )
     _plot_delta_kappe_vs_parameters_separate_datasets(
-        data, log=False, col_wrap=3, show=show
+        data, log=False, col_wrap=2, show=show
     )
     _plot_delta_kappa_vs_parameters_joined_datasets(data, log=True, show=show)
     _plot_delta_kappa_vs_parameters_joined_datasets(data, log=False, show=show)
@@ -140,7 +140,7 @@ def _plot_delta_kappa_vs_parameters_joined_datasets(
     plt.grid(True)
     # plt.tight_layout()
 
-    plt.subplots_adjust(left=0.09, right=0.97, top=0.83, bottom=0.1)
+    plt.subplots_adjust(left=0.09, right=0.97, top=0.93, bottom=0.1)
 
     if show:
         plt.show()

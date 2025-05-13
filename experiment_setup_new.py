@@ -114,7 +114,7 @@ def main() -> None:
         generate_experiments("dod_h", None, None, [4, 8, None]),
         generate_experiments("dod_o", None, None, [4, 8, 16, 32, None]),
         generate_experiments("eesm19", None, None, [1, 2, 4, 8, None]),
-        generate_experiments("eesm23", None, None, [4, 8, None]),
+        generate_experiments("eesm23", None, None, [2, 4, None]),
         generate_experiments("isruc_sg1", None, None, [4, 8, 16, 32, None]),
         generate_experiments("isruc_sg2", None, None, [None]),
         generate_experiments("isruc_sg3", None, None, [4, None]),

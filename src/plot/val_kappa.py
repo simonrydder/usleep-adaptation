@@ -11,7 +11,7 @@ from src.utils.neptune_api.method_data import (
 )
 
 
-def plot_validation_kappa(cols: int = 4, show: bool = False) -> None:
+def plot_validation_kappa(cols: int = 3, show: bool = False) -> None:
     df = _get_validation_kappa_data()
 
     for _, grp_df in df.group_by("dataset"):
@@ -108,4 +108,4 @@ def _plot_validation_kappa(data: pl.DataFrame, cols: int, show: bool) -> None:
 
 
 if __name__ == "__main__":
-    plot_validation_kappa(show=True, cols=3)
+    plot_validation_kappa()

@@ -1,3 +1,5 @@
+import polars as pl
+
 METHODS = [
     "Full",
     "SegCls",
@@ -22,3 +24,19 @@ METHODS = [
     "SCL20",
     "SCL50",
 ]
+
+ORDER_MAP = {name: i for i, name in enumerate(METHODS)}
+
+
+def sort_dataframe_by_method_order(df: pl.DataFrame) -> pl.DataFrame:
+    sorted = (
+        df.with_columns(
+            pl.col("method")
+            .map_elements(lambda x: ORDER_MAP.get(x, None))
+            .alias("sort_key")
+        )
+        .sort("sort_key")
+        .drop("sort_key")
+    )
+
+    return sorted

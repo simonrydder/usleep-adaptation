@@ -3,6 +3,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 from src.plot.colors import HIGHLIGHT_COLOR
+from src.plot.latex_table_formatter import highlight_and_color_cell
 from src.plot.methods import ORDER_MAP, sort_dataframe_by_method_order
 from src.utils.neptune_api.data_loader import load_data
 from src.utils.neptune_api.method_data import extract_validation_data
@@ -17,37 +18,17 @@ def convergence_plotting() -> None:
 
 
 def create_latex_table(data: pl.DataFrame) -> str:
+    avg = data.group_by("method", maintain_order=True).agg(
+        pl.col("max_epoch").mean().alias("avg")
+    )
     df_agg = data.group_by("method", "dataset", maintain_order=True).agg(
         pl.col("max_epoch").mean().alias("max_epoch_mean"),
-        pl.col("max_epoch").median().alias("max_epoch_median"),
     )
-    pivot_df = df_agg.pivot(index="method", on="dataset", values="max_epoch_mean")
-    pivot_df = pivot_df.with_columns(
-        pivot_df.drop("method").mean_horizontal().alias("avg")
-    )
+    pivot_values = df_agg.pivot(index="method", on="dataset", values="max_epoch_mean")
+    pivot_df = pivot_values.join(avg, on="method", how="left")
+
     df = pivot_df.to_pandas()
-    formatted_df = df.copy()
-
-    for col in df.columns[1:]:
-        col_vals = df[col]
-        min_val = int(round(col_vals.min(), 0))
-        sorted_vals = col_vals.sort_values().to_list()
-        # median_val = col_vals.median()
-
-        def format_cell(val):
-            val_int = int(round(val, 0))
-            color = "green!15" if val in sorted_vals[:10] else "red!15"
-            # color = "green!15" if val <= median_val else "red!15"
-            cell = rf"\cellcolor{{{color}}}"
-            if val_int == min_val:
-                return cell + rf"\underline{{\textbf{{{val_int}}}}}"
-            else:
-                return cell + str(val_int)
-
-        formatted_df[col] = col_vals.apply(format_cell)
-
-    # Ensure 'method' stays unchanged
-    formatted_df["method"] = df["method"]
+    formatted_df = highlight_and_color_cell(df)
 
     # Convert to LaTeX
     latex_str = formatted_df.to_latex(index=False, escape=False)

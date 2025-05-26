@@ -32,7 +32,7 @@ def sort_dataframe_by_method_order(df: pl.DataFrame) -> pl.DataFrame:
     sorted = (
         df.with_columns(
             pl.col("method")
-            .map_elements(lambda x: ORDER_MAP.get(x, None))
+            .map_elements(lambda x: ORDER_MAP.get(x, None), pl.Int128())
             .alias("sort_key")
         )
         .sort("sort_key")

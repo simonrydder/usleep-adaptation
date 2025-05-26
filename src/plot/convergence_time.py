@@ -60,7 +60,7 @@ def _get_data() -> pl.DataFrame:
 
 def plot_max_epoch_boxplot(data: pl.DataFrame) -> None:
     data = data.group_by("dataset", "method").agg(pl.col("max_epoch").median())
-    fig = plt.figure(figsize=(18, 6))
+    plt.figure(figsize=(18, 6))
     plt.subplots_adjust(left=0.05, right=0.97, top=0.95, bottom=0.07)
     sns.set_theme(style="whitegrid", context="paper")
 

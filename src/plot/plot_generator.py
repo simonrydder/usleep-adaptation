@@ -8,9 +8,9 @@ from src.plot.val_kappa import (
 
 
 def generate_plots() -> None:
+    plot_pretrained_kappa_performance()
     plot_validation_kappa()
     plot_kappa_vs_methods()
-    plot_pretrained_kappa_performance()
     plot_delta_kappa_vs_parameters()
     plot_delta_kappa_vs_train_size()
 

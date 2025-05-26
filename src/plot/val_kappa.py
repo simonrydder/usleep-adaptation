@@ -4,14 +4,14 @@ from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 
 from src.plot.colors import HIGHLIGHT_COLOR
-from src.utils.figures import save_figure
+from src.utils.figures import adjust_axis_font, save_figure
 from src.utils.neptune_api.data_loader import load_data
 from src.utils.neptune_api.method_data import (
     extract_validation_data,
 )
 
 
-def plot_validation_kappa(cols: int = 3, show: bool = False) -> None:
+def plot_validation_kappa(cols: int = 4, show: bool = False) -> None:
     df = _get_validation_kappa_data()
 
     for _, grp_df in df.group_by("dataset"):
@@ -46,9 +46,12 @@ def _plot_validation_kappa(data: pl.DataFrame, cols: int, show: bool) -> None:
         .sort("method")
     )
     fold_avg = epoch_df.group_by("epoch", "method").agg(pl.mean("kappa"))
-
-    epoch_df = epoch_df
-    fold_avg = fold_avg
+    max_epoch_mean = (
+        epoch_df.group_by("method", "fold")
+        .agg(pl.col("epoch").max())
+        .group_by("method")
+        .agg(pl.col("epoch").mean().alias("max_epoch_mean"))
+    )
 
     sns.set_theme(style="whitegrid", context="paper")
 
@@ -61,7 +64,7 @@ def _plot_validation_kappa(data: pl.DataFrame, cols: int, show: bool) -> None:
         height=2.5,
         aspect=1.5,
     )
-    g.set_titles(template="{col_name}", size=11)
+    g.set_titles(template="{col_name}", size=15)
 
     g.map_dataframe(
         sns.lineplot,
@@ -75,7 +78,12 @@ def _plot_validation_kappa(data: pl.DataFrame, cols: int, show: bool) -> None:
     )
     for i, (ax, method) in enumerate(zip(g.axes.flatten(), g.col_names)):
         assert isinstance(ax, Axes)
-        method_df = fold_avg.filter(pl.col("method") == method)
+        epoch_limit = max_epoch_mean.filter(pl.col("method") == method).item(
+            0, "max_epoch_mean"
+        )
+        method_df = fold_avg.filter(
+            pl.col("method") == method, pl.col("epoch") <= int(round(epoch_limit, 0))
+        )
         sns.lineplot(
             data=method_df,
             x="epoch",
@@ -90,15 +98,18 @@ def _plot_validation_kappa(data: pl.DataFrame, cols: int, show: bool) -> None:
                 loc="upper right",
                 bbox_to_anchor=(0.99, 0.97),
                 bbox_transform=g.figure.transFigure,
-                prop={"size": 10},
+                prop={"size": 14},
             )
 
         ax.set_ylim((0.0, 0.9))
 
-    g.set_axis_labels("Epoch", "Kappa", fontsize=10)
+        adjust_axis_font(ax.yaxis, size=12)
+        adjust_axis_font(ax.xaxis, size=12)
+
+    g.set_axis_labels("Epoch", "Kappa", fontsize=14)
     g.figure.subplots_adjust(top=0.925)
     g.figure.suptitle(
-        f"{dataset.upper()} - Validation Kappa for each Method", fontsize=14
+        f"{dataset.upper()} - Validation Kappa for each Method", fontsize=18
     )
 
     save_figure(g.figure, f"figures/{dataset}_validation_kappa.png")

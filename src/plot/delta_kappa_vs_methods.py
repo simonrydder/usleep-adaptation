@@ -1,59 +1,106 @@
-import os
-
 import matplotlib.pyplot as plt
 import polars as pl
 import seaborn as sns
 
-from src.utils.neptune_api.method_data import MethodData, extract_performance
+from src.plot.colors import HIGHLIGHT_COLOR
+from src.utils.figures import adjust_axis_font
+from src.utils.neptune_api.data_loader import load_data
+from src.utils.neptune_api.method_data import extract_performance
 
 
-def plot_delta_kappa_vs_methods(
-    data: list[MethodData], dataset: str, show: bool = False
-) -> None:
-    df = prepare_data(data)
-    df = df.to_pandas()
+def joined_delta_kappa_vs_methods_plot() -> None:
+    df = _get_data()
+    plot_joined_delta_kappa_vs_methods(df)
+
+
+def plot_joined_delta_kappa_vs_methods(data: pl.DataFrame) -> None:
+    overall_avg = data.group_by("method").agg(pl.col("delta_kappa").mean())
+    dataset_avg = data.group_by("dataset", "method").agg(pl.col("delta_kappa").mean())
+
+    overall_avg = overall_avg.sort("delta_kappa")
+    dataset_avg = dataset_avg.sort("delta_kappa")
 
     plt.figure(figsize=(18, 6))
-    plt.subplots_adjust(left=0.05, right=0.97, top=0.95, bottom=0.07)
     sns.set_theme(style="whitegrid", context="paper")
-    sns.boxplot(data=df, x="method", y="delta_kappa", showfliers=False, fill=True)
+
+    method_order = overall_avg.sort("delta_kappa").get_column("method").to_list()
+    ax = sns.boxplot(
+        data=data,
+        x="method",
+        y="delta_kappa",
+        # showfliers=False,
+        fill=False,
+        color="black",
+        order=method_order,
+        showfliers=False,
+    )
+
     sns.swarmplot(
-        data=df, x="method", y="delta_kappa", color="black", alpha=0.7, size=3
+        data=dataset_avg,
+        x="method",
+        y="delta_kappa",
+        hue="dataset",
+        palette=HIGHLIGHT_COLOR,
+        alpha=0.7,
+        size=5,
+        order=method_order,
+        ax=ax,
     )
 
-    # group_means = df.groupby("method")["delta_kappa"].mean()
+    # ax = sns.violinplot(
+    #     data=data,
+    #     x="method",
+    #     y="delta_kappa",
+    #     # showfliers=False,
+    #     fill=False,
+    #     color="black",
+    #     order=method_order,
+    #     inner="quart",
+    # )
 
-    plt.title(f"{dataset} - Delta Kappa by Method", fontdict={"size": 14})
-    plt.xlabel("Method")
-    plt.ylabel("Delta Kappa")
-    # plt.tight_layout()
+    plt.suptitle("Delta Kappa vs. Method", size=14)
+    plt.subplots_adjust(left=0.05, right=0.97, top=0.86, bottom=0.11)
+    plt.xlabel("Method", fontsize=12)
+    plt.ylabel("Kappa", fontsize=12)
+    plt.xticks(rotation=20, ha="center")
 
-    folder = os.path.join("figures", dataset)
-    if not os.path.exists(folder):
-        os.makedirs(folder)
+    adjust_axis_font(ax.xaxis, size=10)
+    adjust_axis_font(ax.yaxis, size=10)
 
-    plt.savefig(f"figures/{dataset}/delta_kappa_vs_method.png", dpi=300)
-
-    if show:
-        plt.show()
-    pass
-
-
-def prepare_data(data: list[MethodData]) -> pl.DataFrame:
-    base = extract_performance(data, "org")
-    test = extract_performance(data, "new")
-
-    delta_kappa = (
-        test.join(base, on=["method", "record"], how="left", suffix="_base")
-        .with_columns((pl.col("kappa") - pl.col("kappa_base")).alias("delta_kappa"))
-        .select("method", "record", "delta_kappa", "kappa", "kappa_base")
+    secax = ax.secondary_xaxis("top")
+    secax.set_xticks(range(len(method_order)))
+    secax.set_xticklabels(
+        [f"{mean:.3f}" for mean in overall_avg.get_column("delta_kappa")],
+        ha="center",
+        fontsize=10,
+        fontweight="bold",
     )
+    secax.set_xlabel("Mean Kappa", fontsize=12)
 
-    return delta_kappa
+
+def _get_data() -> pl.DataFrame:
+    raw_data = load_data()
+
+    dfs = []
+    for method_data in raw_data:
+        if method_data.train_size is not None:
+            continue
+
+        test = extract_performance(method_data, "new").select(
+            "dataset", "method", "record", "kappa"
+        )
+        base = extract_performance(method_data, "org").select(
+            "dataset", "method", "record", pl.col("kappa").alias("base_kappa")
+        )
+        delta_kappa = test.join(
+            base, on=["dataset", "method", "record"], how="left"
+        ).with_columns((pl.col("kappa") - pl.col("base_kappa")).alias("delta_kappa"))
+
+        dfs.append(delta_kappa)
+
+    df: pl.DataFrame = pl.concat(dfs, how="vertical")
+    return df.sort("dataset", "method")
 
 
 if __name__ == "__main__":
-    from src.utils.neptune_api.data_loader import load_data
-
-    data = load_data(datasets=["eesm19"], ids=[3])
-    plot_delta_kappa_vs_methods(data, "eesm19", show=True)
+    joined_delta_kappa_vs_methods_plot()

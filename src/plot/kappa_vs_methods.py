@@ -75,7 +75,7 @@ def _plot_kappa_vs_methods(data: pl.DataFrame, show: bool = False) -> None:
         ax=ax,
     )
 
-    plt.suptitle(f"{dataset.upper()} - Kappa by Method", size=14)
+    plt.suptitle(f"{dataset.upper()} - Kappa vs. Method", size=14)
     plt.xlabel("Method", fontsize=12)
     plt.ylabel("Kappa", fontsize=12)
     plt.xticks(rotation=20, ha="center")

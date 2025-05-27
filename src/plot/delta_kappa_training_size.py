@@ -50,7 +50,7 @@ def _get_delta_kappa_data() -> pl.DataFrame:
         dfs.append(train_size_delta_kappa)
 
     df: pl.DataFrame = pl.concat(dfs, how="vertical")
-    delta_kappa_mean = df.group_by(["dataset", "method", "key"]).agg(
+    delta_kappa_mean = df.group_by(["dataset", "method", "train_size"]).agg(
         pl.col("kappa").mean(),
         pl.col("delta_kappa").mean(),
         pl.col("train_size").max(),

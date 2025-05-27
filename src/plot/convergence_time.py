@@ -11,8 +11,8 @@ from src.utils.neptune_api.method_data import extract_validation_data
 
 def convergence_plotting() -> None:
     df = _get_data()
-    create_latex_table(df)
-    plot_max_epoch_boxplot(df)
+    print(create_latex_table(df))
+    # plot_max_epoch_boxplot(df)
 
     pass
 
@@ -32,7 +32,6 @@ def create_latex_table(data: pl.DataFrame) -> str:
 
     # Convert to LaTeX
     latex_str = formatted_df.to_latex(index=False, escape=False)
-    print(latex_str)
     return latex_str
 
 

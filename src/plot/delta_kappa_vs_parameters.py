@@ -1,10 +1,13 @@
 import numpy as np
+import pandas as pd
 import polars as pl
 import seaborn as sns
 from matplotlib import pyplot as plt
+from matplotlib.axes import Axes
 from matplotlib.ticker import FuncFormatter, LogLocator, ScalarFormatter
+from scipy.stats import linregress
 
-from src.plot.colors import HIGHLIGHT_COLOR
+from src.plot.colors import BASE_COLOR, HIGHLIGHT_COLOR
 from src.utils.figures import adjust_axis_font, save_figure
 from src.utils.neptune_api.data_loader import load_data
 from src.utils.neptune_api.method_data import (
@@ -16,10 +19,10 @@ from src.utils.neptune_api.method_data import (
 def plot_delta_kappa_vs_parameters(show: bool = False) -> None:
     data = _get_delta_kappa_data()
     _plot_delta_kappe_vs_parameters_separate_datasets(
-        data, log=True, col_wrap=2, show=show
+        data, log=False, col_wrap=3, show=show
     )
     _plot_delta_kappe_vs_parameters_separate_datasets(
-        data, log=False, col_wrap=2, show=show
+        data, log=True, col_wrap=3, show=show
     )
     _plot_delta_kappa_vs_parameters_joined_datasets(data, log=True, show=show)
     _plot_delta_kappa_vs_parameters_joined_datasets(data, log=False, show=show)
@@ -71,7 +74,7 @@ def _get_delta_kappa_data() -> pl.DataFrame:
 
 
 def _plot_delta_kappa_vs_parameters(
-    data: pl.DataFrame,
+    data: pl.DataFrame | pd.DataFrame,
     log: bool,
     full_params: int,
     color=None,
@@ -80,12 +83,16 @@ def _plot_delta_kappa_vs_parameters(
 ):
     ax = plt.gca()
 
+    if isinstance(data, pd.DataFrame):
+        dataset: str = data.iloc[0, 0]  # type: ignore
+    else:
+        dataset: str = data.item(0, "dataset")
+
     sns.scatterplot(
         data=data,
         x="free_parameters",
         y="delta_kappa",
-        hue="dataset",
-        palette=HIGHLIGHT_COLOR,
+        color=HIGHLIGHT_COLOR[dataset],
         alpha=0.6,
         ax=ax,
     )
@@ -112,16 +119,12 @@ def _plot_delta_kappa_vs_parameters(
         is_top_row = True
 
     secax = ax.secondary_xaxis("top", functions=(params_to_percent, percent_to_params))
-    if is_top_row:
-        secax.set_xlabel("% of Free Parameters", fontsize=12)
-    else:
-        secax.set_xlabel("")
-    percent_formatter = FuncFormatter(lambda x, _: f"{x}%")
+    secax.set_xlabel("% of Free Parameters" if is_top_row else "", fontsize=12)
+    secax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: f"{x:.0f}%"))
 
-    secax.xaxis.set_major_formatter(percent_formatter)
-    adjust_axis_font(ax.xaxis, size=10)
-    adjust_axis_font(ax.yaxis, size=10)
-    adjust_axis_font(secax.xaxis, size=10)
+    adjust_axis_font(ax.xaxis, size=12)
+    adjust_axis_font(ax.yaxis, size=12)
+    adjust_axis_font(secax.xaxis, size=12)
     ax.spines["right"].set_visible(True)
     ax.grid(True)
 
@@ -176,14 +179,39 @@ def _plot_delta_kappe_vs_parameters_separate_datasets(
 
     g.set_titles(template="{col_name}", size=13)
     g.figure.subplots_adjust(
-        # top=0.85,
-        top=0.72,
+        top=0.89,
+        bottom=0.055,
+        left=0.055,
+        right=0.97,
         wspace=0.09,
         hspace=0.33,
     )
     g.figure.suptitle(
         "Delta Kappa vs. Number of Free Parameters by Dataset", fontsize=15
     )
+
+    for ax in g.axes.flatten():
+        for line in ax.get_ygridlines():
+            if line.get_ydata()[0] == 0:
+                # line.set_linewidth(1.5)  # or whatever width you prefer
+                line.set_color("black")
+
+    for ax, (_, df) in zip(g.axes.flatten(), data.group_by("dataset")):
+        assert isinstance(ax, Axes)
+        color = BASE_COLOR[df.item(0, "dataset").lower()]
+        x = df.get_column("free_parameters").to_numpy()
+        y = df.get_column("delta_kappa").to_numpy()
+        mask = np.isfinite(x) & np.isfinite(y) & (x > 0)
+        x, y = x[mask], y[mask]
+
+        slope, intercept, *_ = linregress(x, y)
+        x_fit = np.linspace(x.min(), x.max(), 100)
+        y_fit = intercept + slope * (x_fit)
+        add = "-" if intercept < 0 else "+"  # type: ignore
+        label = rf"$y = {slope * x.max():.3f}x {add} {abs(intercept):.3f}$"
+        ax.plot(x_fit, y_fit, color=color, label=label, linewidth=2)
+        ax.legend(loc="best", fontsize=9, frameon=True)
+        pass
 
     save_figure(
         g.figure, f"figures/delta_kappa_vs_parameters{'_log' if log else ''}.png"
@@ -196,4 +224,4 @@ def _plot_delta_kappe_vs_parameters_separate_datasets(
 
 
 if __name__ == "__main__":
-    plot_delta_kappa_vs_parameters(show=True)
+    plot_delta_kappa_vs_parameters()

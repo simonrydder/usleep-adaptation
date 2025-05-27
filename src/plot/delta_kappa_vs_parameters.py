@@ -7,7 +7,7 @@ from matplotlib.axes import Axes
 from matplotlib.ticker import FuncFormatter, LogLocator, ScalarFormatter
 from scipy.stats import linregress
 
-from src.plot.colors import BASE_COLOR, HIGHLIGHT_COLOR
+from src.plot.colors import HIGHLIGHT_COLOR
 from src.utils.figures import adjust_axis_font, save_figure
 from src.utils.neptune_api.data_loader import load_data
 from src.utils.neptune_api.method_data import (
@@ -164,7 +164,7 @@ def _plot_delta_kappe_vs_parameters_separate_datasets(
         col="dataset",
         sharex=True,
         sharey=True,
-        height=4,
+        height=3.5,
         aspect=1.5,
         col_wrap=col_wrap,
     )
@@ -178,16 +178,21 @@ def _plot_delta_kappe_vs_parameters_separate_datasets(
     )
 
     g.set_titles(template="{col_name}", size=13)
+    left_bbox = 0.065
+    right_bbox = 0.97
     g.figure.subplots_adjust(
-        top=0.89,
-        bottom=0.055,
-        left=0.055,
-        right=0.97,
-        wspace=0.09,
-        hspace=0.33,
+        top=0.87,
+        bottom=0.075,
+        left=left_bbox,
+        right=right_bbox,
+        wspace=0.08,
+        hspace=0.37,
     )
     g.figure.suptitle(
-        "Delta Kappa vs. Number of Free Parameters by Dataset", fontsize=15
+        "Delta Kappa vs. Number of Free Parameters by Dataset",
+        fontsize=15,
+        x=(right_bbox + left_bbox) / 2,
+        ha="center",
     )
 
     for ax in g.axes.flatten():
@@ -196,9 +201,9 @@ def _plot_delta_kappe_vs_parameters_separate_datasets(
                 # line.set_linewidth(1.5)  # or whatever width you prefer
                 line.set_color("black")
 
-    for ax, (_, df) in zip(g.axes.flatten(), data.group_by("dataset")):
+    for i, (ax, (_, df)) in enumerate(zip(g.axes.flatten(), data.group_by("dataset"))):
         assert isinstance(ax, Axes)
-        color = BASE_COLOR[df.item(0, "dataset").lower()]
+        color = HIGHLIGHT_COLOR[df.item(0, "dataset").lower()]
         x = df.get_column("free_parameters").to_numpy()
         y = df.get_column("delta_kappa").to_numpy()
         mask = np.isfinite(x) & np.isfinite(y) & (x > 0)
@@ -209,8 +214,9 @@ def _plot_delta_kappe_vs_parameters_separate_datasets(
         y_fit = intercept + slope * (x_fit)
         add = "-" if intercept < 0 else "+"  # type: ignore
         label = rf"$y = {slope * x.max():.3f}x {add} {abs(intercept):.3f}$"
-        ax.plot(x_fit, y_fit, color=color, label=label, linewidth=2)
-        ax.legend(loc="best", fontsize=9, frameon=True)
+        ax.plot(x_fit, y_fit, color=(*color, 0.6), label=label, linewidth=2)
+        location = "upper right" if i in [4] else "lower right"
+        ax.legend(loc=location, fontsize=11, frameon=True)
         pass
 
     save_figure(

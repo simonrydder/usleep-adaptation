@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 
 from src.plot.colors import HIGHLIGHT_COLOR
+from src.plot.methods import sort_dataframe_by_method_order
 from src.utils.figures import adjust_axis_font, save_figure
 from src.utils.neptune_api.data_loader import load_data
 from src.utils.neptune_api.method_data import (
@@ -32,7 +33,7 @@ def _get_validation_kappa_data() -> pl.DataFrame:
 
     df = pl.concat(dfs, how="vertical")
 
-    return df
+    return sort_dataframe_by_method_order(df)
 
 
 def _plot_validation_kappa(data: pl.DataFrame, cols: int, show: bool) -> None:

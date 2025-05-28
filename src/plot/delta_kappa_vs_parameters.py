@@ -16,16 +16,33 @@ from src.utils.neptune_api.method_data import (
 )
 
 
-def plot_delta_kappa_vs_parameters(show: bool = False) -> None:
+def plot_delta_kappa_vs_parameters() -> None:
     data = _get_delta_kappa_data()
+    full_train_size = data.sort("train_size").unique(
+        ["dataset", "method"], keep="last", maintain_order=True
+    )
+
+    min_train_size = data.sort("train_size").unique(
+        ["dataset", "method"], keep="first", maintain_order=True
+    )
+
+    cols = 3
     _plot_delta_kappe_vs_parameters_separate_datasets(
-        data, log=False, col_wrap=3, show=show
+        full_train_size, log=False, col_wrap=cols, prefix="full"
     )
     _plot_delta_kappe_vs_parameters_separate_datasets(
-        data, log=True, col_wrap=3, show=show
+        min_train_size, log=False, col_wrap=cols, prefix="min"
     )
-    _plot_delta_kappa_vs_parameters_joined_datasets(data, log=True, show=show)
-    _plot_delta_kappa_vs_parameters_joined_datasets(data, log=False, show=show)
+
+    _plot_delta_kappe_vs_parameters_separate_datasets(
+        full_train_size, log=True, col_wrap=cols, prefix="full"
+    )
+    _plot_delta_kappe_vs_parameters_separate_datasets(
+        min_train_size, log=True, col_wrap=cols, prefix="min"
+    )
+
+    # _plot_delta_kappa_vs_parameters_joined_datasets(data, log=True, show=show)
+    # _plot_delta_kappa_vs_parameters_joined_datasets(data, log=False, show=show)
 
 
 def _get_delta_kappa_data() -> pl.DataFrame:
@@ -33,8 +50,8 @@ def _get_delta_kappa_data() -> pl.DataFrame:
 
     dfs = []
     for method_data in raw_data:
-        if method_data.train_size is not None:
-            continue
+        # if method_data.train_size is not None:
+        #     continue
 
         test = extract_performance(method_data, "new").drop("accuracy", "loss", "f1")
         base = extract_performance(method_data, "org").drop("accuracy", "loss", "f1")
@@ -45,8 +62,9 @@ def _get_delta_kappa_data() -> pl.DataFrame:
 
         parameters = (
             extract_settings(method_data)
-            .select("dataset", "key", "method", "free_parameters")
-            .unique(keep="any")
+            .select("dataset", "key", "method", "free_parameters", "train_size")
+            .sort("train_size")
+            .unique(["dataset", "key", "method", "free_parameters"], keep="first")
         )
         assert len(parameters) == 1, "Parameters should be the same for all folds"
 
@@ -63,11 +81,13 @@ def _get_delta_kappa_data() -> pl.DataFrame:
         "kappa",
         "delta_kappa",
         "free_parameters",
+        "train_size",
     )
     delta_kappa_mean = selected.group_by(["dataset", "method", "key"]).agg(
         pl.col("kappa").mean(),
         pl.col("delta_kappa").mean(),
         pl.col("free_parameters").mean(),
+        pl.col("train_size").max(),
     )
 
     return delta_kappa_mean.sort("dataset", "method")
@@ -155,8 +175,9 @@ def _plot_delta_kappa_vs_parameters_joined_datasets(
 
 
 def _plot_delta_kappe_vs_parameters_separate_datasets(
-    data: pl.DataFrame, log: bool, col_wrap: int, show: bool
+    data: pl.DataFrame, log: bool, col_wrap: int, prefix: str
 ) -> None:
+    data = data.sort("dataset", "method")
     full_params = data.filter(pl.col("method") == "Full").item(0, "free_parameters")
 
     g = sns.FacetGrid(
@@ -188,8 +209,9 @@ def _plot_delta_kappe_vs_parameters_separate_datasets(
         wspace=0.08,
         hspace=0.37,
     )
+    train_size = "None" if prefix == "full" else "4"
     g.figure.suptitle(
-        "Delta Kappa vs. Number of Free Parameters by Dataset",
+        f"Delta Kappa vs. Number of Free Parameters by Dataset - Train Size: {train_size}",
         fontsize=15,
         x=(right_bbox + left_bbox) / 2,
         ha="center",
@@ -220,11 +242,9 @@ def _plot_delta_kappe_vs_parameters_separate_datasets(
         pass
 
     save_figure(
-        g.figure, f"figures/delta_kappa_vs_parameters{'_log' if log else ''}.png"
+        g.figure,
+        f"figures/{prefix}_delta_kappa_vs_parameters{'_log' if log else ''}.png",
     )
-
-    if show:
-        plt.show()
 
     return None
 

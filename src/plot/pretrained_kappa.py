@@ -26,6 +26,7 @@ def _get_pretrained_kappa_data() -> pl.DataFrame:
     concat: pl.DataFrame = pl.concat(dfs, how="vertical")
     single_org = concat.unique(["record", "dataset"], keep="any")
     result = single_org.select("dataset", "record", "kappa")
+    # result = result.with_columns(pl.col("dataset").str.to_uppercase())
     return result.sort("dataset")
 
 
@@ -59,11 +60,14 @@ def _plot_pretrained_kappa_performance(data: pl.DataFrame, show: bool = False) -
         order=dataset_order,
     )
 
-    plt.suptitle("Kappa of Pretrained Model", size=14)
+    bbox_right = 0.97
+    bbox_left = 0.1
+    center = (bbox_left + bbox_right) / 2
+    plt.subplots_adjust(left=bbox_left, right=bbox_right, top=0.86, bottom=0.1)
+    plt.suptitle("Kappa of Pretrained Model", size=14, x=center, ha="center")
     plt.xlabel("Dataset", fontsize=12)
     plt.ylabel("Kappa", fontsize=12)
     plt.ylim(top=1)
-    plt.subplots_adjust(left=0.1, right=0.97, top=0.86, bottom=0.1)
 
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=10)
     ax.set_yticklabels(ax.get_yticklabels(), fontsize=10)
@@ -88,5 +92,5 @@ def _plot_pretrained_kappa_performance(data: pl.DataFrame, show: bool = False) -
 
 
 if __name__ == "__main__":
-    plot_pretrained_kappa_performance(show=True)
+    plot_pretrained_kappa_performance()
     pass

@@ -46,8 +46,8 @@ def run_experiment(experiment: Experiment):
 
 if __name__ == "__main__":
     exp = Experiment(
-        key="test_lumi",
-        dataset="mass_c3",
+        key="test",
+        dataset="eesm19",
         method="DoRA10",
         model="usleep",
         trainer="usleep",

@@ -431,6 +431,7 @@ index,key,dataset,method,model,trainer,train_size,fold,seed,status
 429,EDVZLkNu,eesm19,LoRA50,usleep,usleep,4,9,42,done
 430,12EDCCA2k,eesm19,LoRA50,usleep,usleep,8,0,42,done
 431,12EDCCA2k,eesm19,LoRA50,usleep,usleep,8,1,42,done
+431,12EDCCA2k,eesm19,LoRA50,usleep,usleep,8,1,42,done
 432,12EDCCA2k,eesm19,LoRA50,usleep,usleep,8,2,42,done
 433,12EDCCA2k,eesm19,LoRA50,usleep,usleep,8,3,42,done
 434,12EDCCA2k,eesm19,LoRA50,usleep,usleep,8,4,42,done

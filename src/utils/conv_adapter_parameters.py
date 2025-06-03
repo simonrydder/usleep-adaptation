@@ -5,6 +5,7 @@ import polars as pl
 import seaborn as sns
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
+from matplotlib.ticker import PercentFormatter
 from tqdm import tqdm
 
 from src.concrete.standard_adapter import StandardAdapter
@@ -63,10 +64,10 @@ def main(show: bool):
     df = raw_data()
 
     types = ["parallel", "sequential"]
-    layers = [False, True]
+    layers = [False]
     target_procentages = [0.05, 0.1, 0.2, 0.5]
 
-    fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+    fig, axs = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
     sns.set_theme(style="whitegrid", context="paper")
 
     axs = axs.flatten()
@@ -85,7 +86,13 @@ def main(show: bool):
 
         # Plot dashed line for reduction=None
         y_none = df_none["procentage"].values[0]
-        ax.axhline(y=y_none, linestyle="--", color="black", linewidth=1.5)
+        ax.axhline(
+            y=y_none,
+            linestyle="--",
+            color="black",
+            linewidth=1.5,
+            label=f"None: {float(y_none * 100):.2f}%",
+        )
 
         closest_points = []
         # Find and plot closest points for each target
@@ -107,11 +114,14 @@ def main(show: bool):
             )
 
         # Title logic
-        title = ("P" if type_ == "parallel" else "S") + "C" + ("L" if layer else "A")
+        # title = ("P" if type_ == "parallel" else "S") + "C" + ("L" if layer else "A")
+        title = type_.capitalize()
         ax.set_title(title, fontdict={"size": 14})
 
         ax.set_xlabel("Reduction")
-        ax.set_ylabel("Procentage")
+        ax.yaxis.set_major_formatter(PercentFormatter(1.0))
+        if i == 0:
+            ax.set_ylabel("Free parameters")
         ax.grid()
 
         # Optional: avoid duplicate legends

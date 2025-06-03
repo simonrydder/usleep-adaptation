@@ -42,6 +42,7 @@ def _plot_kappa_vs_methods(data: pl.DataFrame, show: bool = False) -> None:
 
     base_color = BASE_COLOR[dataset.lower()]
     highlight_color = HIGHLIGHT_COLOR[dataset.lower()]
+    highlight_color = "white"
 
     kappa_mean = data.group_by("method").agg(pl.mean("kappa")).sort("kappa")
     method_order = kappa_mean.get_column("method").to_list()
@@ -51,8 +52,7 @@ def _plot_kappa_vs_methods(data: pl.DataFrame, show: bool = False) -> None:
         for method in method_order
     }
 
-    fig = plt.figure(figsize=(18, 6))
-    plt.subplots_adjust(left=0.05, right=0.97, top=0.95, bottom=0.07)
+    fig = plt.figure(figsize=(18, 7))
     sns.set_theme(style="whitegrid", context="paper")
     ax = sns.boxplot(
         data=data,
@@ -75,15 +75,20 @@ def _plot_kappa_vs_methods(data: pl.DataFrame, show: bool = False) -> None:
         ax=ax,
     )
 
-    plt.suptitle(f"{dataset.upper()} - Kappa by Method", size=14)
-    plt.xlabel("Method", fontsize=12)
-    plt.ylabel("Kappa", fontsize=12)
+    bbox_right = 0.97
+    bbox_left = 0.05
+    center = (bbox_left + bbox_right) / 2
+    plt.subplots_adjust(left=bbox_left, right=bbox_right, top=0.85, bottom=0.12)
+    plt.suptitle(
+        f"{dataset.upper()} - Kappa vs. Method", size=16, x=center, ha="center"
+    )
+    plt.xlabel("Method", fontsize=14)
+    plt.ylabel("Kappa", fontsize=14)
     plt.xticks(rotation=20, ha="center")
-    plt.subplots_adjust(top=0.86, bottom=0.15)
 
     ax.set_xticks(range(len(method_order)))
-    ax.set_xticklabels(ax.get_xticklabels(), fontsize=10)
-    ax.set_yticklabels(ax.get_yticklabels(), fontsize=10)
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize=12)
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=12)
     for label in ax.get_xticklabels():
         if label.get_text() == "original":
             label.set_fontweight("bold")
@@ -93,10 +98,10 @@ def _plot_kappa_vs_methods(data: pl.DataFrame, show: bool = False) -> None:
     secax.set_xticklabels(
         [f"{mean:.2f}" for mean in kappa_mean.get_column("kappa")],
         ha="center",
-        fontsize=10,
+        fontsize=12,
         fontweight="bold",
     )
-    secax.set_xlabel("Mean Kappa", fontsize=12)
+    secax.set_xlabel("Mean Kappa", fontsize=14)
 
     save_figure(fig=fig, path=f"figures/{dataset}_kappa_vs_method.png")
 
@@ -106,4 +111,4 @@ def _plot_kappa_vs_methods(data: pl.DataFrame, show: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    plot_kappa_vs_methods(show=True)
+    plot_kappa_vs_methods()

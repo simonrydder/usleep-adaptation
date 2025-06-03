@@ -30,7 +30,7 @@ torch = [
 torchvision = [
     { index = "pytorch-cu126" },
 ]
-peft = { git = "https://github.com/huggingface/peft.git" }
+peft = { git = "https://github.com/huggingface/peft.git", branch = "main" }
 
 [[tool.uv.index]]
 name = "pytorch-cu126"

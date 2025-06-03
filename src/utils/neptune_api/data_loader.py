@@ -187,5 +187,18 @@ def load_data(
 
 
 if __name__ == "__main__":
-    download_data(datasets=["dod_h", "eesm23"])
-    # load_data()
+    download_data(
+        datasets=[
+            # "dod_o",
+            # "dod_h",
+            # "eesm19",
+            # "eesm23",
+            "isruc_sg1",
+            # "isruc_sg2",
+            # "isruc_sg3",
+            # "mass_c1",
+            # "mass_c3",
+            # "svuh",
+        ],
+        reprocess=True,
+    )

@@ -68,7 +68,7 @@ index,key,dataset,method,model,trainer,train_size,fold,seed,status
 66,16Ta76Gyf,isruc_sg3,Fish20,usleep,usleep,4,6,42,done
 67,16Ta76Gyf,isruc_sg3,Fish20,usleep,usleep,4,7,42,done
 68,16Ta76Gyf,isruc_sg3,Fish20,usleep,usleep,4,8,42,done
-69,16Ta76Gyf,isruc_sg3,Fish20,usleep,usleep,4,9,42,pending
+69,16Ta76Gyf,isruc_sg3,Fish20,usleep,usleep,4,9,42,done
 70,SwwVML8t,isruc_sg3,Fish20,usleep,usleep,,0,42,done
 71,SwwVML8t,isruc_sg3,Fish20,usleep,usleep,,1,42,done
 72,SwwVML8t,isruc_sg3,Fish20,usleep,usleep,,2,42,done
@@ -89,7 +89,7 @@ index,key,dataset,method,model,trainer,train_size,fold,seed,status
 87,a0TW9j1w,isruc_sg3,Fish50,usleep,usleep,4,7,42,done
 88,a0TW9j1w,isruc_sg3,Fish50,usleep,usleep,4,8,42,done
 89,a0TW9j1w,isruc_sg3,Fish50,usleep,usleep,4,9,42,done
-90,H7BvNozs,isruc_sg3,Fish50,usleep,usleep,,0,42,pending
+90,H7BvNozs,isruc_sg3,Fish50,usleep,usleep,,0,42,done
 91,H7BvNozs,isruc_sg3,Fish50,usleep,usleep,,1,42,done
 92,H7BvNozs,isruc_sg3,Fish50,usleep,usleep,,2,42,done
 93,H7BvNozs,isruc_sg3,Fish50,usleep,usleep,,3,42,done

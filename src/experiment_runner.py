@@ -46,11 +46,11 @@ def run_experiment(experiment: Experiment):
 
 if __name__ == "__main__":
     exp = Experiment(
-        key="test",
-        dataset="eesm19",
-        method="LoRA10",
+        key="test_lumi",
+        dataset="mass_c3",
+        method="DoRA10",
         model="usleep",
-        trainer="usleep_debug_neptune",
+        trainer="usleep",
         train_size=None,
         fold=1,
         seed=42,

@@ -12,6 +12,15 @@ from src.utils.neptune_api.method_data import extract_validation_data
 def convergence_plotting() -> None:
     df = _get_data()
     print(create_latex_table(df))
+    print(
+        df.group_by("dataset", maintain_order=True)
+        .agg(
+            pl.col("max_epoch").mean().alias("mean"),
+            pl.col("max_epoch").std().alias("std"),
+        )
+        .to_pandas()
+        .T.to_latex(index=False, escape=False, float_format="%.1f")
+    )
     # plot_max_epoch_boxplot(df)
 
     pass
@@ -19,13 +28,15 @@ def convergence_plotting() -> None:
 
 def create_latex_table(data: pl.DataFrame) -> str:
     avg = data.group_by("method", maintain_order=True).agg(
-        pl.col("max_epoch").mean().alias("avg")
+        pl.col("max_epoch").mean().alias("avg"), pl.col("max_epoch").std().alias("std")
     )
     df_agg = data.group_by("method", "dataset", maintain_order=True).agg(
         pl.col("max_epoch").mean().alias("max_epoch_mean"),
     )
     pivot_values = df_agg.pivot(index="method", on="dataset", values="max_epoch_mean")
-    pivot_df = pivot_values.join(avg, on="method", how="left")
+    pivot_df = pivot_values.join(avg, on="method", how="left").sort(
+        "avg", descending=False
+    )
 
     df = pivot_df.to_pandas()
     formatted_df = highlight_and_color_cell(df)
@@ -58,7 +69,9 @@ def _get_data() -> pl.DataFrame:
 
 
 def plot_max_epoch_boxplot(data: pl.DataFrame) -> None:
-    data = data.group_by("dataset", "method").agg(pl.col("max_epoch").median())
+    data = data.group_by("dataset", "method", maintain_order=True).agg(
+        pl.col("max_epoch").median()
+    )
     plt.figure(figsize=(18, 6))
     plt.subplots_adjust(left=0.05, right=0.97, top=0.95, bottom=0.07)
     sns.set_theme(style="whitegrid", context="paper")

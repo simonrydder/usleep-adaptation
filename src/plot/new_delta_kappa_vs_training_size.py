@@ -80,64 +80,96 @@ def delta_kappa_train_size_plot(df: pl.DataFrame):
         df.group_by(["method", "train_size"])
         .agg(pl.col("delta_kappa").mean().alias("delta_kappa_avg"))
         .with_columns(pl.col("delta_kappa_avg") * 100)
-        .to_pandas()
+        .sort("train_size", "delta_kappa_avg")
+        .with_columns(
+            pl.col("method")
+            .map_elements(lambda x: extract_base_and_variant(x)[0])
+            .alias("base"),
+            pl.col("method")
+            .map_elements(lambda x: extract_base_and_variant(x)[1])
+            .alias("variant"),
+        )
+        # .to_pandas()
     )
-    train_sizes = sorted(avg_df["train_size"].unique())
 
-    dynamic_positions = {}
-    for t in train_sizes:
-        subset = avg_df[avg_df["train_size"] == t].copy()
-        subset = subset.sort_values("delta_kappa_avg")  # Low to high
-        for xpos, row in enumerate(subset.itertuples()):
-            dynamic_positions[(row.method, row.train_size)] = xpos
+    train_size_order = {
+        v: i for i, v in enumerate(sorted(avg_df["train_size"].unique()))
+    }
+    dfs = []
+    for _, train_size_df in avg_df.group_by("train_size", maintain_order=True):
+        dfs.append(
+            train_size_df.with_row_index("xpos").with_columns(
+                pl.col("train_size")
+                .map_elements(lambda x: train_size_order[x], return_dtype=pl.Int64)
+                .alias("ypos")
+            )
+        )
 
-    methods = df["method"].unique().to_list()
+    data: pl.DataFrame = pl.concat(dfs, how="vertical")
 
-    method_bases = {m: extract_base_and_variant(m)[0] for m in methods}
-    method_variants = {m: extract_base_and_variant(m)[1] for m in methods}
-
-    base_methods = sorted(set(method_bases.values()))
-    base_colors = dict(zip(base_methods, sns.color_palette("tab10")))
-
+    train_sizes = data.get_column("train_size").unique().sort()
     linestyles = {None: "solid", "10": "solid", "20": "dashed", "50": "dotted"}
-    style_map = {m: linestyles.get(v) for m, v in method_variants.items()}
-
+    base_colors = dict(
+        zip(
+            data.get_column("base").unique().sort(),
+            sns.color_palette("tab10"),
+        )
+    )
+    square_width = 0.8
+    square_height = 0.4
     fig = plt.figure(figsize=(15, 7))
     plt.subplots_adjust(left=0.05, right=0.97, top=0.94, bottom=0.14)
     ax = plt.gca()
 
-    method_tracks = {method: [] for method in methods}
+    for method, coords in data.group_by("method", maintain_order=True):
+        xs_raw = coords.get_column("xpos")
+        ys_raw = coords.get_column("ypos")
 
-    for row in avg_df.itertuples():
-        x = dynamic_positions[(row.method, row.train_size)]
-        y = train_sizes.index(row.train_size)
-        method_tracks[row.method].append((x, y))
+        ys, xs = [], []
+        for x, y in zip(xs_raw, ys_raw):
+            if y == min(ys_raw):
+                xs.append(x)
+                ys.append(y + square_height / 2)
+            elif y == max(ys_raw):
+                xs.append(x)
+                ys.append(y - square_height / 2)
+            else:
+                xs.append(x)
+                xs.append(x)
+                ys.append(y - square_height / 2)
+                ys.append(y + square_height / 2)
+
+        variant = coords.item(0, "variant")
+        base = coords.item(0, "base")
+        ax.plot(
+            xs,
+            ys,
+            linestyle=linestyles[variant],
+            color=base_colors[base],
+            label=method,
+            zorder=1,
+        )
+
+    for row in data.iter_rows(named=True):
+        print(row)
+        # break
+        x = row["xpos"]
+        y = row["ypos"]
+        val = row["delta_kappa_avg"]
 
         rect = plt.Rectangle(
-            (x - 0.4, y - 0.2),
-            0.8,
-            0.4,
-            color=base_colors[method_bases[row.method]],
-            alpha=0.7,
+            (x - square_width / 2, y - square_height / 2),
+            square_width,
+            square_height,
+            color=base_colors[row["base"]],
+            # alpha=0.7,
+            zorder=2,
         )
         ax.add_patch(rect)
 
-        plt.text(
-            x, y, f"{row.delta_kappa_avg:.2f}", ha="center", va="center", fontsize=12
-        )
+        plt.text(x, y, f"{val:.2f}", ha="center", va="center", fontsize=12, zorder=3)
 
-    for method, coords in method_tracks.items():
-        coords_sorted = sorted(coords, key=lambda x: x[1])
-        xs, ys = zip(*coords_sorted)
-        plt.plot(
-            xs,
-            ys,
-            linestyle=style_map[method],
-            color=base_colors[method_bases[method]],
-            label=method,
-        )
-
-    plt.yticks(range(len(train_sizes)), train_sizes)
+    plt.yticks(range(len(train_size_order)), list(train_size_order.keys()))
     plt.xticks([])
     plt.ylabel("Train Size", fontsize=14)
     plt.title("Delta Kappa per Method based on Train Size", size=15)

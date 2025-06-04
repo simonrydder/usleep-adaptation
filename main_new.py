@@ -19,6 +19,7 @@ def main():
     try:
         dataset = os.getenv("DATASET")
         assert isinstance(dataset, str)
+        print(f'Selected dataset {dataset}')
     except Exception:
         print("DATASET environment variable not found. Exiting.")
         sys.exit(1)

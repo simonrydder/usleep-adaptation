@@ -1,0 +1,7 @@
+default: !include _default.yaml
+method : dora
+parameter_count: grad
+settings:
+    rank : 10
+    alpha : 1
+    dropout : 0

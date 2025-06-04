@@ -14,4 +14,4 @@ def print_hdf5_structure(file_path: str) -> None:
 
 
 if __name__ == "__main__":
-    print_hdf5_structure("data/hdf5/svuh (2).hdf5")
+    print_hdf5_structure("data/hdf5/svuh.hdf5")

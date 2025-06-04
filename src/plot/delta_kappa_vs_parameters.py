@@ -18,7 +18,8 @@ from src.utils.neptune_api.method_data import (
 
 def plot_delta_kappa_vs_parameters() -> None:
     data = _get_delta_kappa_data()
-    full_train_size = data.sort("train_size").unique(
+    data = data.with_columns(pl.col("delta_kappa") * 100, pl.col("kappa") * 100)
+    full_train_size = data.sort("dataset", "method", "train_size").unique(
         ["dataset", "method"], keep="last", maintain_order=True
     )
 
@@ -50,9 +51,6 @@ def _get_delta_kappa_data() -> pl.DataFrame:
 
     dfs = []
     for method_data in raw_data:
-        # if method_data.train_size is not None:
-        #     continue
-
         test = extract_performance(method_data, "new").drop("accuracy", "loss", "f1")
         base = extract_performance(method_data, "org").drop("accuracy", "loss", "f1")
 
@@ -235,7 +233,7 @@ def _plot_delta_kappe_vs_parameters_separate_datasets(
         x_fit = np.linspace(x.min(), x.max(), 100)
         y_fit = intercept + slope * (x_fit)
         add = "-" if intercept < 0 else "+"  # type: ignore
-        label = rf"$y = {slope * x.max():.3f}x {add} {abs(intercept):.3f}$"
+        label = rf"$y = {slope * x.max():.3f}x {add} {abs(intercept):.3f}$"  # type: ignore
         ax.plot(x_fit, y_fit, color=(*color, 0.6), label=label, linewidth=2)
         location = "upper right" if i in [4] else "lower right"
         ax.legend(loc=location, fontsize=11, frameon=True)

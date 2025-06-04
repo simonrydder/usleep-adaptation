@@ -15,7 +15,7 @@ from src.utils.neptune_api.method_data import (
 def plot_validation_kappa(cols: int = 4, show: bool = False) -> None:
     df = _get_validation_kappa_data()
 
-    for _, grp_df in df.group_by("dataset"):
+    for _, grp_df in df.group_by("dataset", maintain_order=True):
         _plot_validation_kappa(grp_df, cols=cols, show=show)
 
 
@@ -31,8 +31,8 @@ def _get_validation_kappa_data() -> pl.DataFrame:
         val = val.drop("accuracy", "loss", "f1")
         dfs.append(val)
 
-    df = pl.concat(dfs, how="vertical")
-
+    df: pl.DataFrame = pl.concat(dfs, how="vertical")
+    df = df.with_columns(pl.col("kappa") * 100)
     return sort_dataframe_by_method_order(df)
 
 
@@ -41,16 +41,18 @@ def _plot_validation_kappa(data: pl.DataFrame, cols: int, show: bool) -> None:
     color = HIGHLIGHT_COLOR[dataset.lower()]
 
     epoch_df = (
-        data.group_by("epoch", "method", "fold")
+        data.group_by("epoch", "method", "fold", maintain_order=True)
         .mean()
         .drop("step", "record")
-        .sort("method")
+        # .sort("method")
     )
-    fold_avg = epoch_df.group_by("epoch", "method").agg(pl.mean("kappa"))
+    fold_avg = epoch_df.group_by("epoch", "method", maintain_order=True).agg(
+        pl.mean("kappa")
+    )
     max_epoch_mean = (
-        epoch_df.group_by("method", "fold")
+        epoch_df.group_by("method", "fold", maintain_order=True)
         .agg(pl.col("epoch").max())
-        .group_by("method")
+        .group_by("method", maintain_order=True)
         .agg(pl.col("epoch").mean().alias("max_epoch_mean"))
     )
 
@@ -62,8 +64,8 @@ def _plot_validation_kappa(data: pl.DataFrame, cols: int, show: bool) -> None:
         col_wrap=cols,
         sharey=True,
         sharex=True,
-        height=2.5,
-        aspect=1.5,
+        height=3,
+        aspect=1.25,
     )
     g.set_titles(template="{col_name}", size=15)
 
@@ -97,12 +99,12 @@ def _plot_validation_kappa(data: pl.DataFrame, cols: int, show: bool) -> None:
         if i == 0:
             ax.legend(
                 loc="upper right",
-                bbox_to_anchor=(0.99, 0.97),
+                bbox_to_anchor=(0.99, 0.98),
                 bbox_transform=g.figure.transFigure,
                 prop={"size": 14},
             )
 
-        ax.set_ylim((0.0, 0.9))
+        ax.set_ylim((-5, 95))
 
         adjust_axis_font(ax.yaxis, size=12)
         adjust_axis_font(ax.xaxis, size=12)

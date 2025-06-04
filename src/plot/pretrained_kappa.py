@@ -10,6 +10,7 @@ from src.utils.neptune_api.method_data import extract_performance
 
 def plot_pretrained_kappa_performance(show: bool = False) -> None:
     data = _get_pretrained_kappa_data()
+    data = data.with_columns(pl.col("kappa") * 100)
     _plot_pretrained_kappa_performance(data, show=show)
 
 
@@ -67,7 +68,7 @@ def _plot_pretrained_kappa_performance(data: pl.DataFrame, show: bool = False) -
     plt.suptitle("Kappa of Pretrained Model", size=14, x=center, ha="center")
     plt.xlabel("Dataset", fontsize=12)
     plt.ylabel("Kappa", fontsize=12)
-    plt.ylim(top=1)
+    plt.ylim(top=100)
 
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=10)
     ax.set_yticklabels(ax.get_yticklabels(), fontsize=10)

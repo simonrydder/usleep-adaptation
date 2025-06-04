@@ -52,7 +52,7 @@ def _plot_kappa_vs_methods(data: pl.DataFrame, show: bool = False) -> None:
         for method in method_order
     }
 
-    fig = plt.figure(figsize=(18, 7))
+    fig = plt.figure(figsize=(18, 8))
     sns.set_theme(style="whitegrid", context="paper")
     ax = sns.boxplot(
         data=data,

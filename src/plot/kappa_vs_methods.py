@@ -10,13 +10,13 @@ from src.utils.neptune_api.method_data import extract_performance
 
 def plot_kappa_vs_methods(show: bool = False) -> None:
     data = get_kappa_data()
+    data = data.with_columns(pl.col("kappa") * 100)
 
     for _, grp_df in data.group_by("dataset"):
         _plot_kappa_vs_methods(grp_df, show=show)
 
 
 def get_kappa_data() -> pl.DataFrame:
-    # TODO: Filter to keep only rows with train_size = None
     raw_data = load_data()
 
     dfs = []

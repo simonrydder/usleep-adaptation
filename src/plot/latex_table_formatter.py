@@ -11,9 +11,13 @@ def highlight_and_color_cell(df: pd.DataFrame) -> pd.DataFrame:
         def format_cell(val):
             # val_int = int(round(val, 0))
             print_val = round(val, 1)
-            color = "green!15" if val in sorted_vals[:10] else "red!15"
+            cell = "" if val in sorted_vals[:10] else r"\cellcolor{black!15}"
+            # color = "green!15" if val in sorted_vals[:10] else "red!15"
             # color = "green!15" if val <= median_val else "red!15"
-            cell = rf"\cellcolor{{{color}}}"
+            # cell = rf"\cellcolor{{{color}}}"
+            if col == "std":
+                return str(print_val)
+
             if val == min_val:
                 return cell + rf"\underline{{\textbf{{{print_val}}}}}"
             else:
@@ -35,8 +39,7 @@ def delta_kappa_format(df: pd.DataFrame) -> pd.DataFrame:
         # median_val = col_vals.median()
 
         def format_cell(val):
-            color = "green!15" if val >= 0 else "red!15"
-            cell = rf"\cellcolor{{{color}}}"
+            cell = "" if val >= 0 else r"\cellcolor{black!15}"
             if val == _max:
                 return cell + rf"\underline{{\textbf{{{round(val, 1)}}}}}"
             else:

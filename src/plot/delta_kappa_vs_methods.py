@@ -14,6 +14,7 @@ def joined_delta_kappa_vs_methods_plot() -> None:
 
 
 def plot_joined_delta_kappa_vs_methods(data: pl.DataFrame) -> None:
+    data = data.with_columns(pl.col("delta_kappa") * 100)
     overall_avg = data.group_by("method").agg(pl.col("delta_kappa").mean())
     dataset_avg = data.group_by("dataset", "method").agg(pl.col("delta_kappa").mean())
 
@@ -70,12 +71,14 @@ def plot_joined_delta_kappa_vs_methods(data: pl.DataFrame) -> None:
     secax = ax.secondary_xaxis("top")
     secax.set_xticks(range(len(method_order)))
     secax.set_xticklabels(
-        [f"{mean:.3f}" for mean in overall_avg.get_column("delta_kappa")],
+        [f"{mean:.1f}" for mean in overall_avg.get_column("delta_kappa")],
         ha="center",
         fontsize=10,
         fontweight="bold",
     )
     secax.set_xlabel("Mean Kappa", fontsize=12)
+
+    pass
 
 
 def _get_data() -> pl.DataFrame:
